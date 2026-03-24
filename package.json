@@ -1,0 +1,22 @@
+{
+  "name": "onchainpixel",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=18 <23"
+  },
+  "scripts": {
+    "clean": "hardhat clean",
+    "compile": "hardhat compile",
+    "build": "npm run compile && node scripts/export-artifacts.js",
+    "test": "hardhat test",
+    "node": "hardhat node"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@openzeppelin/contracts": "^4.9.6",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.22.17"
+  }
+}
