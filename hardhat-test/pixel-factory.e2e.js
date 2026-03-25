@@ -5,7 +5,6 @@ const BPS = 10000;
 const POOL_SEED_BPS = 6000;
 const TREASURY_BPS = 1000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
-const LONG_WINDOW = 24 * 60 * 60;
 
 function palette16() {
   return ethers.utils.hexlify([
@@ -79,6 +78,11 @@ async function seedPoolReserve(pool, creator, routerAddress, amount) {
   await (await pool.connect(creator).setRouter(routerAddress)).wait();
 }
 
+async function setStabilizationSnapshot(pool, creator) {
+  const floor = await pool.getFloorPrice();
+  await (await pool.connect(creator).setExternalMarketSnapshot(2, 120, floor)).wait();
+}
+
 describe("PixelFactory end-to-end", function () {
   it("creates a fully wired collection stack and routes mint through router", async function () {
     const env = await deployFactoryStack();
@@ -130,8 +134,7 @@ describe("PixelFactory end-to-end", function () {
     assert.strictEqual(await nft.ownerOf(0), pool.address);
     assert.strictEqual((await pool.availableNFTs()).toString(), "1");
 
-    await increaseTime(LONG_WINDOW + 1);
-
+    await setStabilizationSnapshot(pool, creator);
     await (await pool.connect(creator).releasePoolInventoryForListing(1)).wait();
 
     assert.strictEqual(await nft.ownerOf(0), creator.address);

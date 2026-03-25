@@ -7,7 +7,6 @@ const TREASURY_BPS = 1000;
 const TRADE_FEE_BPS = 250;
 const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
-const LONG_WINDOW = 24 * 60 * 60;
 const MARKET_STATE_SLOT = 24;
 const slotCache = {};
 
@@ -136,6 +135,11 @@ async function forceMarketState(pool, value) {
   await ethers.provider.send("evm_mine", []);
 }
 
+async function setStabilizationSnapshot(pool, owner) {
+  const floor = await pool.getFloorPrice();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor)).wait();
+}
+
 async function deployFactoryStack() {
   const [deployer, creator] = await ethers.getSigners();
   const mintPrice = ethers.utils.parseEther("0.01");
@@ -216,8 +220,7 @@ describe("Protocol fee and admin invariants", function () {
     await (await router.connect(user).sellNFT(0, 0)).wait();
     assert.strictEqual(await nft.ownerOf(0), pool.address);
 
-    await increaseTime(LONG_WINDOW + 1);
-    await forceMarketState(pool, 1);
+    await setStabilizationSnapshot(pool, owner);
     assert.strictEqual(await pool.canReleaseInventoryForListing(), true);
 
     await (await pool.connect(owner).pause()).wait();

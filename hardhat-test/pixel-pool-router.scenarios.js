@@ -7,7 +7,6 @@ const TREASURY_BPS = 1000;
 const TRADE_FEE_BPS = 250;
 const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
-const LONG_WINDOW = 24 * 60 * 60;
 const INVENTORY_STALE_AGE = 7 * 24 * 60 * 60;
 const MARKET_STATE_SLOT = 24;
 const slotCache = {};
@@ -169,17 +168,13 @@ async function setUintVar(contract, getterName, value, probeValue = 987654321) {
   await ethers.provider.send("evm_mine", []);
 }
 
-async function forceStabilizationMetrics(pool) {
+async function setStabilizationSnapshot(pool, owner) {
   const floor = await pool.getFloorPrice();
-  await setUintVar(pool, "shortWindowVolume", 1);
-  await setUintVar(pool, "longWindowVolume", 4);
-  await setUintVar(pool, "shortWindowBuys", 1);
-  await setUintVar(pool, "shortWindowSells", 1);
-  await setUintVar(pool, "floorEma", floor);
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor)).wait();
 }
 
 describe("PixelPool longer scenarios", function () {
-  it("tracks net sell pressure across multiple sells and external listing releases", async function () {
+  it("tracks sell pressure until external sales are confirmed", async function () {
     const { owner, user, nft, pool, router, mintPrice } = await deployStack();
 
     await mintMany(router, user, mintPrice, 3);
@@ -195,23 +190,27 @@ describe("PixelPool longer scenarios", function () {
     assert.strictEqual((await pool.availableNFTs()).toString(), "3");
     assert(floorAfterSells.lt(floorStart));
 
-    await increaseTime(LONG_WINDOW + 1);
-    await forceStabilizationMetrics(pool);
+    await setStabilizationSnapshot(pool, owner);
 
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
-
-    await forceStabilizationMetrics(pool);
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
     const floorAfterReleases = await pool.getFloorPrice();
-    assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
+    assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "3");
     assert.strictEqual((await pool.availableNFTs()).toString(), "1");
     assert.strictEqual(await nft.ownerOf(2), owner.address);
     assert.strictEqual(await nft.ownerOf(1), owner.address);
-    assert(floorAfterReleases.gt(floorAfterSells));
+
+    await (await pool.connect(owner).confirmExternalSale(2, addBps(floorAfterSells, STABILIZATION_SPREAD_BPS))).wait();
+    await (await pool.connect(owner).confirmExternalSale(1, addBps(floorAfterSells, STABILIZATION_SPREAD_BPS))).wait();
+
+    const floorAfterSales = await pool.getFloorPrice();
+    assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
+    assert(floorAfterReleases.lte(floorAfterSales));
+    assert(floorAfterSales.gt(floorAfterSells));
   });
 
-  it("restores the floor path after listing release reduces sell pressure", async function () {
+  it("restores the floor path after a confirmed external sale reduces sell pressure", async function () {
     const { owner, user, nft, pool, router, mintPrice } = await deployStack();
 
     await (await router.connect(user)["mint(bytes)"](onePixel(4), { value: mintPrice })).wait();
@@ -227,14 +226,19 @@ describe("PixelPool longer scenarios", function () {
     const floorAfterSell = await pool.getFloorPrice();
     assert(emaAfterSell.lt(emaStart));
 
-    await increaseTime(LONG_WINDOW + 1);
-    await forceStabilizationMetrics(pool);
+    await setStabilizationSnapshot(pool, owner);
 
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
     const floorAfterRelease = await pool.getFloorPrice();
     assert.strictEqual(await nft.ownerOf(0), owner.address);
-    assert(floorAfterRelease.gt(floorAfterSell));
+    assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
+
+    await (await pool.connect(owner).confirmExternalSale(0, addBps(floorAfterSell, STABILIZATION_SPREAD_BPS))).wait();
+
+    const floorAfterConfirm = await pool.getFloorPrice();
+    assert(floorAfterRelease.lte(floorAfterConfirm));
+    assert(floorAfterConfirm.gt(floorAfterSell));
   });
 
   it("stops buyback once treasury budget can no longer fund one floor purchase even if inventory remains", async function () {
@@ -245,7 +249,7 @@ describe("PixelPool longer scenarios", function () {
       pool,
       owner,
       ethers.utils.parseEther("6"),
-      ethers.utils.parseEther("0.118")
+      ethers.utils.parseEther("0.058")
     );
 
     await increaseTime(LAUNCH_PROTECTION + 1);

@@ -29,9 +29,9 @@ interface IPixelPool {
     function canSellIntoPool() external view returns (bool);
     function canReleaseInventoryForListing() external view returns (bool);
     function getMarketSignals() external view returns (
-        uint256 volumeRatioBps,
-        uint256 pressureRatioBps,
-        uint256 floorDeviationBps,
+        uint256 purchaseRateBps,
+        uint256 listingPressureBps,
+        uint256 floorRatioBps,
         uint256 coverageRatioBps
     );
 }
@@ -223,14 +223,14 @@ contract PixelRouter is Ownable, ReentrancyGuard {
     function getPoolState() external view returns (
         bool poolBuysEnabled,
         bool listingEnabled,
-        uint256 volumeRatioBps,
-        uint256 pressureRatioBps,
-        uint256 floorDeviationBps,
+        uint256 purchaseRateBps,
+        uint256 listingPressureBps,
+        uint256 floorRatioBps,
         uint256 coverageRatioBps
     ) {
         poolBuysEnabled = pool.canSellIntoPool();
         listingEnabled = pool.canReleaseInventoryForListing();
-        (volumeRatioBps, pressureRatioBps, floorDeviationBps, coverageRatioBps) = pool.getMarketSignals();
+        (purchaseRateBps, listingPressureBps, floorRatioBps, coverageRatioBps) = pool.getMarketSignals();
     }
 
     // ============================================================

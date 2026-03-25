@@ -122,6 +122,11 @@ async function forceMarketState(pool, desiredState) {
   await ethers.provider.send("evm_mine", []);
 }
 
+async function setStabilizationSnapshot(pool, owner, floorOverride) {
+  const floor = floorOverride || await pool.getFloorPrice();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor)).wait();
+}
+
 describe("PixelPool + PixelRouter economics flows", function () {
   it("buyback vaults stale inventory and recapitalizes pool reserve", async function () {
     const { owner, user, nft, pool, router, mintPrice } = await deployStack();
@@ -144,13 +149,13 @@ describe("PixelPool + PixelRouter economics flows", function () {
 
     const [mode, maxBuy] = await pool.getBuybackMode();
     assert.strictEqual(mode.toString(), "1");
-    assert.strictEqual(maxBuy.toString(), "1");
+    assert.strictEqual(maxBuy.toString(), "2");
 
     await (await pool.connect(owner).executeBuyback()).wait();
 
-    assert.strictEqual((await pool.availableNFTs()).toString(), "1");
-    assert.strictEqual((await pool.vaultSize()).toString(), "1");
-    assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
+    assert.strictEqual((await pool.availableNFTs()).toString(), "0");
+    assert.strictEqual((await pool.vaultSize()).toString(), "2");
+    assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "0");
     assert((await pool.ethBalance()).gt(ethBefore));
     assert((await pool.treasuryBalance()).lt(treasuryBefore));
   });
@@ -203,7 +208,6 @@ describe("PixelPool + PixelRouter economics flows", function () {
 
     await increaseTime(INVENTORY_STALE_AGE + 1);
     await (await pool.connect(owner).executeBuyback()).wait();
-    await (await pool.connect(owner).executeBuyback()).wait();
 
     assert.strictEqual((await pool.vaultSize()).toString(), "2");
 
@@ -231,7 +235,7 @@ describe("PixelPool + PixelRouter economics flows", function () {
       pool,
       owner,
       ethers.utils.parseEther("6"),
-      ethers.utils.parseEther("0.13")
+      ethers.utils.parseEther("0.07")
     );
 
     await increaseTime(LAUNCH_PROTECTION + 1);
@@ -244,7 +248,8 @@ describe("PixelPool + PixelRouter economics flows", function () {
     assert.strictEqual((await pool.vaultSize()).toString(), "1");
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
 
-    await forceMarketState(pool, 1);
+    const targetPrice = await pool.getVaultListingTarget(1);
+    await setStabilizationSnapshot(pool, owner, targetPrice);
     assert.strictEqual((await pool.marketState()).toString(), "1");
 
     await (await pool.connect(owner).relistFromVault(1)).wait();

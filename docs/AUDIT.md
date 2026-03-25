@@ -145,6 +145,17 @@ This does not replace a timelock or audit, but it removes the "single hot wallet
 
 This preserves practical setup flexibility while making post-launch router swaps visible and non-instant.
 
+### External market state and listing confirmation — IMPROVED
+
+The pool no longer relies on stale internal buy/sell window math after the protocol moved resale outward:
+
+- `getMarketSignals()` now derives state from `externalSales24h`, `externalListings`, and `externalFloor`
+- release to the external listing vault no longer reduces `totalSoldIntoPool` on its own
+- `confirmExternalSale()` is now the explicit point where external resale can reduce stored sell pressure
+- vault relist now uses the stored `buybackPrice * 1.2` target directly
+
+This aligns the contract with the newer architecture where the pool is a floor-exit venue and resale happens externally.
+
 ## Current Test Coverage
 
 **70 passing tests** across 13 test files:
@@ -156,10 +167,10 @@ This preserves practical setup flexibility while making post-launch router swaps
 | Deploy/config guards | 4 | zero-price rejects, dependency validation, factory create guards |
 | PixelFactory creation guards | 4 | empty bytecode rejects, missing bytecode, invalid BPS, DeployFailed path |
 | Factory / NFT admin paths | 4 | onlyOwner setters, withdraw paths, palette lock, multisig handoff |
-| Smoke (router/pool wiring) | 11 | Deployment, mint splits, exact payment, rescue, constructor/config guards, sell/buy flow, refunds |
+| Smoke (router/pool wiring) | 11 | Deployment, mint splits, exact payment, rescue, constructor/config guards, sell/list/release flow, refunds |
 | Economics | 4 | Buyback, protocol burn, vault burn, relist |
-| Scenarios | 4 | Sell pressure tracking, EMA movement, budget exhaustion, WeakDemand gates |
-| Market-state thresholds | 6 | Launch protection, coverage gates, buy/sell activation, buyback gating |
+| Scenarios | 4 | Sell pressure tracking, external-sale confirmation, budget exhaustion, WeakDemand gates |
+| Market-state thresholds | 6 | Launch protection, coverage gates, listing activation, buyback gating |
 | Staking | 9 | Stake/unstake, access control, fee distribution, claim, edge cases |
 | Router sell edges | 7 | All sell revert conditions, payout accuracy, no stuck assets |
 | Market stress | 9 | State transitions, solvency, floor stability, supply consistency, heavy sell-lane closure |

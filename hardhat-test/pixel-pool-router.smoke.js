@@ -7,7 +7,6 @@ const TREASURY_BPS = 1000;
 const TRADE_FEE_BPS = 250;
 const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
-const LONG_WINDOW = 24 * 60 * 60;
 
 function palette16() {
   return ethers.utils.hexlify([
@@ -71,6 +70,11 @@ async function seedPoolReserve(pool, owner, routerAddress, amount) {
   await (await pool.connect(owner).setRouter(owner.address)).wait();
   await (await pool.connect(owner).seedLiquidity({ value: amount })).wait();
   await (await pool.connect(owner).setRouter(routerAddress)).wait();
+}
+
+async function setStabilizationSnapshot(pool, owner) {
+  const floor = await pool.getFloorPrice();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor)).wait();
 }
 
 function addBps(value, bps) {
@@ -279,7 +283,7 @@ describe("PixelPool + PixelRouter smoke suite", function () {
     );
   });
 
-  it("supports sell into pool and later releases inventory to the listing vault after market windows reset", async function () {
+  it("supports sell into pool and later confirms external sale after listing release", async function () {
     const { owner, user, buyer, nft, pool, router, mintPrice } = await deployStack();
 
     await (await router.connect(user)["mint(bytes)"](onePixel(2), { value: mintPrice })).wait();
@@ -295,8 +299,7 @@ describe("PixelPool + PixelRouter smoke suite", function () {
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
     assert.strictEqual((await pool.marketState()).toString(), "2");
 
-    await increaseTime(LONG_WINDOW + 1);
-
+    await setStabilizationSnapshot(pool, owner);
     const floor = await pool.getFloorPrice();
     const ask = addBps(floor, STABILIZATION_SPREAD_BPS);
     assert.strictEqual((await pool.getListingPrice()).toString(), ask.toString());
@@ -305,8 +308,11 @@ describe("PixelPool + PixelRouter smoke suite", function () {
 
     assert.strictEqual(await nft.ownerOf(0), owner.address);
     assert.strictEqual((await pool.availableNFTs()).toString(), "0");
-    assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "0");
+    assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
     assert.strictEqual(await pool.canReleaseInventoryForListing(), false);
+
+    await (await pool.connect(owner).confirmExternalSale(0, ask)).wait();
+    assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "0");
   });
 
   it("releases inventory without trapping ETH in the router", async function () {
@@ -320,8 +326,7 @@ describe("PixelPool + PixelRouter smoke suite", function () {
     await (await nft.connect(user).approve(router.address, 0)).wait();
     await (await router.connect(user).sellNFT(0, 0)).wait();
 
-    await increaseTime(LONG_WINDOW + 1);
-
+    await setStabilizationSnapshot(pool, owner);
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
     assert.strictEqual(await nft.ownerOf(0), owner.address);

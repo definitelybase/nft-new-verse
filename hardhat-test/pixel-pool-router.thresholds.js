@@ -156,6 +156,10 @@ async function forceMarketState(pool, value) {
   await ethers.provider.send("evm_mine", []);
 }
 
+async function setMarketSnapshot(pool, owner, sales24h, activeListings, externalFloor) {
+  await (await pool.connect(owner).setExternalMarketSnapshot(sales24h, activeListings, externalFloor)).wait();
+}
+
 describe("PixelPool market-state thresholds and negative gates", function () {
   it("keeps pool selling disabled during launch protection even with healthy reserve and forced stabilization", async function () {
     const { pool } = await deployStack();
@@ -205,15 +209,8 @@ describe("PixelPool market-state thresholds and negative gates", function () {
     await mintAndSellOne(router, nft, user, mintPrice);
 
     await forceMarketState(pool, 2);
-
     const floor = await pool.getFloorPrice();
-    const emaAtBoundary = floor.mul(BPS).div(9000);
-
-    await setUintVar(pool, "shortWindowVolume", 3);
-    await setUintVar(pool, "longWindowVolume", 16);
-    await setUintVar(pool, "shortWindowBuys", 4);
-    await setUintVar(pool, "shortWindowSells", 5);
-    await setUintVar(pool, "floorEma", emaAtBoundary);
+    await setMarketSnapshot(pool, owner, 1, 150, floor);
 
     const [mode] = await pool.getBuybackMode();
     assert.strictEqual(mode.toString(), "0");
@@ -226,16 +223,8 @@ describe("PixelPool market-state thresholds and negative gates", function () {
     await increaseTime(LAUNCH_PROTECTION + 1);
     await mintAndSellOne(router, nft, user, mintPrice);
 
-    await forceMarketState(pool, 2);
-
     const floor = await pool.getFloorPrice();
-    const emaBelowThreshold = floor.mul(BPS).div(8900);
-
-    await setUintVar(pool, "shortWindowVolume", 2);
-    await setUintVar(pool, "longWindowVolume", 16);
-    await setUintVar(pool, "shortWindowBuys", 3);
-    await setUintVar(pool, "shortWindowSells", 4);
-    await setUintVar(pool, "floorEma", emaBelowThreshold);
+    await setMarketSnapshot(pool, owner, 0, 151, floor.sub(1));
 
     const [mode, maxBuy] = await pool.getBuybackMode();
     assert.strictEqual(mode.toString(), "1");

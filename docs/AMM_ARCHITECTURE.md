@@ -155,21 +155,20 @@ It uses observed market signals to choose behaviour.
 
 ### Inputs
 
-The pool tracks:
+The pool now tracks a simple external market snapshot plus internal reserve health.
 
-- short-window volume
-- long-window volume
-- short-window buys
-- short-window sells
-- smoothed floor baseline (`floorEma`)
-- reserve coverage ratio
+Owner / Safe updates:
 
-From these it derives:
+- `externalSales24h`
+- `externalListings`
+- `externalFloor`
 
-- `volumeRatio`
-- `pressureRatio`
-- `floorDeviation`
-- `coverageRatio`
+The pool itself derives:
+
+- `purchaseRateBps`
+- `listingPressureBps`
+- `floorRatioBps`
+- `coverageRatioBps`
 
 ## States
 
@@ -195,9 +194,9 @@ If the reserve is too available too early, sellers can dump into protocol suppor
 
 Meaning:
 
-- volume is healthy enough
-- floor is near its smoothed baseline
-- buy and sell pressure are relatively balanced
+- external buying is healthy enough
+- listing pressure is not excessive
+- external floor is at or above protocol floor
 
 Pool behaviour:
 
@@ -213,9 +212,9 @@ This is the only state where the protocol should behave as a normal NFT AMM.
 
 Meaning:
 
-- short-term activity weakens
-- sell pressure dominates
-- floor trades below baseline
+- external buying weakens
+- listing pressure is elevated
+- external floor slips below protocol floor
 
 Pool behaviour:
 
@@ -229,31 +228,32 @@ When demand weakens, the protocol should not add more supply to the market.
 
 ## Market Signals In Practice
 
-### Volume Ratio
+### Purchase Rate
 
-Compares short-term activity to longer-term baseline.
-
-Used to detect:
-
-- whether the market is cooling down
-- whether the current state is still active enough for two-sided trading
-
-### Pressure Ratio
-
-Compares short-window sells to buys.
+Measures what share of the full collection traded on the external market in the last 24 hours.
 
 Used to detect:
 
-- whether sellers are dominating
-- whether the pool should move into a defensive state
+- whether real demand exists outside the protocol
+- whether the market is active enough to support outward listing
 
-### Floor Deviation
+### Listing Pressure
 
-Compares current floor to smoothed floor.
+Measures what share of the collection is currently listed for sale.
 
 Used to detect:
 
-- whether the current floor is being pushed below normal regime
+- whether supply overhang is building
+- whether the market is getting crowded with asks
+
+### Floor Ratio
+
+Compares external floor to protocol floor.
+
+Used to detect:
+
+- whether the external market is pricing above protocol exit
+- whether outward relisting has room to clear at a healthy premium
 
 ### Coverage Ratio
 
@@ -273,7 +273,7 @@ When `canSellIntoPool()` is true:
 3. fee is applied
 4. seller receives payout from pool reserve
 5. pool inventory increases
-6. market windows and floor baseline update
+6. floor baseline updates and cumulative sell pressure increases
 
 This is instant floor exit, not rarity pricing.
 
@@ -284,8 +284,9 @@ When `canReleaseInventoryForListing()` is true:
 1. protocol inventory can be released from pool or vault to the listing vault
 2. release uses the pool ask as a reference price, not as an internal sale
 3. the protocol can list inventory outward instead of acting as its own storefront
-4. sell pressure can be reduced when pool inventory is released
-5. rarity and premium discovery happen on the external market
+4. releasing inventory alone does **not** reduce cumulative sell pressure
+5. sell pressure only improves after a confirmed external sale
+6. rarity and premium discovery happen on the external market
 
 This keeps the pool as a floor-exit venue and leaves resale to the listing layer.
 
@@ -308,9 +309,9 @@ Buyback is not always-on support.
 It is a treasury operation triggered only when:
 
 - state is `WeakDemand`
-- short-term volume is weak
-- sell pressure is high
-- floor is below smoothed baseline
+- external buying is weak
+- listing pressure is high
+- external floor is below protocol floor
 - coverage ratio remains strong enough
 
 This means treasury acts only when the market is:

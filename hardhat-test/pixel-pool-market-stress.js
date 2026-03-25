@@ -7,9 +7,6 @@ const TREASURY_BPS = 1000;
 const TRADE_FEE_BPS = 250;
 const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
-const SHORT_WINDOW = 6 * 60 * 60;
-const LONG_WINDOW = 24 * 60 * 60;
-
 const STATES = ["Expansion", "Stabilization", "WeakDemand"];
 
 function palette16() {
@@ -73,6 +70,11 @@ async function getState(pool) {
   return STATES[s] || `Unknown(${s})`;
 }
 
+async function setStabilizationSnapshot(pool, owner) {
+  const floor = await pool.getFloorPrice();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor)).wait();
+}
+
 describe("Market-state stress tests", function () {
   it("starts in Expansion during launch protection regardless of activity", async function () {
     const { alice, pool, router, mintPrice } = await deployStack();
@@ -99,7 +101,7 @@ describe("Market-state stress tests", function () {
     assert.strictEqual(await getState(pool), "WeakDemand");
   });
 
-  it("recovers from WeakDemand enough to release inventory externally after window reset", async function () {
+  it("recovers from WeakDemand enough to release inventory externally after a healthy market snapshot", async function () {
     const { owner, alice, nft, pool, router, mintPrice } = await deployStack();
 
     // Setup: mint, seed, pass launch
@@ -113,15 +115,11 @@ describe("Market-state stress tests", function () {
     await (await router.connect(alice).sellNFT(0, 0)).wait();
     assert.strictEqual(await getState(pool), "WeakDemand");
 
-    // Wait for both windows to reset
-    await increaseTime(LONG_WINDOW + 1);
-
     // Add one more sell so the pool has fresh inventory to release outward.
     await (await nft.connect(alice).approve(router.address, 1)).wait();
     await (await router.connect(alice).sellNFT(1, 0)).wait();
 
-    // Wait for windows to reset so the market can leave the weak-demand snapshot.
-    await increaseTime(LONG_WINDOW + 1);
+    await setStabilizationSnapshot(pool, owner);
 
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 

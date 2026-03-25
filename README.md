@@ -122,7 +122,7 @@ The live Hardhat tests cover:
 - wiring and mint flow through router
 - pool reserve and treasury split
 - exact mint payment checks
-- sell / buySpecific flows
+- sell / external listing / external sale-confirmation flows
 - buyback, vault, relist, and burn behaviour
 - market-state thresholds and negative gates
 - market-state stress and solvency checks

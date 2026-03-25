@@ -119,9 +119,9 @@ export default function usePoolData({ poolAddress, routerAddress, rpcUrl, ethUsd
         marketStateIdx: state,
         canSell: poolState ? poolState.poolBuysEnabled : false,
         listingEnabled: poolState ? poolState.listingEnabled : false,
-        volumeRatioBps: poolState ? Number(poolState.volumeRatioBps) : 0,
-        pressureRatioBps: poolState ? Number(poolState.pressureRatioBps) : 0,
-        floorDeviationBps: poolState ? Number(poolState.floorDeviationBps) : 0,
+        purchaseRateBps: poolState ? Number(poolState.purchaseRateBps) : 0,
+        listingPressureBps: poolState ? Number(poolState.listingPressureBps) : 0,
+        floorRatioBps: poolState ? Number(poolState.floorRatioBps) : 0,
         coverageRatioBps: poolState ? Number(poolState.coverageRatioBps) : 0,
 
         // mint

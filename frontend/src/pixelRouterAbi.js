@@ -41,9 +41,9 @@ export const PIXEL_ROUTER_ABI = [
     outputs: [
       { internalType: "bool", name: "poolBuysEnabled", type: "bool" },
       { internalType: "bool", name: "listingEnabled", type: "bool" },
-      { internalType: "uint256", name: "volumeRatioBps", type: "uint256" },
-      { internalType: "uint256", name: "pressureRatioBps", type: "uint256" },
-      { internalType: "uint256", name: "floorDeviationBps", type: "uint256" },
+      { internalType: "uint256", name: "purchaseRateBps", type: "uint256" },
+      { internalType: "uint256", name: "listingPressureBps", type: "uint256" },
+      { internalType: "uint256", name: "floorRatioBps", type: "uint256" },
       { internalType: "uint256", name: "coverageRatioBps", type: "uint256" },
     ],
     stateMutability: "view",
