@@ -8,6 +8,8 @@ const TRADE_FEE_BPS = 250;
 const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
 const LONG_WINDOW = 24 * 60 * 60;
+const MARKET_STATE_SLOT = 24;
+const slotCache = {};
 
 function palette16() {
   return ethers.utils.hexlify([
@@ -30,6 +32,14 @@ function getEvent(receipt, name) {
   const event = receipt.events.find((entry) => entry.event === name);
   assert.ok(event, `Missing event ${name}`);
   return event;
+}
+
+function slotHex(slot) {
+  return ethers.utils.hexZeroPad(ethers.utils.hexlify(slot), 32);
+}
+
+function valueHex(value) {
+  return ethers.utils.hexZeroPad(ethers.BigNumber.from(value).toHexString(), 32);
 }
 
 async function increaseTime(seconds) {
@@ -60,6 +70,7 @@ async function deployStack() {
   await (await nft.connect(owner).setMinter(router.address, true)).wait();
   await (await nft.connect(owner).setBurner(pool.address, true)).wait();
   await (await pool.connect(owner).setRouter(router.address)).wait();
+  await (await pool.connect(owner).setListingVault(owner.address)).wait();
 
   return { owner, creator, user, buyer, nft, pool, router, mintPrice };
 }
@@ -72,6 +83,57 @@ async function seedPoolReserve(pool, owner, routerAddress, amount) {
   await (await pool.connect(owner).setRouter(owner.address)).wait();
   await (await pool.connect(owner).seedLiquidity({ value: amount })).wait();
   await (await pool.connect(owner).setRouter(routerAddress)).wait();
+}
+
+function slotCacheKey(contract, getterName) {
+  return `${contract.address}:${getterName}`;
+}
+
+async function findStorageSlot(contract, getterName, probeValue) {
+  const key = slotCacheKey(contract, getterName);
+  if (slotCache[key] !== undefined) return slotCache[key];
+
+  for (let candidate = 0; candidate < 80; candidate++) {
+    const slot = slotHex(candidate);
+    const original = await ethers.provider.getStorageAt(contract.address, slot);
+
+    await ethers.provider.send("hardhat_setStorageAt", [contract.address, slot, valueHex(probeValue)]);
+    await ethers.provider.send("evm_mine", []);
+
+    const current = await contract[getterName]();
+    const matches = ethers.BigNumber.isBigNumber(current)
+      ? current.eq(probeValue)
+      : Number(current) === Number(probeValue);
+
+    await ethers.provider.send("hardhat_setStorageAt", [contract.address, slot, original]);
+    await ethers.provider.send("evm_mine", []);
+
+    if (matches) {
+      slotCache[key] = candidate;
+      return candidate;
+    }
+  }
+
+  throw new Error(`Unable to locate storage slot for ${getterName}`);
+}
+
+async function setUintVar(contract, getterName, value, probeValue = 987654321) {
+  const slot = await findStorageSlot(contract, getterName, probeValue);
+  await ethers.provider.send("hardhat_setStorageAt", [
+    contract.address,
+    slotHex(slot),
+    valueHex(value),
+  ]);
+  await ethers.provider.send("evm_mine", []);
+}
+
+async function forceMarketState(pool, value) {
+  await ethers.provider.send("hardhat_setStorageAt", [
+    pool.address,
+    slotHex(MARKET_STATE_SLOT),
+    valueHex(value),
+  ]);
+  await ethers.provider.send("evm_mine", []);
 }
 
 async function deployFactoryStack() {
@@ -130,8 +192,8 @@ describe("Protocol fee and admin invariants", function () {
     );
   });
 
-  it("pause blocks trade paths and unpause restores them", async function () {
-    const { owner, user, buyer, nft, pool, router, mintPrice } = await deployStack();
+  it("pause blocks trade and listing-release paths, then unpause restores them", async function () {
+    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
 
     await mintOne(router, user, mintPrice, 1);
     await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("5"));
@@ -155,20 +217,18 @@ describe("Protocol fee and admin invariants", function () {
     assert.strictEqual(await nft.ownerOf(0), pool.address);
 
     await increaseTime(LONG_WINDOW + 1);
-
-    const floor = await pool.getFloorPrice();
-    const ask = addBps(floor, STABILIZATION_SPREAD_BPS);
-    const cost = addBps(ask, TRADE_FEE_BPS);
+    await forceMarketState(pool, 1);
+    assert.strictEqual(await pool.canReleaseInventoryForListing(), true);
 
     await (await pool.connect(owner).pause()).wait();
     await assert.rejects(
-      router.connect(buyer).buySpecificNFT(0, cost, { value: cost }),
+      pool.connect(owner).releasePoolInventoryForListing(1),
       /paused/
     );
 
     await (await pool.connect(owner).unpause()).wait();
-    await (await router.connect(buyer).buySpecificNFT(0, cost, { value: cost })).wait();
-    assert.strictEqual(await nft.ownerOf(0), buyer.address);
+    await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
+    assert.strictEqual(await nft.ownerOf(0), owner.address);
   });
 
   it("enforces factory fees and lets only owner withdraw them", async function () {

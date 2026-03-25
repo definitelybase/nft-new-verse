@@ -62,6 +62,7 @@ async function deployStack() {
   await (await nft.connect(owner).setMinter(router.address, true)).wait();
   await (await nft.connect(owner).setBurner(pool.address, true)).wait();
   await (await pool.connect(owner).setRouter(router.address)).wait();
+  await (await pool.connect(owner).setListingVault(owner.address)).wait();
 
   return { owner, creator, user, buyer, nft, pool, router, mintPrice };
 }
@@ -278,7 +279,7 @@ describe("PixelPool + PixelRouter smoke suite", function () {
     );
   });
 
-  it("supports sell into pool and later buySpecific after market windows reset", async function () {
+  it("supports sell into pool and later releases inventory to the listing vault after market windows reset", async function () {
     const { owner, user, buyer, nft, pool, router, mintPrice } = await deployStack();
 
     await (await router.connect(user)["mint(bytes)"](onePixel(2), { value: mintPrice })).wait();
@@ -298,17 +299,18 @@ describe("PixelPool + PixelRouter smoke suite", function () {
 
     const floor = await pool.getFloorPrice();
     const ask = addBps(floor, STABILIZATION_SPREAD_BPS);
-    const cost = addBps(ask, TRADE_FEE_BPS);
+    assert.strictEqual((await pool.getListingPrice()).toString(), ask.toString());
 
-    await (await router.connect(buyer).buySpecificNFT(0, cost, { value: cost })).wait();
+    await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
-    assert.strictEqual(await nft.ownerOf(0), buyer.address);
+    assert.strictEqual(await nft.ownerOf(0), owner.address);
     assert.strictEqual((await pool.availableNFTs()).toString(), "0");
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "0");
+    assert.strictEqual(await pool.canReleaseInventoryForListing(), false);
   });
 
-  it("refunds router buy overpayment back to the buyer instead of trapping ETH in the router", async function () {
-    const { owner, user, buyer, nft, pool, router, mintPrice } = await deployStack();
+  it("releases inventory without trapping ETH in the router", async function () {
+    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
 
     await (await router.connect(user)["mint(bytes)"](onePixel(2), { value: mintPrice })).wait();
     await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("5"));
@@ -320,14 +322,9 @@ describe("PixelPool + PixelRouter smoke suite", function () {
 
     await increaseTime(LONG_WINDOW + 1);
 
-    const floor = await pool.getFloorPrice();
-    const ask = addBps(floor, STABILIZATION_SPREAD_BPS);
-    const cost = addBps(ask, TRADE_FEE_BPS);
-    const overpay = addBps(cost, 100);
+    await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
-    await (await router.connect(buyer).buySpecificNFT(0, overpay, { value: overpay })).wait();
-
-    assert.strictEqual(await nft.ownerOf(0), buyer.address);
+    assert.strictEqual(await nft.ownerOf(0), owner.address);
     assert.strictEqual((await ethers.provider.getBalance(router.address)).toString(), "0");
   });
 });

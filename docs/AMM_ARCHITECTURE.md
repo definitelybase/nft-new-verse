@@ -277,18 +277,17 @@ When `canSellIntoPool()` is true:
 
 This is instant floor exit, not rarity pricing.
 
-## Buy Flow
+## External Listing Release Flow
 
-When `canBuyFromPool()` is true:
+When `canReleaseInventoryForListing()` is true:
 
-1. buyer selects pool inventory or takes default inventory
-2. pool computes ask = bid + spread
-3. fee is applied
-4. buyer receives NFT
-5. pool reserve increases
-6. market windows and floor baseline update
+1. protocol inventory can be released from pool or vault to the listing vault
+2. release uses the pool ask as a reference price, not as an internal sale
+3. the protocol can list inventory outward instead of acting as its own storefront
+4. sell pressure can be reduced when pool inventory is released
+5. rarity and premium discovery happen on the external market
 
-This lets the protocol recycle inventory and rebuild reserve depth.
+This keeps the pool as a floor-exit venue and leaves resale to the listing layer.
 
 ## Inventory Philosophy
 
@@ -338,10 +337,10 @@ Relist is an inventory operation, not a new market sell event.
 
 That means:
 
-- relist can increase available pool inventory
+- relist can move vault inventory into the external listing lane
 - relist must not increase the variable that tracks cumulative sell pressure
 
-Otherwise the protocol would artificially degrade its own floor curve by moving NFTs internally.
+Otherwise the protocol would artificially degrade its own floor curve by moving NFTs between internal buckets.
 
 ## Staking Layer
 
@@ -368,7 +367,7 @@ The new architecture is stronger because it:
 
 - separates reserve roles
 - uses simpler bid math
-- limits AMM behaviour to appropriate market states
+- limits protocol market-making to the floor exit lane
 - lets community, not protocol, discover rarity premiums
 - avoids pretending the pool can be fair to every NFT at every moment
 
@@ -377,9 +376,9 @@ The new architecture is stronger because it:
 The current code expresses this architecture through:
 
 - `getFloorPrice()` for linear bid
-- `getBuyPrice()` for conditional ask
+- `getListingPrice()` for external listing reference
 - `canSellIntoPool()` for reserve-backed floor buying
-- `canBuyFromPool()` for state-gated inventory sales
+- `canReleaseInventoryForListing()` for state-gated listing release
 - `getMarketSignals()` for state transitions
 - `executeBuyback()` for treasury-driven weak-market support
 - `protocolBurn()` for real NFT supply contraction

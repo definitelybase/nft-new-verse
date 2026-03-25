@@ -4,8 +4,6 @@ const { ethers } = require("hardhat");
 const BPS = 10000;
 const POOL_SEED_BPS = 6000;
 const TREASURY_BPS = 1000;
-const TRADE_FEE_BPS = 250;
-const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
 const LONG_WINDOW = 24 * 60 * 60;
 
@@ -20,10 +18,6 @@ function palette16() {
 
 function onePixel(colorIndex = 1) {
   return ethers.utils.hexlify([(colorIndex & 0x0f) << 4]);
-}
-
-function addBps(value, bps) {
-  return value.add(value.mul(bps).div(BPS));
 }
 
 async function increaseTime(seconds) {
@@ -105,6 +99,7 @@ describe("PixelFactory end-to-end", function () {
     assert.strictEqual(await nft.isMinter(router.address), true);
     assert.strictEqual(await nft.isBurner(pool.address), true);
     assert.strictEqual(await pool.router(), router.address);
+    assert.strictEqual(await pool.listingVault(), creator.address);
 
     await expectCustomError(
       nft.connect(buyer)["mint(bytes)"](onePixel(), { value: mintPrice }),
@@ -119,9 +114,9 @@ describe("PixelFactory end-to-end", function () {
     assert.strictEqual((await pool.totalMinted()).toString(), "1");
   });
 
-  it("supports sell and buySpecific on a factory-created stack", async function () {
+  it("supports sell and later releases inventory to the creator listing vault", async function () {
     const env = await deployFactoryStack();
-    const { creator, buyer, nextBuyer, mintPrice } = env;
+    const { creator, buyer, mintPrice } = env;
     const { nft, pool, router } = await createCollection(env);
 
     await (await router.connect(buyer)["mint(bytes)"](onePixel(3), { value: mintPrice })).wait();
@@ -137,13 +132,9 @@ describe("PixelFactory end-to-end", function () {
 
     await increaseTime(LONG_WINDOW + 1);
 
-    const floor = await pool.getFloorPrice();
-    const ask = addBps(floor, STABILIZATION_SPREAD_BPS);
-    const cost = addBps(ask, TRADE_FEE_BPS);
+    await (await pool.connect(creator).releasePoolInventoryForListing(1)).wait();
 
-    await (await router.connect(nextBuyer).buySpecificNFT(0, cost, { value: cost })).wait();
-
-    assert.strictEqual(await nft.ownerOf(0), nextBuyer.address);
+    assert.strictEqual(await nft.ownerOf(0), creator.address);
     assert.strictEqual((await pool.availableNFTs()).toString(), "0");
   });
 });

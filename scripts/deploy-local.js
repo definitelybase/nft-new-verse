@@ -37,6 +37,7 @@ async function main() {
   const isLocal = network.chainId === 31337;
   const creatorAddress = process.env.CREATOR_ADDRESS || fallbackCreator.address;
   const ownerAddress = process.env.OWNER_ADDRESS || process.env.SAFE_ADDRESS || deployer.address;
+  const listingVaultAddress = process.env.LISTING_VAULT_ADDRESS || ownerAddress;
   const localSeedEth = process.env.LOCAL_POOL_SEED_ETH || "1";
   const shouldLockPalette = process.env.SKIP_PALETTE_LOCK !== "YES";
 
@@ -46,11 +47,15 @@ async function main() {
   if (!ethers.utils.isAddress(ownerAddress) || ownerAddress === ethers.constants.AddressZero) {
     throw new Error("OWNER_ADDRESS/SAFE_ADDRESS must be a non-zero address");
   }
+  if (!ethers.utils.isAddress(listingVaultAddress) || listingVaultAddress === ethers.constants.AddressZero) {
+    throw new Error("LISTING_VAULT_ADDRESS must be a non-zero address");
+  }
 
   console.log(`\nNetwork: ${networkLabel} (chainId ${network.chainId})`);
   console.log(`Deployer: ${deployer.address}`);
   console.log(`Creator:  ${creatorAddress}`);
   console.log(`Owner:    ${ownerAddress}`);
+  console.log(`Listing:  ${listingVaultAddress}`);
   console.log(`Balance:  ${ethers.utils.formatEther(await deployer.getBalance())} ETH\n`);
 
   let totalGas = ethers.BigNumber.from(0);
@@ -88,12 +93,14 @@ async function main() {
   tx = await nft.setMinter(router.address, true); await tx.wait();
   tx = await nft.setBurner(pool.address, true); await tx.wait();
   tx = await pool.setRouter(router.address); await tx.wait();
-  console.log("\nPermissions wired: router=minter, pool=burner, pool.router=router");
+  tx = await pool.setListingVault(listingVaultAddress); await tx.wait();
+  console.log("\nPermissions wired: router=minter, pool=burner, pool.router=router, pool.listingVault=listing vault");
 
   const routerIsMinter = await nft.isMinter(router.address);
   const poolIsBurner = await nft.isBurner(pool.address);
   const poolRouter = await pool.router();
-  if (!routerIsMinter || !poolIsBurner || poolRouter !== router.address) {
+  const poolListingVault = await pool.listingVault();
+  if (!routerIsMinter || !poolIsBurner || poolRouter !== router.address || poolListingVault !== listingVaultAddress) {
     throw new Error("Post-deploy wiring verification failed");
   }
 
@@ -147,9 +154,11 @@ async function main() {
     deployer: deployer.address,
     creator: creatorAddress,
     owner: ownerAddress,
+    listingVault: listingVaultAddress,
     paletteLocked: shouldLockPalette,
     totalGas: totalGas.toString(),
     appConfig: {
+      chainId: String(network.chainId),
       poolAddress: pool.address,
       routerAddress: router.address,
       nftAddress: nft.address,
@@ -170,6 +179,7 @@ async function main() {
 --- Paste into frontend/src/appConfig.js ---
 
 export const APP_CONFIG = Object.freeze({
+  chainId: "${network.chainId}",
   poolAddress: "${pool.address}",
   routerAddress: "${router.address}",
   nftAddress: "${nft.address}",

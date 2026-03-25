@@ -8,6 +8,7 @@ interface ISetup {
     function setMinter(address minter, bool authorized) external;
     function setBurner(address burner, bool authorized) external;
     function setRouter(address router_) external;
+    function setListingVault(address vault) external;
     function transferOwnership(address newOwner) external;
 }
 
@@ -121,6 +122,7 @@ contract PixelFactory is Ownable {
         ISetup(nftAddr).setMinter(routerAddr, true);
         ISetup(nftAddr).setBurner(poolAddr, true);
         ISetup(poolAddr).setRouter(routerAddr);
+        ISetup(poolAddr).setListingVault(msg.sender);
 
         // 5. Transfer ownership to creator
         ISetup(nftAddr).transferOwnership(msg.sender);

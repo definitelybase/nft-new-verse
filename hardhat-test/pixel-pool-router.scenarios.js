@@ -9,8 +9,7 @@ const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
 const LONG_WINDOW = 24 * 60 * 60;
 const INVENTORY_STALE_AGE = 7 * 24 * 60 * 60;
-
-let marketStateSlot;
+const MARKET_STATE_SLOT = 24;
 const slotCache = {};
 
 function palette16() {
@@ -78,6 +77,7 @@ async function deployStack() {
   await (await nft.connect(owner).setMinter(router.address, true)).wait();
   await (await nft.connect(owner).setBurner(pool.address, true)).wait();
   await (await pool.connect(owner).setRouter(router.address)).wait();
+  await (await pool.connect(owner).setListingVault(owner.address)).wait();
 
   return { owner, creator, user, buyer, nft, pool, router, mintPrice };
 }
@@ -116,37 +116,10 @@ async function sellMany(router, nft, user, tokenIds) {
   }
 }
 
-async function locateMarketStateSlot(pool) {
-  if (marketStateSlot !== undefined) {
-    return marketStateSlot;
-  }
-
-  for (let candidate = 0; candidate < 50; candidate++) {
-    const slot = slotHex(candidate);
-    const original = await ethers.provider.getStorageAt(pool.address, slot);
-
-    await ethers.provider.send("hardhat_setStorageAt", [pool.address, slot, valueHex(1)]);
-    await ethers.provider.send("evm_mine", []);
-
-    if (Number(await pool.marketState()) === 1) {
-      marketStateSlot = candidate;
-      await ethers.provider.send("hardhat_setStorageAt", [pool.address, slot, original]);
-      await ethers.provider.send("evm_mine", []);
-      return marketStateSlot;
-    }
-
-    await ethers.provider.send("hardhat_setStorageAt", [pool.address, slot, original]);
-    await ethers.provider.send("evm_mine", []);
-  }
-
-  throw new Error("Unable to locate marketState storage slot");
-}
-
 async function forceMarketState(pool, desiredState) {
-  const slot = await locateMarketStateSlot(pool);
   await ethers.provider.send("hardhat_setStorageAt", [
     pool.address,
-    slotHex(slot),
+    slotHex(MARKET_STATE_SLOT),
     valueHex(desiredState)
   ]);
   await ethers.provider.send("evm_mine", []);
@@ -206,8 +179,8 @@ async function forceStabilizationMetrics(pool) {
 }
 
 describe("PixelPool longer scenarios", function () {
-  it("tracks net sell pressure across multiple sells and buys", async function () {
-    const { owner, user, buyer, nft, pool, router, mintPrice } = await deployStack();
+  it("tracks net sell pressure across multiple sells and external listing releases", async function () {
+    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
 
     await mintMany(router, user, mintPrice, 3);
     await seedReserves(pool, owner, ethers.utils.parseEther("10"), ethers.constants.Zero);
@@ -225,21 +198,21 @@ describe("PixelPool longer scenarios", function () {
     await increaseTime(LONG_WINDOW + 1);
     await forceStabilizationMetrics(pool);
 
-    const price1 = addBps(addBps(await pool.getFloorPrice(), STABILIZATION_SPREAD_BPS), TRADE_FEE_BPS);
-    await (await router.connect(buyer).buySpecificNFT(0, price1, { value: price1 })).wait();
+    await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
     await forceStabilizationMetrics(pool);
-    const price2 = addBps(addBps(await pool.getFloorPrice(), STABILIZATION_SPREAD_BPS), TRADE_FEE_BPS);
-    await (await router.connect(buyer).buySpecificNFT(1, price2, { value: price2 })).wait();
+    await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
-    const floorAfterBuys = await pool.getFloorPrice();
+    const floorAfterReleases = await pool.getFloorPrice();
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
     assert.strictEqual((await pool.availableNFTs()).toString(), "1");
-    assert(floorAfterBuys.gt(floorAfterSells));
+    assert.strictEqual(await nft.ownerOf(2), owner.address);
+    assert.strictEqual(await nft.ownerOf(1), owner.address);
+    assert(floorAfterReleases.gt(floorAfterSells));
   });
 
-  it("moves floorEma down after sells and back up after buys", async function () {
-    const { owner, user, buyer, nft, pool, router, mintPrice } = await deployStack();
+  it("restores the floor path after listing release reduces sell pressure", async function () {
+    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
 
     await (await router.connect(user)["mint(bytes)"](onePixel(4), { value: mintPrice })).wait();
     await seedReserves(pool, owner, ethers.utils.parseEther("6"), ethers.constants.Zero);
@@ -251,15 +224,17 @@ describe("PixelPool longer scenarios", function () {
     await (await router.connect(user).sellNFT(0, 0)).wait();
 
     const emaAfterSell = await pool.floorEma();
+    const floorAfterSell = await pool.getFloorPrice();
     assert(emaAfterSell.lt(emaStart));
 
     await increaseTime(LONG_WINDOW + 1);
+    await forceStabilizationMetrics(pool);
 
-    const buyCost = addBps(addBps(await pool.getFloorPrice(), STABILIZATION_SPREAD_BPS), TRADE_FEE_BPS);
-    await (await router.connect(buyer).buySpecificNFT(0, buyCost, { value: buyCost })).wait();
+    await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
-    const emaAfterBuy = await pool.floorEma();
-    assert(emaAfterBuy.gt(emaAfterSell));
+    const floorAfterRelease = await pool.getFloorPrice();
+    assert.strictEqual(await nft.ownerOf(0), owner.address);
+    assert(floorAfterRelease.gt(floorAfterSell));
   });
 
   it("stops buyback once treasury budget can no longer fund one floor purchase even if inventory remains", async function () {
@@ -291,8 +266,8 @@ describe("PixelPool longer scenarios", function () {
     assert.strictEqual(maxBuy.toString(), "0");
   });
 
-  it("buySpecific remains blocked in WeakDemand even when inventory exists", async function () {
-    const { owner, user, buyer, nft, pool, router, mintPrice } = await deployStack();
+  it("listing release remains blocked in WeakDemand even when inventory exists", async function () {
+    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
 
     await (await router.connect(user)["mint(bytes)"](onePixel(5), { value: mintPrice })).wait();
     await seedReserves(pool, owner, ethers.utils.parseEther("6"), ethers.constants.Zero);
@@ -303,12 +278,11 @@ describe("PixelPool longer scenarios", function () {
 
     await forceMarketState(pool, 2);
     assert.strictEqual(Number(await pool.marketState()), 2);
-    assert.strictEqual(await pool.canBuyFromPool(), false);
+    assert.strictEqual(await pool.canReleaseInventoryForListing(), false);
 
-    const attemptedCost = addBps(addBps(await pool.getFloorPrice(), STABILIZATION_SPREAD_BPS), TRADE_FEE_BPS);
     await assert.rejects(
-      router.connect(buyer).buySpecificNFT(0, attemptedCost, { value: attemptedCost }),
-      /PoolBuyDisabled/
+      pool.connect(owner).releasePoolInventoryForListing(1),
+      /ListingReleaseDisabled/
     );
   });
 });

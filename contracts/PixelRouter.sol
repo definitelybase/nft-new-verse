@@ -22,14 +22,12 @@ interface IPixelPool {
     function seedTreasury() external payable;
     function setTotalMinted(uint256 count) external;
     function sell(uint256 tokenId, uint256 minPrice) external;
-    function buy(uint256 maxPrice) external payable returns (uint256 tokenId);
-    function buySpecific(uint256 tokenId, uint256 maxPrice) external payable;
     function getFloorPrice() external view returns (uint256);
     function getSellPrice() external view returns (uint256);
-    function getBuyPrice() external view returns (uint256);
+    function getListingPrice() external view returns (uint256);
     function availableNFTs() external view returns (uint256);
     function canSellIntoPool() external view returns (bool);
-    function canBuyFromPool() external view returns (bool);
+    function canReleaseInventoryForListing() external view returns (bool);
     function getMarketSignals() external view returns (
         uint256 volumeRatioBps,
         uint256 pressureRatioBps,
@@ -39,8 +37,8 @@ interface IPixelPool {
 }
 
 /// @title PixelRouter
-/// @notice Single entry point for minting, seeding liquidity, and routing swaps
-/// @dev Pool availability is controlled by PixelPool market-state rules
+/// @notice Single entry point for minting, reserve seeding, and floor-exit sells
+/// @dev External listing availability is controlled by PixelPool market-state rules
 contract PixelRouter is Ownable, ReentrancyGuard {
 
     // ============================================================
@@ -60,7 +58,7 @@ contract PixelRouter is Ownable, ReentrancyGuard {
     // ============================================================
 
     event Minted(address indexed minter, uint256 indexed tokenId, uint256 mintPrice, uint256 poolSeed);
-    event Swapped(address indexed user, bool isBuy, uint256 indexed tokenId, uint256 price);
+    event NFTSoldToPool(address indexed user, uint256 indexed tokenId, uint256 payout);
     event MintPriceUpdated(uint256 previousPrice, uint256 newPrice);
     event CreatorUpdated(address indexed previousCreator, address indexed newCreator);
     event PoolSeedBpsUpdated(uint256 previousBps, uint256 newBps);
@@ -201,74 +199,37 @@ contract PixelRouter is Ownable, ReentrancyGuard {
         (bool success, ) = msg.sender.call{value: received}("");
         if (!success) revert TransferFailed();
 
-        emit Swapped(msg.sender, false, tokenId, received);
-    }
-
-    // ============================================================
-    //                    SWAP: ETH → BUY NFT
-    // ============================================================
-
-    /// @notice Buy an NFT from the pool when inventory sales are currently enabled
-    /// @param maxPrice Maximum acceptable price (slippage protection)
-    function buyNFT(uint256 maxPrice) external payable nonReentrant returns (uint256 tokenId) {
-        uint256 balanceBefore = address(this).balance - msg.value;
-        tokenId = pool.buy{value: msg.value}(maxPrice);
-        uint256 refund = address(this).balance - balanceBefore;
-
-        // Transfer NFT from pool (which sent it to router) to buyer
-        nftContract.transferFrom(address(this), msg.sender, tokenId);
-
-        if (refund > 0) {
-            (bool success, ) = msg.sender.call{value: refund}("");
-            if (!success) revert TransferFailed();
-        }
-
-        emit Swapped(msg.sender, true, tokenId, msg.value - refund);
-    }
-
-    /// @notice Buy a specific NFT from the pool inventory
-    function buySpecificNFT(uint256 tokenId, uint256 maxPrice) external payable nonReentrant {
-        uint256 balanceBefore = address(this).balance - msg.value;
-        pool.buySpecific{value: msg.value}(tokenId, maxPrice);
-        uint256 refund = address(this).balance - balanceBefore;
-        nftContract.transferFrom(address(this), msg.sender, tokenId);
-
-        if (refund > 0) {
-            (bool success, ) = msg.sender.call{value: refund}("");
-            if (!success) revert TransferFailed();
-        }
-
-        emit Swapped(msg.sender, true, tokenId, msg.value - refund);
+        emit NFTSoldToPool(msg.sender, tokenId, received);
     }
 
     // ============================================================
     //                    VIEW HELPERS
     // ============================================================
 
-    /// @notice Get current prices
+    /// @notice Get current prices and listing reference from the pool
     function getPrices() external view returns (
         uint256 floorPrice,
         uint256 sellPrice,
-        uint256 buyPrice,
+        uint256 listingPrice,
         uint256 available
     ) {
         floorPrice = pool.getFloorPrice();
         sellPrice = pool.getSellPrice();
-        buyPrice = pool.getBuyPrice();
+        listingPrice = pool.getListingPrice();
         available = pool.availableNFTs();
     }
 
-    /// @notice Surface pool availability and market signals for the UI
+    /// @notice Surface sell-lane and external-listing availability for the UI
     function getPoolState() external view returns (
         bool poolBuysEnabled,
-        bool poolSellsEnabled,
+        bool listingEnabled,
         uint256 volumeRatioBps,
         uint256 pressureRatioBps,
         uint256 floorDeviationBps,
         uint256 coverageRatioBps
     ) {
         poolBuysEnabled = pool.canSellIntoPool();
-        poolSellsEnabled = pool.canBuyFromPool();
+        listingEnabled = pool.canReleaseInventoryForListing();
         (volumeRatioBps, pressureRatioBps, floorDeviationBps, coverageRatioBps) = pool.getMarketSignals();
     }
 

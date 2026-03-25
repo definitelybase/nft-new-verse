@@ -19,7 +19,7 @@ export const PIXEL_ROUTER_ABI = [
     outputs: [
       { internalType: "uint256", name: "floorPrice", type: "uint256" },
       { internalType: "uint256", name: "sellPrice", type: "uint256" },
-      { internalType: "uint256", name: "buyPrice", type: "uint256" },
+      { internalType: "uint256", name: "listingPrice", type: "uint256" },
       { internalType: "uint256", name: "available", type: "uint256" },
     ],
     stateMutability: "view",
@@ -36,28 +36,11 @@ export const PIXEL_ROUTER_ABI = [
     type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "maxPrice", type: "uint256" }],
-    name: "buyNFT",
-    outputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "uint256", name: "tokenId", type: "uint256" },
-      { internalType: "uint256", name: "maxPrice", type: "uint256" },
-    ],
-    name: "buySpecificNFT",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
     inputs: [],
     name: "getPoolState",
     outputs: [
       { internalType: "bool", name: "poolBuysEnabled", type: "bool" },
-      { internalType: "bool", name: "poolSellsEnabled", type: "bool" },
+      { internalType: "bool", name: "listingEnabled", type: "bool" },
       { internalType: "uint256", name: "volumeRatioBps", type: "uint256" },
       { internalType: "uint256", name: "pressureRatioBps", type: "uint256" },
       { internalType: "uint256", name: "floorDeviationBps", type: "uint256" },
@@ -203,8 +186,15 @@ export const PIXEL_POOL_ABI = [
   },
   {
     inputs: [],
-    name: "getBuyPrice",
+    name: "getListingPrice",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "listingVault",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
     stateMutability: "view",
     type: "function",
   },
@@ -217,7 +207,7 @@ export const PIXEL_POOL_ABI = [
   },
   {
     inputs: [],
-    name: "canBuyFromPool",
+    name: "canReleaseInventoryForListing",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "view",
     type: "function",

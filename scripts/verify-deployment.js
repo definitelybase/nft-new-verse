@@ -72,6 +72,7 @@ async function main() {
   const routerAddress = normalizeAddress(json.collection ? json.collection.router : json.router);
   const expectedOwner = normalizeAddress(json.owner);
   const expectedCreator = normalizeAddress(json.creator);
+  const expectedListingVault = json.listingVault ? normalizeAddress(json.listingVault) : ethers.constants.AddressZero;
   const hasFactory = Boolean(json.factory);
   const factoryAddress = hasFactory ? normalizeAddress(json.factory) : "";
 
@@ -92,6 +93,7 @@ async function main() {
   if (factoryAddress) console.log(`Factory:${factoryAddress}`);
   console.log(`Owner:  ${expectedOwner}`);
   console.log(`Creator:${expectedCreator}`);
+  if (json.listingVault) console.log(`Listing:${expectedListingVault}`);
   console.log("");
 
   const nftOwner = normalizeAddress(await nft.owner());
@@ -104,6 +106,7 @@ async function main() {
   const paletteLocked = await nft.paletteLocked();
   const pendingRouter = await pool.pendingRouter();
   const pendingRouterEta = await pool.pendingRouterEta();
+  const poolListingVault = await pool.listingVault();
 
   check("NFT owner", nftOwner === expectedOwner, `${nftOwner}`, failures);
   check("Pool owner", poolOwner === expectedOwner, `${poolOwner}`, failures);
@@ -117,6 +120,9 @@ async function main() {
   check("Router is NFT minter", routerIsMinter, `${routerIsMinter}`, failures);
   check("Pool is NFT burner", poolIsBurner, `${poolIsBurner}`, failures);
   check("Router creator", routerCreator === expectedCreator, `${routerCreator}`, failures);
+  if (json.listingVault) {
+    check("Pool listing vault", normalizeAddress(poolListingVault) === expectedListingVault, `${poolListingVault}`, failures);
+  }
   check("Palette locked", paletteLocked === true, `${paletteLocked}`, failures);
   check(
     "No pending router change",

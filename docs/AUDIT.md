@@ -71,7 +71,7 @@ Previously listed as "logically plausible but not verified". Now covered:
 
 - buyback vaults stale inventory and recapitalizes pool reserve
 - burnAgedVaultInventory works correctly even with mixed-age vault items
-- relist restores vault inventory to pool without increasing sell pressure
+- relist releases vault inventory to the external listing vault without increasing sell pressure
 - buyback disabled at exact weak-market boundary values
 - buyback enabled once weak-market signals move past thresholds
 - buyback disabled below coverage threshold even for stale inventory

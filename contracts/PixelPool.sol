@@ -13,7 +13,7 @@ interface IERC721Burnable is IERC721 {
 
 /// @title PixelPool
 /// @notice Market-state-aware NFT floor-liquidity pool with staking and treasury buyback
-/// @dev Uses a reserve-aware linear floor bid, conditional inventory sales, and gated buyback logic.
+/// @dev Uses a reserve-aware linear floor bid, external listing releases, and gated buyback logic.
 ///      The pool is designed to provide floor liquidity when market conditions allow it,
 ///      not to guarantee permanent fair-value exits for every NFT.
 contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
@@ -24,7 +24,6 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     }
 
     error PoolEmpty();
-    error InsufficientPayment();
     error NotNFTOwner();
     error NFTNotInPool();
     error TransferFailed();
@@ -36,16 +35,16 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     error NotRouter();
     error BuybackNotActive();
     error RelistConditionsNotMet();
-    error PoolBuyDisabled();
+    error ListingReleaseDisabled();
     error PoolSellDisabled();
     error ZeroAddress();
     error InvalidDependency();
+    error ListingVaultNotSet();
     error RouterChangePending();
     error RouterChangeNotReady();
     error RouterChangeNotPending();
 
     event NFTSold(address indexed seller, uint256 indexed tokenId, uint256 price, uint256 fee);
-    event NFTBought(address indexed buyer, uint256 indexed tokenId, uint256 price, uint256 fee);
     event LiquidityAdded(uint256 ethAmount);
     event TreasurySeeded(uint256 ethAmount);
     event NFTStaked(address indexed staker, uint256 indexed tokenId);
@@ -56,6 +55,8 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     event BuybackExecuted(uint256 bought, uint256 ethSpent, uint256 burned, uint256 vaulted);
     event VaultRelisted(uint256 count);
     event VaultBurned(uint256 count);
+    event ListingVaultUpdated(address indexed previousVault, address indexed newVault);
+    event InventoryReleasedForListing(uint256 indexed tokenId, address indexed listingVault, uint256 referencePrice, bool fromVault);
     event RouterChangeQueued(address indexed currentRouter, address indexed pendingRouter, uint256 activateAt);
     event RouterChangeCancelled(address indexed pendingRouter);
     event RouterUpdated(address indexed previousRouter, address indexed newRouter);
@@ -97,6 +98,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     IERC721Burnable public immutable nftContract;
     uint256 public immutable mintPrice;
     address public router;
+    address public listingVault;
     address public pendingRouter;
     uint256 public pendingRouterEta;
     uint256 public immutable launchTimestamp;
@@ -179,8 +181,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         if (!canSellIntoPool()) return 0;
         return getFloorPrice();
     }
-    function getBuyPrice() public view returns (uint256) {
-        if (!canBuyFromPool()) return 0;
+    function getListingPrice() public view returns (uint256) {
         return _applySpread(getFloorPrice());
     }
 
@@ -223,8 +224,11 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         return _coverageRatio(getFloorPrice()) >= BPS;
     }
 
-    function canBuyFromPool() public view returns (bool) {
-        return marketState == MarketState.Stabilization && _poolNfts.length > 0;
+    function canReleaseInventoryForListing() public view returns (bool) {
+        return
+            marketState == MarketState.Stabilization &&
+            listingVault != address(0) &&
+            (_poolNfts.length > 0 || _vaultNfts.length > 0);
     }
 
     // ---- Sell ----
@@ -245,42 +249,6 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         _refreshMarketState();
         (bool ok,) = msg.sender.call{value: payout}(""); if (!ok) revert TransferFailed();
         emit NFTSold(msg.sender, tokenId, price, fee);
-    }
-
-    // ---- Buy ----
-    function buy(uint256 maxPrice) external payable nonReentrant whenNotPaused returns (uint256 tokenId) {
-        _rollWindows();
-        _refreshMarketState();
-        if (!canBuyFromPool()) revert PoolBuyDisabled();
-        if (_poolNfts.length == 0) revert PoolEmpty();
-        uint256 price = getBuyPrice(); uint256 fee = (price * TRADE_FEE_BPS) / BPS; uint256 cost = price + fee;
-        if (cost > maxPrice) revert SlippageExceeded(); if (msg.value < cost) revert InsufficientPayment();
-        tokenId = _poolNfts[_poolNfts.length - 1]; _rmPool(tokenId);
-        if (totalSoldIntoPool > 0) totalSoldIntoPool -= 1;
-        _recordTrade(price, true);
-        _distFee(fee); ethBalance += price; _updateFloorEma();
-        _refreshMarketState();
-        nftContract.transferFrom(address(this), msg.sender, tokenId);
-        uint256 ref = msg.value - cost;
-        if (ref > 0) { (bool ok,) = msg.sender.call{value: ref}(""); if (!ok) revert TransferFailed(); }
-        emit NFTBought(msg.sender, tokenId, price, fee);
-    }
-
-    function buySpecific(uint256 tokenId, uint256 maxPrice) external payable nonReentrant whenNotPaused {
-        _rollWindows();
-        _refreshMarketState();
-        if (!canBuyFromPool()) revert PoolBuyDisabled();
-        if (!isInPool[tokenId]) revert NFTNotInPool();
-        uint256 price = getBuyPrice(); uint256 fee = (price * TRADE_FEE_BPS) / BPS; uint256 cost = price + fee;
-        if (cost > maxPrice) revert SlippageExceeded(); if (msg.value < cost) revert InsufficientPayment();
-        _rmPool(tokenId); if (totalSoldIntoPool > 0) totalSoldIntoPool -= 1;
-        _recordTrade(price, true);
-        _distFee(fee); ethBalance += price; _updateFloorEma();
-        _refreshMarketState();
-        nftContract.transferFrom(address(this), msg.sender, tokenId);
-        uint256 ref = msg.value - cost;
-        if (ref > 0) { (bool ok,) = msg.sender.call{value: ref}(""); if (!ok) revert TransferFailed(); }
-        emit NFTBought(msg.sender, tokenId, price, fee);
     }
 
     // ---- Staking ----
@@ -386,19 +354,43 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         emit VaultBurned(burned);
     }
 
-    function relistFromVault(uint256 count) external nonReentrant {
-        if (marketState != MarketState.Stabilization) revert RelistConditionsNotMet();
-        if (_poolNfts.length >= INVENTORY_LOW) revert RelistConditionsNotMet();
-        uint256 ask = getBuyPrice(); uint256 done;
+    function relistFromVault(uint256 count) external onlyOwner nonReentrant whenNotPaused {
+        if (listingVault == address(0)) revert ListingVaultNotSet();
+        if (!canReleaseInventoryForListing()) revert RelistConditionsNotMet();
+        uint256 ask = getListingPrice(); uint256 done;
         for (uint256 i = 0; i < count; i++) {
-            if (_vaultNfts.length == 0 || _poolNfts.length >= INVENTORY_LOW) break;
+            if (_vaultNfts.length == 0) break;
             uint256 tid = _vaultNfts[_vaultNfts.length - 1];
             uint256 minP = (buybackPrice[tid] * (BPS + RELIST_PROFIT_BPS)) / BPS;
             if (ask < minP) break;
-            _rmVault(tid); _addPool(tid); done++;
+            _rmVault(tid);
+            nftContract.transferFrom(address(this), listingVault, tid);
+            emit InventoryReleasedForListing(tid, listingVault, ask, true);
+            done++;
         }
         if (done == 0) revert RelistConditionsNotMet();
         emit VaultRelisted(done);
+    }
+
+    function releasePoolInventoryForListing(uint256 count) external onlyOwner nonReentrant whenNotPaused {
+        if (listingVault == address(0)) revert ListingVaultNotSet();
+        _rollWindows();
+        _refreshMarketState();
+        if (!canReleaseInventoryForListing()) revert ListingReleaseDisabled();
+        uint256 ask = getListingPrice();
+        uint256 done;
+        for (uint256 i = 0; i < count; i++) {
+            if (_poolNfts.length == 0) break;
+            uint256 tid = _poolNfts[_poolNfts.length - 1];
+            _rmPool(tid);
+            if (totalSoldIntoPool > 0) totalSoldIntoPool -= 1;
+            nftContract.transferFrom(address(this), listingVault, tid);
+            emit InventoryReleasedForListing(tid, listingVault, ask, false);
+            done++;
+        }
+        if (done == 0) revert PoolEmpty();
+        _updateFloorEma();
+        _refreshMarketState();
     }
 
     // ---- Metrics ----
@@ -447,6 +439,11 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         delete pendingRouter;
         delete pendingRouterEta;
         emit RouterChangeCancelled(queued);
+    }
+    function setListingVault(address vault) external onlyOwner {
+        if (vault == address(0)) revert ZeroAddress();
+        emit ListingVaultUpdated(listingVault, vault);
+        listingVault = vault;
     }
     function pause() external onlyOwner { _pause(); }
     function unpause() external onlyOwner { _unpause(); }

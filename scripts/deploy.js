@@ -110,6 +110,7 @@ async function main() {
   const wallet = new ethers.Wallet(pk, provider);
   const creatorAddress = process.env.CREATOR_ADDRESS || wallet.address;
   const ownerAddress = process.env.OWNER_ADDRESS || process.env.SAFE_ADDRESS || wallet.address;
+  const listingVaultAddress = process.env.LISTING_VAULT_ADDRESS || ownerAddress;
   const shouldLockPalette = process.env.SKIP_PALETTE_LOCK !== "YES";
   const balance = await wallet.getBalance();
   const gasPrice = await provider.getGasPrice();
@@ -120,11 +121,15 @@ async function main() {
   if (!ethers.utils.isAddress(ownerAddress) || ownerAddress === ethers.constants.AddressZero) {
     throw new Error("OWNER_ADDRESS/SAFE_ADDRESS must be a non-zero address");
   }
+  if (!ethers.utils.isAddress(listingVaultAddress) || listingVaultAddress === ethers.constants.AddressZero) {
+    throw new Error("LISTING_VAULT_ADDRESS must be a non-zero address");
+  }
 
   console.log(`\nOnChainPixel Full Deploy -> ${network}`);
   console.log(`Deployer: ${wallet.address}`);
   console.log(`Creator:  ${creatorAddress}`);
   console.log(`Owner:    ${ownerAddress}`);
+  console.log(`Listing:  ${listingVaultAddress}`);
   console.log(`Balance: ${ethers.utils.formatEther(balance)} ETH`);
   console.log(`Gas: ${ethers.utils.formatUnits(gasPrice, "gwei")} gwei\n`);
 
@@ -192,6 +197,10 @@ async function main() {
   const poolContract = new ethers.Contract(poolAddr, artifacts.pool.abi, wallet);
   const routerContract = new ethers.Contract(routerAddr, artifacts.router.abi, wallet);
 
+  tx = await poolContract.setListingVault(listingVaultAddress);
+  await tx.wait();
+  console.log(`   OK Listing vault set: ${listingVaultAddress}`);
+
   if (creatorAddress.toLowerCase() !== wallet.address.toLowerCase()) {
     tx = await routerContract.setCreator(creatorAddress);
     await tx.wait();
@@ -226,12 +235,14 @@ async function main() {
   const isMinter = await nftContract.isMinter(routerAddr);
   const isBurner = await nftContract.isBurner(poolAddr);
   const poolRouter = await poolContract.router();
+  const poolListingVault = await poolContract.listingVault();
   const paletteLocked = await nftContract.paletteLocked();
 
   console.log(`   NFT: bitDepth=${bd}, canvas=${w}x${h}, palette=${ps} colors`);
   console.log(`   Router is minter: ${isMinter}`);
   console.log(`   Pool is burner: ${isBurner}`);
   console.log(`   Pool router set: ${poolRouter === routerAddr}`);
+  console.log(`   Pool listing vault: ${poolListingVault}`);
   console.log(`   Palette locked: ${paletteLocked}`);
   console.log(`   Creator of Router: ${await routerContract.creator()}`);
   console.log(`   Owner of Factory: ${await factory.owner()}`);
@@ -252,6 +263,7 @@ async function main() {
     deployer: wallet.address,
     creator: creatorAddress,
     owner: ownerAddress,
+    listingVault: listingVaultAddress,
     paletteLocked,
     config: {
       name,
@@ -265,6 +277,7 @@ async function main() {
       treasuryBps,
     },
     appConfig: {
+      chainId: String(providerNetwork.chainId),
       poolAddress: poolAddr,
       routerAddress: routerAddr,
       nftAddress: nftAddr,
@@ -279,6 +292,7 @@ async function main() {
   console.log(`\nSaved to deployment-${network}.json`);
   console.log(`\n--- Paste into frontend/src/appConfig.js ---\n`);
   console.log(`export const APP_CONFIG = Object.freeze({
+  chainId: "${providerNetwork.chainId}",
   poolAddress: "${poolAddr}",
   routerAddress: "${routerAddr}",
   nftAddress: "${nftAddr}",

@@ -6,6 +6,7 @@ const POOL_SEED_BPS = 6000;
 const TREASURY_BPS = 1000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
 const INVENTORY_STALE_AGE = 7 * 24 * 60 * 60;
+const MARKET_STATE_SLOT = 24;
 
 const slotCache = {};
 
@@ -70,6 +71,7 @@ async function deployStack() {
   await (await nft.connect(owner).setMinter(router.address, true)).wait();
   await (await nft.connect(owner).setBurner(pool.address, true)).wait();
   await (await pool.connect(owner).setRouter(router.address)).wait();
+  await (await pool.connect(owner).setListingVault(owner.address)).wait();
 
   return { owner, creator, user, buyer, nft, pool, router, mintPrice };
 }
@@ -146,7 +148,12 @@ async function setUintVar(contract, getterName, value, probeValue = 987654321) {
 }
 
 async function forceMarketState(pool, value) {
-  await setUintVar(pool, "marketState", value, 1);
+  await ethers.provider.send("hardhat_setStorageAt", [
+    pool.address,
+    slotHex(MARKET_STATE_SLOT),
+    valueHex(value)
+  ]);
+  await ethers.provider.send("evm_mine", []);
 }
 
 describe("PixelPool market-state thresholds and negative gates", function () {
@@ -172,22 +179,22 @@ describe("PixelPool market-state thresholds and negative gates", function () {
     assert.strictEqual(await pool.canSellIntoPool(), true);
   });
 
-  it("allows pool buying only when stabilization and inventory are both present", async function () {
+  it("allows external listing only when stabilization, listing vault, and inventory are all present", async function () {
     const { owner, user, nft, pool, router, mintPrice } = await deployStack();
 
     await seedReserves(pool, owner, ethers.utils.parseEther("6"), ethers.constants.Zero);
     await increaseTime(LAUNCH_PROTECTION + 1);
 
     await forceMarketState(pool, 1);
-    assert.strictEqual(await pool.canBuyFromPool(), false);
+    assert.strictEqual(await pool.canReleaseInventoryForListing(), false);
 
     await mintAndSellOne(router, nft, user, mintPrice);
 
     await forceMarketState(pool, 2);
-    assert.strictEqual(await pool.canBuyFromPool(), false);
+    assert.strictEqual(await pool.canReleaseInventoryForListing(), false);
 
     await forceMarketState(pool, 1);
-    assert.strictEqual(await pool.canBuyFromPool(), true);
+    assert.strictEqual(await pool.canReleaseInventoryForListing(), true);
   });
 
   it("keeps buyback disabled at exact weak-market boundary values", async function () {

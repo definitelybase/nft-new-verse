@@ -53,6 +53,7 @@ async function deployStack() {
   await (await nft.connect(owner).setMinter(router.address, true)).wait();
   await (await nft.connect(owner).setBurner(pool.address, true)).wait();
   await (await pool.connect(owner).setRouter(router.address)).wait();
+  await (await pool.connect(owner).setListingVault(owner.address)).wait();
 
   return { owner, creator, alice, bob, charlie, nft, pool, router, mintPrice };
 }
@@ -98,8 +99,8 @@ describe("Market-state stress tests", function () {
     assert.strictEqual(await getState(pool), "WeakDemand");
   });
 
-  it("recovers from WeakDemand to Stabilization after window reset with balanced volume", async function () {
-    const { owner, alice, bob, nft, pool, router, mintPrice } = await deployStack();
+  it("recovers from WeakDemand enough to release inventory externally after window reset", async function () {
+    const { owner, alice, nft, pool, router, mintPrice } = await deployStack();
 
     // Setup: mint, seed, pass launch
     await mintOne(router, alice, mintPrice, 1);
@@ -115,26 +116,21 @@ describe("Market-state stress tests", function () {
     // Wait for both windows to reset
     await increaseTime(LONG_WINDOW + 1);
 
-    // Now sell + buy in same window for balanced volume
+    // Add one more sell so the pool has fresh inventory to release outward.
     await (await nft.connect(alice).approve(router.address, 1)).wait();
     await (await router.connect(alice).sellNFT(1, 0)).wait();
 
-    // Pool should now have inventory; wait SHORT_WINDOW to reset again
+    // Wait for windows to reset so the market can leave the weak-demand snapshot.
     await increaseTime(LONG_WINDOW + 1);
 
-    // Buy from pool — should transition to Stabilization
-    // (volumeRatio ≈ BPS, pressureRatio balanced, floorDeviation stable)
-    const floor = await pool.getFloorPrice();
-    const ask = addBps(floor, STABILIZATION_SPREAD_BPS);
-    const cost = addBps(ask, TRADE_FEE_BPS);
-    await (await router.connect(bob).buySpecificNFT(1, cost, { value: cost })).wait();
+    await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
     const state = await getState(pool);
-    // After a single buy with fresh windows, should be Expansion or Stabilization
     assert.ok(
       state === "Stabilization" || state === "Expansion",
-      `Expected Stabilization or Expansion after balanced activity, got ${state}`
+      `Expected Stabilization or Expansion after release, got ${state}`
     );
+    assert.strictEqual(await nft.ownerOf(1), owner.address);
   });
 
   it("ethBalance never goes negative through many sell cycles", async function () {

@@ -7,8 +7,7 @@ const TREASURY_BPS = 1000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
 const INVENTORY_STALE_AGE = 7 * 24 * 60 * 60;
 const VAULT_BURN_AGE = 14 * 24 * 60 * 60;
-
-let cachedMarketStateSlot;
+const MARKET_STATE_SLOT = 24;
 
 function palette16() {
   return ethers.utils.hexlify([
@@ -71,6 +70,7 @@ async function deployStack() {
   await (await nft.connect(owner).setMinter(router.address, true)).wait();
   await (await nft.connect(owner).setBurner(pool.address, true)).wait();
   await (await pool.connect(owner).setRouter(router.address)).wait();
+  await (await pool.connect(owner).setListingVault(owner.address)).wait();
 
   return { owner, creator, user, buyer, nft, pool, router, mintPrice };
 }
@@ -114,31 +114,9 @@ async function expectRevert(promise) {
 }
 
 async function forceMarketState(pool, desiredState) {
-  if (cachedMarketStateSlot === undefined) {
-    for (let candidate = 0; candidate < 40; candidate++) {
-      const slot = slotHex(candidate);
-      const original = await ethers.provider.getStorageAt(pool.address, slot);
-      await ethers.provider.send("hardhat_setStorageAt", [pool.address, slot, valueHex(1)]);
-      await ethers.provider.send("evm_mine", []);
-
-      const state = await pool.marketState();
-      if (Number(state) === 1) {
-        cachedMarketStateSlot = candidate;
-        break;
-      }
-
-      await ethers.provider.send("hardhat_setStorageAt", [pool.address, slot, original]);
-      await ethers.provider.send("evm_mine", []);
-    }
-  }
-
-  if (cachedMarketStateSlot === undefined) {
-    throw new Error("Unable to locate marketState storage slot");
-  }
-
   await ethers.provider.send("hardhat_setStorageAt", [
     pool.address,
-    slotHex(cachedMarketStateSlot),
+    slotHex(MARKET_STATE_SLOT),
     valueHex(desiredState)
   ]);
   await ethers.provider.send("evm_mine", []);
@@ -245,7 +223,7 @@ describe("PixelPool + PixelRouter economics flows", function () {
     assert.strictEqual(await nft.ownerOf(0), pool.address);
   });
 
-  it("relist restores vault inventory to pool without increasing sell pressure", async function () {
+  it("relist releases vault inventory to the listing vault without increasing sell pressure", async function () {
     const { owner, user, nft, pool, router, mintPrice } = await deployStack();
 
     await mintMany(router, user, mintPrice, 2);
@@ -271,7 +249,8 @@ describe("PixelPool + PixelRouter economics flows", function () {
 
     await (await pool.connect(owner).relistFromVault(1)).wait();
 
-    assert.strictEqual((await pool.availableNFTs()).toString(), "2");
+    assert.strictEqual(await nft.ownerOf(1), owner.address);
+    assert.strictEqual((await pool.availableNFTs()).toString(), "1");
     assert.strictEqual((await pool.vaultSize()).toString(), "0");
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
   });

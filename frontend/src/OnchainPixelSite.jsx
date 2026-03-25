@@ -44,8 +44,7 @@ const MOCK_POOL = {
   floor: 0,
   sellPrice: 0,
   sellPayout: 0,
-  buyPrice: 0,
-  buyCost: 0,
+  listingPrice: 0,
   totalMinted: 0,
   totalStaked: 0,
   poolNfts: 0,
@@ -56,7 +55,7 @@ const MOCK_POOL = {
   treasuryBalance: 0,
   marketState: null,
   canSell: false,
-  canBuy: false,
+  listingEnabled: false,
   ethUsd: 2000,
   mintPriceEth: null,
   dailyVolume: null,
@@ -881,8 +880,8 @@ function PoolViz({ pool, className = "", style }) {
           <div style={{ marginTop: 8, color: COLORS.yellow, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>{pool.floor} ETH</div>
         </FrostCard>
         <FrostCard style={{ padding: 14, background: COLORS.surfaceStrong, borderRadius: 24, minHeight: 108, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-          <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Ask total</div>
-          <div style={{ marginTop: 8, color: COLORS.green, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>{pool.buyCost || pool.buyPrice} ETH</div>
+          <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Listing ref</div>
+          <div style={{ marginTop: 8, color: COLORS.green, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>{pool.listingPrice} ETH</div>
         </FrostCard>
       </div>
     </FrostCard>
@@ -1631,7 +1630,7 @@ function MintPage({ wallet, onConnectWallet, appConfig, pool, isLive, poolError 
 }
 
 function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poolError }) {
-  const [tab, setTab] = useState("buy");
+  const [tab, setTab] = useState("listing");
   const [sellTokenId, setSellTokenId] = useState("");
   const [txStatus, setTxStatus] = useState("");
   const [txHash, setTxHash] = useState("");
@@ -1719,37 +1718,6 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
       face: countBy("face"),
     };
   }, [marketItems]);
-
-  async function handleBuy() {
-    if (!wallet?.provider || !wallet?.account) { setTxStatus("Connect wallet first."); return; }
-    if (!routerAddress) { setTxStatus("Router address not set."); return; }
-    const chainErr = checkChain(wallet, appConfig);
-    if (chainErr) { setTxStatus(chainErr); return; }
-    if (!pool.canBuy) { setTxStatus("Pool buying is currently disabled (need Stabilization + inventory)."); return; }
-
-    try {
-      setIsSubmitting(true); setTxHash(""); setTxStatus("Reading buy price...");
-      const signer = wallet.provider.getSigner();
-      const router = new ethers.Contract(routerAddress, PIXEL_ROUTER_ABI, signer);
-      const prices = await router.getPrices();
-      const buyPrice = prices.buyPrice;
-      const fee = buyPrice.mul(250).div(10000);
-      const cost = buyPrice.add(fee);
-      // 1% slippage buffer
-      const maxPrice = cost.add(cost.div(100));
-
-      setTxStatus(`Buying at ${formatEth(cost)}. Confirm in wallet...`);
-      const tx = await router.buyNFT(maxPrice, { value: maxPrice });
-      setTxHash(tx.hash);
-      setTxStatus("Submitted. Waiting for confirmation...");
-      await tx.wait();
-      setTxStatus("Buy confirmed on-chain.");
-    } catch (error) {
-      setTxStatus(error?.reason || error?.data?.message || error?.message || "Buy failed.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
 
   async function handleSell() {
     if (!wallet?.provider || !wallet?.account) { setTxStatus("Connect wallet first."); return; }
@@ -1939,13 +1907,13 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
               Pool lane
             </div>
             <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-              Pool inventory is the instant-exit layer. The grid is the discovery layer. Together they act like a marketplace plus an embedded floor AMM.
+              The pool is the instant-exit layer. Discovery and premium pricing stay in the open market, while protocol inventory is routed outward for external listings once the spread is attractive enough.
             </div>
             <div style={{ marginTop: 14, display: "grid", gap: 10 }}>
               <div style={{ padding: 12, borderRadius: 16, background: COLORS.surfaceStrong }}>
-                <div style={{ color: COLORS.green, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Buy lane</div>
+                <div style={{ color: COLORS.green, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Listing lane</div>
                 <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                  Pulls from pool inventory when stabilization conditions are met.
+                  Protocol inventory can be released toward an external listing vault once stabilization conditions are met.
                 </div>
               </div>
               <div style={{ padding: 12, borderRadius: 16, background: COLORS.surfaceStrong }}>
@@ -2021,64 +1989,65 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
 
           <FrostCard className="site-reveal" style={{ padding: 20, ...revealStyle(300) }}>
             <div className="site-reveal-soft" style={{ display: "flex", gap: 8, marginBottom: 16, alignItems: "center", flexWrap: "wrap" }}>
-              {["buy", "sell"].map((type) => (
+              {[
+                ["listing", "Protocol listings"],
+                ["sell", "Sell to pool"],
+              ].map(([type, label]) => (
                 <MetalButton
                   key={type}
                   onClick={() => { setTab(type); setTxStatus(""); setTxHash(""); }}
-                  tone={type === "buy" ? "green" : "red"}
+                  tone={type === "listing" ? "green" : "red"}
                   active={tab === type}
                   size="sm"
                   style={{ padding: "11px 18px", textTransform: "capitalize" }}
                 >
-                  {type === "buy" ? "Buy from pool" : "Sell to pool"}
+                  {label}
                 </MetalButton>
               ))}
               <DataBadge isLive={isLive} error={poolError} />
             </div>
 
-            {tab === "buy" ? (
+            {tab === "listing" ? (
               <div>
                 <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 24, fontWeight: 600 }}>
-                  Buy from liquidity pool
+                  Protocol listing lane
                 </div>
                 <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
-                  Buys the next available NFT from pool inventory at the ask price. This is the fast lane, not the premium trait discovery lane.
-                  {!pool.canBuy ? <span style={{ color: COLORS.yellow }}> Buying opens only when stabilization and inventory conditions are met.</span> : null}
+                  The protocol no longer sells inventory directly out of the pool. Instead, inventory that came in through floor bids is released toward an external listing vault once the market stabilizes and the listing spread is healthy enough.
+                  {!pool.listingEnabled ? <span style={{ color: COLORS.yellow }}> Listing release opens only in stabilization with inventory ready.</span> : null}
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: isCompactMarketLayout ? "1fr" : "repeat(3, 1fr)", gap: 12, marginTop: 16, alignItems: "stretch" }}>
                   <FrostCard style={{ padding: 14, background: COLORS.surfaceStrong, borderRadius: 18, minHeight: 104, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Total cost</div>
-                    <div style={{ marginTop: 8, color: COLORS.green, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>{pool.buyCost ? fmtEth(pool.buyCost) : "—"}</div>
+                    <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Listing reference</div>
+                    <div style={{ marginTop: 8, color: COLORS.green, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>{pool.listingPrice ? fmtEth(pool.listingPrice) : "—"}</div>
                   </FrostCard>
                   <FrostCard style={{ padding: 14, background: COLORS.surfaceStrong, borderRadius: 18, minHeight: 104, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                     <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Inventory</div>
                     <div style={{ marginTop: 8, color: COLORS.text, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>{pool.poolNfts}</div>
                   </FrostCard>
                   <FrostCard style={{ padding: 14, background: COLORS.surfaceStrong, borderRadius: 18, minHeight: 104, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Coverage</div>
-                    <div style={{ marginTop: 8, color: COLORS.purple, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>{fmtPct(pool.liqRatio)}</div>
+                    <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Lane status</div>
+                    <div style={{ marginTop: 8, color: COLORS.purple, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>{pool.listingEnabled ? "Open" : "Closed"}</div>
                   </FrostCard>
                 </div>
 
                 <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
-                  <MetalButton
-                    onClick={handleBuy}
-                    disabled={isSubmitting || !pool.canBuy}
-                    block
-                    tone="green"
-                    active={pool.canBuy}
-                    size="lg"
-                    style={{
-                      width: "100%",
-                      cursor: isSubmitting ? "progress" : pool.canBuy ? "pointer" : "not-allowed",
-                      opacity: isSubmitting ? 0.7 : 1,
-                    }}
-                  >
-                    {isSubmitting ? "Buying..." : pool.canBuy ? `Buy for ~${fmtEth(pool.buyCost || pool.buyPrice)}` : "Buy disabled"}
-                  </MetalButton>
+                  <FrostCard style={{ padding: 16, background: COLORS.surfaceStrong, borderRadius: 18 }}>
+                    <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
+                      How it works now
+                    </div>
+                    <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.8 }}>
+                      Holders still exit through the protocol floor bid. But once inventory accumulates, the protocol routes that inventory toward an external listing vault instead of selling it directly out of the pool. Rare pieces keep their premium in open price discovery.
+                    </div>
+                  </FrostCard>
+                  <FrostCard style={{ padding: 16, background: COLORS.surfaceStrong, borderRadius: 18 }}>
+                    <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Current policy</div>
+                    <div style={{ marginTop: 8, color: COLORS.text, fontFamily: fonts, fontSize: 11, lineHeight: 1.8 }}>
+                      Release is allowed only in stabilization, with inventory on hand, and uses the protocol listing reference rather than a direct on-chain retail checkout.
+                    </div>
+                  </FrostCard>
                   <WrongChainBanner wallet={wallet} appConfig={appConfig} />
-                  <TxStatusBar txStatus={txStatus} txHash={txHash} chainId={wallet?.chainId} />
                 </div>
               </div>
             ) : (
@@ -2612,8 +2581,7 @@ function buildPoolView(liveData) {
     floor: liveData.floor,
     sellPrice: liveData.sellPrice,
     sellPayout: liveData.sellPayout,
-    buyPrice: liveData.buyPrice,
-    buyCost: liveData.buyCost,
+    listingPrice: liveData.listingPrice,
     totalMinted: liveData.totalMinted,
     totalStaked: liveData.lockedSupply,
     poolNfts: liveData.poolNfts,
@@ -2624,7 +2592,7 @@ function buildPoolView(liveData) {
     treasuryBalance: liveData.treasuryBalance,
     marketState: liveData.marketState,
     canSell: liveData.canSell,
-    canBuy: liveData.canBuy,
+    listingEnabled: liveData.listingEnabled,
     ethUsd: liveData.ethUsd,
     mintPriceEth: liveData.mintPriceEth,
     // not available on-chain without indexer

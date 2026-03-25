@@ -261,7 +261,7 @@ Floor-liquidity engine with:
 
 - market states
 - reserve-aware floor pricing
-- conditional inventory sales
+- external listing releases
 - treasury buyback gates
 - staking
 - pool metrics
@@ -272,7 +272,7 @@ Main user entry point for:
 
 - minting
 - liquidity seeding
-- buy / sell routing
+- floor-exit sell routing
 - surfacing pool state to UI
 
 ### PixelFactory

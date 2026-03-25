@@ -9,12 +9,6 @@ function fmt(bn, decimals = 18) {
   return Number(ethers.utils.formatUnits(bn, decimals));
 }
 
-function fmtFeeAdjusted(bn, feeBps, direction) {
-  const fee = bn.mul(feeBps).div(10000);
-  const adjusted = direction === "subtract" ? bn.sub(fee) : bn.add(fee);
-  return Number(ethers.utils.formatUnits(adjusted, 18));
-}
-
 /**
  * Reads live pool + router state. Returns null while loading.
  * Falls back to rpcUrl if no wallet provider is available.
@@ -90,17 +84,17 @@ export default function usePoolData({ poolAddress, routerAddress, rpcUrl, ethUsd
       const emc = fmt(metrics.effectiveMarketCap);
       const liqRatio = Number(metrics.liquidityRatio) / 100; // BPS → %
       const sellPrice = prices ? fmt(prices.sellPrice) : 0;
-      const buyPrice = prices ? fmt(prices.buyPrice) : 0;
-      const sellPayout = prices ? fmtFeeAdjusted(prices.sellPrice, 250, "subtract") : 0;
-      const buyCost = prices ? fmtFeeAdjusted(prices.buyPrice, 250, "add") : 0;
+      const listingPrice = prices ? fmt(prices.listingPrice) : 0;
+      const sellPayout = prices
+        ? Number(ethers.utils.formatUnits(prices.sellPrice.sub(prices.sellPrice.mul(250).div(10000)), 18))
+        : 0;
 
       setData({
         // prices (pool-only fallback when router is absent)
         floor,
         sellPrice,
         sellPayout,
-        buyPrice,
-        buyCost,
+        listingPrice,
         floorUsd: floor * ethUsdNum,
 
         // supply
@@ -124,7 +118,7 @@ export default function usePoolData({ poolAddress, routerAddress, rpcUrl, ethUsd
         marketState: MARKET_STATES[state] || "Unknown",
         marketStateIdx: state,
         canSell: poolState ? poolState.poolBuysEnabled : false,
-        canBuy: poolState ? poolState.poolSellsEnabled : false,
+        listingEnabled: poolState ? poolState.listingEnabled : false,
         volumeRatioBps: poolState ? Number(poolState.volumeRatioBps) : 0,
         pressureRatioBps: poolState ? Number(poolState.pressureRatioBps) : 0,
         floorDeviationBps: poolState ? Number(poolState.floorDeviationBps) : 0,
