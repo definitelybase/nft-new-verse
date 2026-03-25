@@ -10,13 +10,23 @@
     "clean": "hardhat clean",
     "compile": "hardhat compile",
     "build": "npm run compile && node scripts/export-artifacts.js",
+    "frontend:dev": "vite frontend --host 0.0.0.0",
+    "frontend:build": "vite build frontend",
+    "frontend:preview": "vite preview frontend --host 0.0.0.0",
     "test": "hardhat test",
-    "node": "hardhat node"
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy-local.js --network localhost"
+  },
+  "dependencies": {
+    "ethers": "^5.7.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@openzeppelin/contracts": "^4.9.6",
-    "ethers": "^5.7.2",
-    "hardhat": "^2.22.17"
+    "hardhat": "^2.22.17",
+    "vite": "^5.4.19"
   }
 }
