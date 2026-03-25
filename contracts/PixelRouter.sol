@@ -50,7 +50,9 @@ contract PixelRouter is Ownable, ReentrancyGuard {
     error IncorrectPayment();
     error TransferFailed();
     error MintFailed();
+    error InvalidAmount();
     error InvalidBps();
+    error InvalidDependency();
     error ZeroAddress();
 
     // ============================================================
@@ -103,6 +105,11 @@ contract PixelRouter is Ownable, ReentrancyGuard {
         uint256 poolSeedBps_,
         uint256 treasuryBps_
     ) Ownable() {
+        if (nftContract_ == address(0) || pool_ == address(0) || creator_ == address(0)) {
+            revert ZeroAddress();
+        }
+        if (nftContract_.code.length == 0 || pool_.code.length == 0) revert InvalidDependency();
+        if (mintPrice_ == 0) revert InvalidAmount();
         if (poolSeedBps_ + treasuryBps_ > 10000) revert InvalidBps();
         nftContract = IPixelNFT(nftContract_);
         pool = IPixelPool(pool_);
@@ -271,6 +278,7 @@ contract PixelRouter is Ownable, ReentrancyGuard {
 
     /// @notice Update mint price
     function setMintPrice(uint256 newPrice) external onlyOwner {
+        if (newPrice == 0) revert InvalidAmount();
         emit MintPriceUpdated(mintPrice, newPrice);
         mintPrice = newPrice;
     }

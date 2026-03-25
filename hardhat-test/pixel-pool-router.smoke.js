@@ -81,6 +81,22 @@ async function expectCustomError(promise, errorName) {
 }
 
 describe("PixelPool + PixelRouter smoke suite", function () {
+  it("rejects invalid pool constructor arguments", async function () {
+    const [owner] = await ethers.getSigners();
+    const mintPrice = ethers.utils.parseEther("0.01");
+    const Pool = await ethers.getContractFactory("PixelPool");
+
+    await expectCustomError(
+      Pool.deploy(ethers.constants.AddressZero, mintPrice),
+      "ZeroAddress"
+    );
+
+    await expectCustomError(
+      Pool.deploy(owner.address, 0),
+      "InvalidAmount"
+    );
+  });
+
   it("wires router minter, pool burner, and keeps public mint disabled by default", async function () {
     const { user, nft, pool, router, mintPrice } = await deployStack();
 
@@ -104,6 +120,19 @@ describe("PixelPool + PixelRouter smoke suite", function () {
     assert.strictEqual((await pool.treasuryBalance()).toString(), mintPrice.mul(TREASURY_BPS).div(BPS).toString());
     assert.strictEqual((await pool.totalMinted()).toString(), "1");
     assert.strictEqual((await nft.totalSupply()).toString(), "1");
+  });
+
+  it("keeps totalMinted monotonic when updated by the router", async function () {
+    const { owner, pool } = await deployStack();
+
+    await (await pool.connect(owner).setRouter(owner.address)).wait();
+    await (await pool.connect(owner).setTotalMinted(3)).wait();
+    assert.strictEqual((await pool.totalMinted()).toString(), "3");
+
+    await expectCustomError(
+      pool.connect(owner).setTotalMinted(2),
+      "InvalidAmount"
+    );
   });
 
   it("requires exact router mint payment", async function () {
@@ -203,6 +232,48 @@ describe("PixelPool + PixelRouter smoke suite", function () {
 
     await expectCustomError(
       router.connect(owner).rescueNFT(0, ethers.constants.AddressZero),
+      "ZeroAddress"
+    );
+  });
+
+  it("rejects zero-address router constructor arguments", async function () {
+    const [_, creator] = await ethers.getSigners();
+    const mintPrice = ethers.utils.parseEther("0.01");
+    const Router = await ethers.getContractFactory("PixelRouter");
+
+    await expectCustomError(
+      Router.deploy(
+        ethers.constants.AddressZero,
+        creator.address,
+        creator.address,
+        mintPrice,
+        POOL_SEED_BPS,
+        TREASURY_BPS
+      ),
+      "ZeroAddress"
+    );
+
+    await expectCustomError(
+      Router.deploy(
+        creator.address,
+        ethers.constants.AddressZero,
+        creator.address,
+        mintPrice,
+        POOL_SEED_BPS,
+        TREASURY_BPS
+      ),
+      "ZeroAddress"
+    );
+
+    await expectCustomError(
+      Router.deploy(
+        creator.address,
+        creator.address,
+        ethers.constants.AddressZero,
+        mintPrice,
+        POOL_SEED_BPS,
+        TREASURY_BPS
+      ),
       "ZeroAddress"
     );
   });

@@ -1,6 +1,6 @@
 # OnChainPixel — Current Audit Notes
 
-This file is the current `open issues` register for the repo after the NFT / Pool / Router / Factory alignment work and the contract hardening round.
+This file is the current `open issues` register for the repo after the NFT / Pool / Router / Factory alignment work, the contract hardening round, and the deploy-safety pass.
 
 ## Closed Since The Original Draft
 
@@ -111,16 +111,29 @@ Router and pool admin/emergency paths now emit explicit events for:
 
 This is enough for basic indexing and ops visibility, though analytics-oriented events are still limited.
 
+### Deploy/config guards — IMPROVED
+
+Constructor and config validation is tighter now:
+
+- `OnChainPixelNFT` rejects `mintPrice == 0`
+- `PixelPool` rejects zero-address NFT, non-contract NFT dependency, and `mintPrice == 0`
+- `PixelRouter` rejects zero-address dependencies, non-contract NFT/pool dependencies, and `mintPrice == 0`
+- `PixelFactory.createCollection()` rejects `mintPrice == 0`
+- `setTotalMinted()` is monotonic and cannot move backwards
+
+This reduces the chance of bad local/testnet deployments silently producing broken state.
+
 ## Current Test Coverage
 
-**56 passing tests** across 11 test files:
+**68 passing tests** across 13 test files:
 
 | Suite | Tests | Coverage |
 |-------|-------|----------|
 | Admin / emergency events | 2 | Router/pool admin events, factory setup/admin events |
 | Protocol/admin invariants | 3 | claimProtocolFees, pause/unpause, factory fee/withdraw |
+| Deploy/config guards | 4 | zero-price rejects, dependency validation, factory create guards |
 | Factory / NFT admin paths | 3 | onlyOwner setters, withdraw paths, palette lock |
-| Smoke (router/pool wiring) | 8 | Deployment, mint splits, exact payment, rescue, sell/buy flow, refunds |
+| Smoke (router/pool wiring) | 11 | Deployment, mint splits, exact payment, rescue, constructor/config guards, sell/buy flow, refunds |
 | Economics | 4 | Buyback, protocol burn, vault burn, relist |
 | Scenarios | 4 | Sell pressure tracking, EMA movement, budget exhaustion, WeakDemand gates |
 | Market-state thresholds | 6 | Launch protection, coverage gates, buy/sell activation, buyback gating |
@@ -155,9 +168,9 @@ Local tests prove constructor encoding and wiring, but there is no proof that th
 
 ### Do Now
 
-1. Add deploy script for local and testnet
+1. Validate direct deploy path on Sepolia and capture real gas + addresses
 2. Validate factory deployment flow end-to-end on testnet
-3. Tighten the remaining broad `catch { break; }` style test branches so unexpected reverts do not get masked
+3. Keep deployment JSON and frontend appConfig in sync after each live deploy
 
 ### Do Before Any Public Testnet Push
 

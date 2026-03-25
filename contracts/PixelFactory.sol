@@ -17,9 +17,11 @@ interface ISetup {
 ///      createCollection() deploys NFT + Pool + Router via CREATE2,
 ///      wires permissions, and transfers ownership to the creator.
 contract PixelFactory is Ownable {
+    error InvalidAmount();
     error InsufficientFee();
     error InvalidBps();
     error MissingBytecode();
+    error DeployFailed();
     error TransferFailed();
 
     event CollectionCreated(
@@ -90,6 +92,7 @@ contract PixelFactory is Ownable {
         bytes calldata paletteRGB
     ) external payable returns (address nftAddr, address poolAddr, address routerAddr) {
         if (nftCode.length == 0 || poolCode.length == 0 || routerCode.length == 0) revert MissingBytecode();
+        if (mintPrice_ == 0) revert InvalidAmount();
         if (msg.value < factoryFee) revert InsufficientFee();
         if (poolSeedBps_ + treasuryBps_ > 10000) revert InvalidBps();
 
@@ -134,7 +137,7 @@ contract PixelFactory is Ownable {
     function _deploy(bytes memory bytecode, uint256 salt) private returns (address addr) {
         bytes32 s = bytes32(salt);
         assembly { addr := create2(0, add(bytecode, 0x20), mload(bytecode), s) }
-        require(addr != address(0), "Deploy failed");
+        if (addr == address(0)) revert DeployFailed();
     }
 
     // ============================================================

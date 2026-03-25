@@ -23,6 +23,18 @@ function getEvent(receipt, name) {
   return event;
 }
 
+function getParsedLog(receipt, contract, name) {
+  for (const log of receipt.logs) {
+    try {
+      const parsed = contract.interface.parseLog(log);
+      if (parsed.name === name) return parsed;
+    } catch (_) {
+      // ignore logs from other contracts
+    }
+  }
+  assert.fail(`Missing event ${name}`);
+}
+
 async function deployStack() {
   const [owner, creator, user, other] = await ethers.getSigners();
   const mintPrice = ethers.utils.parseEther("0.01");
@@ -47,6 +59,28 @@ async function deployStack() {
 }
 
 describe("Admin and emergency events", function () {
+  it("emits mint-side accounting events across router and pool", async function () {
+    const { user, pool, router, mintPrice } = await deployStack();
+
+    const receipt = await (await router.connect(user)["mint(bytes)"](onePixel(2), { value: mintPrice })).wait();
+
+    const routerMinted = getEvent(receipt, "Minted");
+    const liquidityAdded = getParsedLog(receipt, pool, "LiquidityAdded");
+    const treasurySeeded = getParsedLog(receipt, pool, "TreasurySeeded");
+    const totalMintedUpdated = getParsedLog(receipt, pool, "TotalMintedUpdated");
+
+    assert.strictEqual(routerMinted.args.minter, user.address);
+    assert.strictEqual(routerMinted.args.tokenId.toString(), "0");
+    assert.strictEqual(routerMinted.args.mintPrice.toString(), mintPrice.toString());
+    assert.strictEqual(routerMinted.args.poolSeed.toString(), mintPrice.mul(POOL_SEED_BPS).div(10000).toString());
+
+    assert.strictEqual(liquidityAdded.args.ethAmount.toString(), mintPrice.mul(POOL_SEED_BPS).div(10000).toString());
+    assert.strictEqual(treasurySeeded.args.ethAmount.toString(), mintPrice.mul(TREASURY_BPS).div(10000).toString());
+    assert.strictEqual(totalMintedUpdated.args.previousTotalMinted.toString(), "0");
+    assert.strictEqual(totalMintedUpdated.args.newTotalMinted.toString(), "1");
+    assert.strictEqual((await pool.totalMinted()).toString(), "1");
+  });
+
   it("emits router and pool admin/emergency events", async function () {
     const { owner, creator, user, other, nft, pool, router, mintPrice } = await deployStack();
 

@@ -16,6 +16,13 @@ module.exports = {
       gas: "auto",
       blockGasLimit: 30000000,
     },
+    localhost: {
+      url: "http://127.0.0.1:8545",
+    },
+    sepolia: {
+      url: process.env.SEPOLIA_RPC_URL || "",
+      accounts: process.env.DEPLOYER_KEY ? [process.env.DEPLOYER_KEY] : [],
+    },
   },
   paths: {
     sources: "./contracts",

@@ -39,14 +39,17 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     error PoolBuyDisabled();
     error PoolSellDisabled();
     error ZeroAddress();
+    error InvalidDependency();
 
     event NFTSold(address indexed seller, uint256 indexed tokenId, uint256 price, uint256 fee);
     event NFTBought(address indexed buyer, uint256 indexed tokenId, uint256 price, uint256 fee);
     event LiquidityAdded(uint256 ethAmount);
+    event TreasurySeeded(uint256 ethAmount);
     event NFTStaked(address indexed staker, uint256 indexed tokenId);
     event NFTUnstaked(address indexed staker, uint256 indexed tokenId);
     event FeesClaimed(address indexed staker, uint256 amount);
     event ProtocolFeesClaimed(address indexed to, uint256 amount);
+    event TotalMintedUpdated(uint256 previousTotalMinted, uint256 newTotalMinted);
     event BuybackExecuted(uint256 bought, uint256 ethSpent, uint256 burned, uint256 vaulted);
     event VaultRelisted(uint256 count);
     event VaultBurned(uint256 count);
@@ -131,6 +134,9 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     mapping(uint256 => uint256) public vaultStoredAt;
 
     constructor(address nft_, uint256 mintPrice_) Ownable() {
+        if (nft_ == address(0)) revert ZeroAddress();
+        if (nft_.code.length == 0) revert InvalidDependency();
+        if (mintPrice_ == 0) revert InvalidAmount();
         nftContract = IERC721Burnable(nft_);
         mintPrice = mintPrice_;
         launchTimestamp = block.timestamp;
@@ -140,9 +146,14 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         longWindowStart = block.timestamp;
     }
 
-    function seedLiquidity() external payable { _onlyRouter(); ethBalance += msg.value; emit LiquidityAdded(msg.value); }
-    function seedTreasury() external payable { _onlyRouter(); treasuryBalance += msg.value; }
-    function setTotalMinted(uint256 c) external { _onlyRouter(); totalMinted = c; }
+    function seedLiquidity() external payable { _onlyRouter(); if (msg.value == 0) revert PoolEmpty(); ethBalance += msg.value; emit LiquidityAdded(msg.value); }
+    function seedTreasury() external payable { _onlyRouter(); treasuryBalance += msg.value; emit TreasurySeeded(msg.value); }
+    function setTotalMinted(uint256 c) external {
+        _onlyRouter();
+        if (c < totalMinted) revert InvalidAmount();
+        emit TotalMintedUpdated(totalMinted, c);
+        totalMinted = c;
+    }
     function _onlyRouter() private view { if (msg.sender != router) revert NotRouter(); }
 
     // ---- Floor Pricing ----

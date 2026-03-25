@@ -15,6 +15,7 @@
     "frontend:preview": "vite preview frontend --host 0.0.0.0",
     "test": "hardhat test",
     "node": "hardhat node",
+    "deploy:hardhat": "hardhat run scripts/deploy-local.js --network hardhat",
     "deploy:local": "hardhat run scripts/deploy-local.js --network localhost"
   },
   "dependencies": {

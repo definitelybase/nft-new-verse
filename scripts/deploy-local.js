@@ -1,15 +1,21 @@
 /**
- * OnChainPixel — Local Hardhat Deploy
+ * OnChainPixel — Direct Deploy (no Factory)
  *
- * Deploys NFT + Pool + Router directly (no Factory) for local dev and frontend testing.
- * Outputs addresses ready to paste into frontend/src/appConfig.js.
+ * Deploys NFT + Pool + Router directly. 5x cheaper than Factory pattern.
+ * Works on localhost, Sepolia, or any network configured in hardhat.config.js.
  *
  * Usage:
- *   1. npm run node          (in another terminal)
- *   2. npx hardhat run scripts/deploy-local.js --network localhost
+ *   Local:   npm run node && npm run deploy:local
+ *   Sepolia: npx hardhat run scripts/deploy-local.js --network sepolia
+ *
+ * Gas cost comparison:
+ *   Factory flow:  ~37M gas (5 txs: deploy + 3 uploads + createCollection)
+ *   Direct deploy: ~7.8M gas (3 txs: NFT + Pool + Router + wiring)
  */
 
 const { ethers } = require("hardhat");
+const fs = require("fs");
+const path = require("path");
 
 const PALETTE_16 = Buffer.from([
   0x00,0x00,0x00, 0xFF,0x00,0x00, 0x00,0xFF,0x00, 0x00,0x00,0xFF,
@@ -21,56 +27,102 @@ const PALETTE_16 = Buffer.from([
 async function main() {
   const [deployer, creator] = await ethers.getSigners();
   const mintPrice = ethers.utils.parseEther("0.001");
+  const network = await ethers.provider.getNetwork();
+  const networkLabel = network.name === "unknown" && network.chainId === 31337 ? "hardhat" : network.name;
+  const isLocal = network.chainId === 31337;
+  const creatorAddress = process.env.CREATOR_ADDRESS || creator.address;
+  const localSeedEth = process.env.LOCAL_POOL_SEED_ETH || "1";
 
-  console.log(`\nDeployer: ${deployer.address}`);
-  console.log(`Creator:  ${creator.address}\n`);
+  if (!ethers.utils.isAddress(creatorAddress) || creatorAddress === ethers.constants.AddressZero) {
+    throw new Error("CREATOR_ADDRESS must be a non-zero address");
+  }
+
+  console.log(`\nNetwork: ${networkLabel} (chainId ${network.chainId})`);
+  console.log(`Deployer: ${deployer.address}`);
+  console.log(`Creator:  ${creatorAddress}`);
+  console.log(`Balance:  ${ethers.utils.formatEther(await deployer.getBalance())} ETH\n`);
+
+  let totalGas = ethers.BigNumber.from(0);
 
   // 1. Deploy NFT
   const NFT = await ethers.getContractFactory("OnChainPixelNFT");
   const nft = await NFT.deploy(
     "OnChainPixels", "OCPX",
-    4,    // bitDepth
-    32,   // width
-    32,   // height
-    10000, // maxSupply
-    mintPrice,
-    PALETTE_16
+    4, 32, 32, 10000,
+    mintPrice, PALETTE_16
   );
-  await nft.deployed();
-  console.log(`NFT:    ${nft.address}`);
+  let r = await nft.deployTransaction.wait();
+  totalGas = totalGas.add(r.gasUsed);
+  console.log(`NFT:    ${nft.address} (${r.gasUsed.toLocaleString()} gas)`);
 
   // 2. Deploy Pool
   const Pool = await ethers.getContractFactory("PixelPool");
   const pool = await Pool.deploy(nft.address, mintPrice);
-  await pool.deployed();
-  console.log(`Pool:   ${pool.address}`);
+  r = await pool.deployTransaction.wait();
+  totalGas = totalGas.add(r.gasUsed);
+  console.log(`Pool:   ${pool.address} (${r.gasUsed.toLocaleString()} gas)`);
 
   // 3. Deploy Router
   const Router = await ethers.getContractFactory("PixelRouter");
   const router = await Router.deploy(
-    nft.address,
-    pool.address,
-    creator.address,
-    mintPrice,
-    6000,  // poolSeedBps (60%)
-    1000   // treasuryBps (10%)
+    nft.address, pool.address, creatorAddress,
+    mintPrice, 6000, 1000
   );
-  await router.deployed();
-  console.log(`Router: ${router.address}`);
+  r = await router.deployTransaction.wait();
+  totalGas = totalGas.add(r.gasUsed);
+  console.log(`Router: ${router.address} (${r.gasUsed.toLocaleString()} gas)`);
 
   // 4. Wire permissions
-  await (await nft.setMinter(router.address, true)).wait();
-  await (await nft.setBurner(pool.address, true)).wait();
-  await (await pool.setRouter(router.address)).wait();
+  let tx;
+  tx = await nft.setMinter(router.address, true); await tx.wait();
+  tx = await nft.setBurner(pool.address, true); await tx.wait();
+  tx = await pool.setRouter(router.address); await tx.wait();
   console.log("\nPermissions wired: router=minter, pool=burner, pool.router=router");
 
-  // 5. Seed initial liquidity so the pool is functional
-  await (await pool.setRouter(deployer.address)).wait();
-  await (await pool.seedLiquidity({ value: ethers.utils.parseEther("1") })).wait();
-  await (await pool.setRouter(router.address)).wait();
-  console.log("Seeded 1 ETH into pool reserve");
+  const routerIsMinter = await nft.isMinter(router.address);
+  const poolIsBurner = await nft.isBurner(pool.address);
+  const poolRouter = await pool.router();
+  if (!routerIsMinter || !poolIsBurner || poolRouter !== router.address) {
+    throw new Error("Post-deploy wiring verification failed");
+  }
 
-  // 6. Output appConfig
+  // 5. Seed initial liquidity (local only — on testnet, seed manually)
+  if (isLocal) {
+    const localSeedAmount = ethers.utils.parseEther(localSeedEth);
+    tx = await pool.setRouter(deployer.address); await tx.wait();
+    tx = await pool.seedLiquidity({ value: localSeedAmount }); await tx.wait();
+    tx = await pool.setRouter(router.address); await tx.wait();
+    console.log(`Seeded ${localSeedEth} ETH into pool reserve (local only)`);
+  }
+
+  // 6. Save deployment info
+  const rpcUrl = isLocal ? "http://127.0.0.1:8545" : "";
+  const deployInfo = {
+    network: networkLabel,
+    chainId: network.chainId,
+    nft: nft.address,
+    pool: pool.address,
+    router: router.address,
+    deployer: deployer.address,
+    creator: creatorAddress,
+    totalGas: totalGas.toString(),
+    appConfig: {
+      poolAddress: pool.address,
+      routerAddress: router.address,
+      nftAddress: nft.address,
+      rpcUrl: isLocal ? "http://127.0.0.1:8545" : "",
+      ethUsd: "2000",
+    },
+    timestamp: new Date().toISOString(),
+  };
+
+  const filename = `deployment-${network.chainId}.json`;
+  fs.writeFileSync(filename, JSON.stringify(deployInfo, null, 2));
+
+  console.log(`\nTotal deploy gas: ${totalGas.toLocaleString()}`);
+  console.log(`Saved to ${path.resolve(filename)}`);
+
+  // 7. Output appConfig
   console.log(`
 --- Paste into frontend/src/appConfig.js ---
 
@@ -78,7 +130,7 @@ export const APP_CONFIG = Object.freeze({
   poolAddress: "${pool.address}",
   routerAddress: "${router.address}",
   nftAddress: "${nft.address}",
-  rpcUrl: "http://127.0.0.1:8545",
+  rpcUrl: "${rpcUrl}",
   ethUsd: "2000",
 });
 `);

@@ -17,6 +17,7 @@ import "./libraries/SVGRenderer.sol";
 contract OnChainPixelNFT is ERC721, Ownable, IOnChainPixel {
     using Strings for uint256;
 
+    error InvalidAmount();
     error InvalidCanvasSize();
     error InvalidPixelData();
     error InvalidBitDepth();
@@ -64,6 +65,7 @@ contract OnChainPixelNFT is ERC721, Ownable, IOnChainPixel {
         uint256 mintPrice_,
         bytes memory paletteRGB
     ) ERC721(name_, symbol_) Ownable() {
+        if (mintPrice_ == 0) revert InvalidAmount();
         if (bitDepth_ != 2 && bitDepth_ != 4 && bitDepth_ != 8) {
             revert InvalidBitDepth();
         }
@@ -247,6 +249,7 @@ contract OnChainPixelNFT is ERC721, Ownable, IOnChainPixel {
     }
 
     function setMintPrice(uint256 newPrice) external onlyOwner {
+        if (newPrice == 0) revert InvalidAmount();
         mintPrice = newPrice;
     }
 

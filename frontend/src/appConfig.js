@@ -3,12 +3,16 @@
 // rpcUrl is used as a fallback when no wallet is connected.
 //
 // For local Hardhat testing:
-//   1. npm run node
-//   2. node scripts/deploy.js
+//   1. npm run node                       (terminal 1)
+//   2. npm run deploy:local               (terminal 2 — outputs ready-to-paste block)
 //   3. Paste the addresses below
+//   4. npm run frontend:dev               (terminal 2)
 //
-// For testnet / mainnet:
-//   Use the addresses from your deployment output and a public RPC.
+// For Sepolia testnet:
+//   1. npm run build
+//   2. PRIVATE_KEY=0x... RPC_URL=https://sepolia... node scripts/deploy.js sepolia
+//   3. Paste addresses from deployment-sepolia.json below
+//   4. Set rpcUrl to a public Sepolia RPC (e.g. Alchemy/Infura)
 
 export const APP_CONFIG = Object.freeze({
   poolAddress: "",

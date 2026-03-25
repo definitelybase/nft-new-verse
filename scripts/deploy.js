@@ -17,11 +17,36 @@ const { ethers } = require("ethers");
 const fs = require("fs");
 const path = require("path");
 
+const NETWORKS = {
+  sepolia: {
+    chainId: 11155111,
+    rpcEnv: ["SEPOLIA_RPC_URL", "RPC_URL"],
+    explorer: "https://sepolia.etherscan.io",
+  },
+  mainnet: {
+    chainId: 1,
+    rpcEnv: ["MAINNET_RPC_URL", "RPC_URL"],
+    explorer: "https://etherscan.io",
+  },
+};
+
+function firstEnv(names) {
+  for (const name of names) {
+    if (process.env[name]) return process.env[name];
+  }
+  return "";
+}
+
 // Load all artifacts
 function loadArtifact(name) {
+  const abiPath = path.join(__dirname, `../build/${name}.abi`);
+  const binPath = path.join(__dirname, `../build/${name}.bin`);
+  if (!fs.existsSync(abiPath) || !fs.existsSync(binPath)) {
+    throw new Error(`Missing build artifacts for ${name}. Run "npm run build" first.`);
+  }
   return {
-    abi: JSON.parse(fs.readFileSync(path.join(__dirname, `../build/${name}.abi`), "utf8")),
-    bin: "0x" + fs.readFileSync(path.join(__dirname, `../build/${name}.bin`), "utf8").trim(),
+    abi: JSON.parse(fs.readFileSync(abiPath, "utf8")),
+    bin: "0x" + fs.readFileSync(binPath, "utf8").trim(),
   };
 }
 
@@ -56,15 +81,32 @@ const COLLECTION = {
 
 async function main() {
   const network = process.argv[2] || "sepolia";
-  const pk = process.env.PRIVATE_KEY;
-  const rpc = process.env.RPC_URL;
+  const networkConfig = NETWORKS[network];
+  if (!networkConfig) {
+    throw new Error(`Unsupported network "${network}". Use one of: ${Object.keys(NETWORKS).join(", ")}`);
+  }
+
+  const pk = firstEnv(["DEPLOYER_KEY", "PRIVATE_KEY"]);
+  const rpc = firstEnv(networkConfig.rpcEnv);
 
   if (!pk || !rpc) {
-    console.error("Usage: PRIVATE_KEY=0x... RPC_URL=https://... node deploy.js [sepolia|mainnet]");
-    process.exit(1);
+    throw new Error(
+      `Missing deploy env. Set DEPLOYER_KEY (or PRIVATE_KEY) and one of: ${networkConfig.rpcEnv.join(", ")}`
+    );
+  }
+
+  if (network === "mainnet" && process.env.CONFIRM_MAINNET !== "YES") {
+    throw new Error('Mainnet deploy blocked. Re-run with CONFIRM_MAINNET=YES once you really want it.');
   }
 
   const provider = new ethers.providers.JsonRpcProvider(rpc);
+  const providerNetwork = await provider.getNetwork();
+  if (providerNetwork.chainId !== networkConfig.chainId) {
+    throw new Error(
+      `RPC/network mismatch: requested ${network} but RPC returned chainId ${providerNetwork.chainId}`
+    );
+  }
+
   const wallet = new ethers.Wallet(pk, provider);
   const balance = await wallet.getBalance();
   const gasPrice = await provider.getGasPrice();
@@ -123,6 +165,9 @@ async function main() {
   const nftAddr = event?.args?.nft;
   const poolAddr = event?.args?.pool;
   const routerAddr = event?.args?.router;
+  if (!nftAddr || !poolAddr || !routerAddr) {
+    throw new Error("CollectionCreated event missing expected addresses");
+  }
 
   console.log(`   ✅ Collection created! (${receipt.gasUsed.toLocaleString()} gas)`);
   console.log(`   📍 NFT:    ${nftAddr}`);
@@ -139,10 +184,12 @@ async function main() {
   const [w, h] = await nftContract.defaultCanvasSize();
   const ps = await nftContract.paletteSize();
   const isMinter = await nftContract.isMinter(routerAddr);
+  const isBurner = await nftContract.isBurner(poolAddr);
   const poolRouter = await poolContract.router();
 
   console.log(`   NFT: bitDepth=${bd}, canvas=${w}x${h}, palette=${ps} colors`);
   console.log(`   Router is minter: ${isMinter}`);
+  console.log(`   Pool is burner: ${isBurner}`);
   console.log(`   Pool router set: ${poolRouter === routerAddr}`);
   console.log(`   Owner of NFT: ${await nftContract.owner()}`);
   console.log(`   Owner of Pool: ${await poolContract.owner()}`);
@@ -151,6 +198,7 @@ async function main() {
   // ---- Save deployment info ----
   const deployInfo = {
     network,
+    chainId: providerNetwork.chainId,
     factory: factory.address,
     collection: {
       nft: nftAddr,
@@ -169,19 +217,32 @@ async function main() {
       poolSeedBps,
       treasuryBps,
     },
+    appConfig: {
+      poolAddress: poolAddr,
+      routerAddress: routerAddr,
+      nftAddress: nftAddr,
+      rpcUrl: rpc,
+      ethUsd: "2000",
+    },
     timestamp: new Date().toISOString(),
   };
 
   fs.writeFileSync(`deployment-${network}.json`, JSON.stringify(deployInfo, null, 2));
-  
-  const explorer = network === "mainnet" ? "https://etherscan.io" : "https://sepolia.etherscan.io";
 
   console.log(`\n💾 Saved to deployment-${network}.json`);
+  console.log(`\n--- Paste into frontend/src/appConfig.js ---\n`);
+  console.log(`export const APP_CONFIG = Object.freeze({
+  poolAddress: "${poolAddr}",
+  routerAddress: "${routerAddr}",
+  nftAddress: "${nftAddr}",
+  rpcUrl: "${rpc}",
+  ethUsd: "2000",
+});`);
   console.log(`\n🔗 Links:`);
-  console.log(`   Factory: ${explorer}/address/${factory.address}`);
-  console.log(`   NFT:     ${explorer}/address/${nftAddr}`);
-  console.log(`   Pool:    ${explorer}/address/${poolAddr}`);
-  console.log(`   Router:  ${explorer}/address/${routerAddr}`);
+  console.log(`   Factory: ${networkConfig.explorer}/address/${factory.address}`);
+  console.log(`   NFT:     ${networkConfig.explorer}/address/${nftAddr}`);
+  console.log(`   Pool:    ${networkConfig.explorer}/address/${poolAddr}`);
+  console.log(`   Router:  ${networkConfig.explorer}/address/${routerAddr}`);
   console.log(`\n✅ DONE! Collection is live. Mint via Router at ${routerAddr}`);
 }
 

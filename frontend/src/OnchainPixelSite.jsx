@@ -392,7 +392,15 @@ function FloatingNav({ page, setPage, wallet, onConnectWallet }) {
             letterSpacing: 0.55,
           }}
         >
-          {wallet?.account ? shortAddress(wallet.account) : "Connect Wallet"}
+          {wallet?.account ? (
+            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{
+                width: 7, height: 7, borderRadius: "50%",
+                background: SUPPORTED_CHAINS.includes(wallet.chainId) ? COLORS.green : COLORS.yellow,
+              }} />
+              {shortAddress(wallet.account)}
+            </span>
+          ) : "Connect Wallet"}
         </button>
       </FrostCard>
     </header>
@@ -748,11 +756,23 @@ function HomePage({ setPage, pool, isLive, poolError }) {
   );
 }
 
-function TxStatusBar({ txStatus, txHash }) {
+function explorerTxUrl(txHash, chainId) {
+  const explorers = {
+    "1": "https://etherscan.io",
+    "11155111": "https://sepolia.etherscan.io",
+    "8453": "https://basescan.org",
+    "84532": "https://sepolia.basescan.org",
+  };
+  const base = explorers[chainId];
+  return base ? `${base}/tx/${txHash}` : null;
+}
+
+function TxStatusBar({ txStatus, txHash, chainId }) {
   if (!txStatus && !txHash) return null;
   const isSuccess = txStatus?.includes("confirmed");
   const isError = txStatus?.includes("failed") || txStatus?.includes("Failed") || txStatus?.includes("revert");
   const color = isSuccess ? COLORS.green : isError ? COLORS.red : COLORS.text;
+  const url = txHash ? explorerTxUrl(txHash, chainId) : null;
 
   return (
     <div style={{ marginTop: 12 }}>
@@ -763,7 +783,13 @@ function TxStatusBar({ txStatus, txHash }) {
       ) : null}
       {txHash ? (
         <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7, wordBreak: "break-all" }}>
-          Tx: {txHash}
+          {url ? (
+            <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: COLORS.accent, textDecoration: "underline" }}>
+              View on explorer
+            </a>
+          ) : (
+            <>Tx: {txHash.slice(0, 10)}...{txHash.slice(-8)}</>
+          )}
         </div>
       ) : null}
     </div>
@@ -793,12 +819,50 @@ function ConnectPrompt({ wallet, onConnectWallet }) {
   );
 }
 
+const SUPPORTED_CHAINS = ["1", "11155111", "84532", "31337"];
+const CHAIN_LABELS = { "1": "Ethereum", "11155111": "Sepolia", "84532": "Base Sepolia", "31337": "Hardhat" };
+
 function checkChain(wallet) {
-  const expected = ["1", "11155111", "84532", "31337"];
-  if (wallet?.chainId && !expected.includes(wallet.chainId)) {
+  if (wallet?.chainId && !SUPPORTED_CHAINS.includes(wallet.chainId)) {
     return `Wrong network (chainId ${wallet.chainId}). Switch to Ethereum, Sepolia, or Base Sepolia.`;
   }
   return null;
+}
+
+async function switchToChain(targetChainId) {
+  if (!window.ethereum) return;
+  try {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0x" + Number(targetChainId).toString(16) }],
+    });
+  } catch {
+    // Chain not added or user rejected — ignore
+  }
+}
+
+function WrongChainBanner({ wallet }) {
+  const chainErr = checkChain(wallet);
+  if (!chainErr || !wallet?.account) return null;
+  return (
+    <div style={{
+      padding: "10px 16px", borderRadius: 14, marginBottom: 12,
+      background: COLORS.yellowSoft, border: `1px solid ${COLORS.yellow}`,
+      display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+    }}>
+      <span style={{ color: COLORS.yellow, fontFamily: fonts, fontSize: 11 }}>{chainErr}</span>
+      <button
+        onClick={() => switchToChain("11155111")}
+        style={{
+          padding: "6px 12px", borderRadius: 999, border: `1px solid ${COLORS.yellow}`,
+          cursor: "pointer", background: "transparent", color: COLORS.yellow,
+          fontFamily: fonts, fontSize: 10, fontWeight: 700, whiteSpace: "nowrap",
+        }}
+      >
+        Switch to Sepolia
+      </button>
+    </div>
+  );
 }
 
 function MintPage({ wallet, onConnectWallet, appConfig, pool, isLive, poolError }) {
@@ -927,20 +991,22 @@ function MintPage({ wallet, onConnectWallet, appConfig, pool, isLive, poolError 
         <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
           <button
             onClick={handleMint}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !payloadValid}
             style={{
               width: "100%", padding: "14px 0", borderRadius: 999,
-              border: `1px solid ${COLORS.borderStrong}`,
-              cursor: isSubmitting ? "progress" : "pointer",
-              background: COLORS.surfaceStrong, color: COLORS.text,
+              border: `1px solid ${payloadValid ? COLORS.borderStrong : COLORS.border}`,
+              cursor: isSubmitting ? "progress" : payloadValid ? "pointer" : "not-allowed",
+              background: payloadValid ? COLORS.surfaceStrong : COLORS.surface,
+              color: payloadValid ? COLORS.text : COLORS.textDim,
               fontFamily: fonts, fontSize: 12, fontWeight: 700,
               opacity: isSubmitting ? 0.7 : 1,
             }}
           >
-            {isSubmitting ? "Minting..." : `Mint for ${mintPriceLabel}`}
+            {isSubmitting ? "Minting..." : payloadValid ? `Mint for ${mintPriceLabel}` : "Draw pixel art first"}
           </button>
+          <WrongChainBanner wallet={wallet} />
           <ConnectPrompt wallet={wallet} onConnectWallet={onConnectWallet} />
-          <TxStatusBar txStatus={txStatus} txHash={txHash} />
+          <TxStatusBar txStatus={txStatus} txHash={txHash} chainId={wallet?.chainId} />
         </div>
       </FrostCard>
     </div>
@@ -1120,8 +1186,9 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
               >
                 {isSubmitting ? "Buying..." : pool.canBuy ? `Buy for ~${fmtEth(pool.buyPrice)}` : "Buy disabled"}
               </button>
-              <ConnectPrompt wallet={wallet} onConnectWallet={onConnectWallet} />
-              <TxStatusBar txStatus={txStatus} txHash={txHash} />
+              <WrongChainBanner wallet={wallet} />
+          <ConnectPrompt wallet={wallet} onConnectWallet={onConnectWallet} />
+              <TxStatusBar txStatus={txStatus} txHash={txHash} chainId={wallet?.chainId} />
             </div>
           </div>
         ) : (
@@ -1185,8 +1252,9 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
               >
                 {isSubmitting ? "Selling..." : pool.canSell ? `Sell for ~${fmtEth(pool.sellPrice)}` : "Sell disabled"}
               </button>
-              <ConnectPrompt wallet={wallet} onConnectWallet={onConnectWallet} />
-              <TxStatusBar txStatus={txStatus} txHash={txHash} />
+              <WrongChainBanner wallet={wallet} />
+          <ConnectPrompt wallet={wallet} onConnectWallet={onConnectWallet} />
+              <TxStatusBar txStatus={txStatus} txHash={txHash} chainId={wallet?.chainId} />
             </div>
           </div>
         )}
@@ -1483,7 +1551,7 @@ function StakingPage({ pool, isLive, wallet, onConnectWallet, appConfig, poolErr
       {/* Status */}
       <div style={{ marginTop: 14 }}>
         <ConnectPrompt wallet={wallet} onConnectWallet={onConnectWallet} />
-        <TxStatusBar txStatus={txStatus} txHash={txHash} />
+        <TxStatusBar txStatus={txStatus} txHash={txHash} chainId={wallet?.chainId} />
         <div style={{ marginTop: 8 }}>
           <DataBadge isLive={isLive} error={poolError} />
         </div>

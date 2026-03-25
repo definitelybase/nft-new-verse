@@ -94,4 +94,35 @@ describe("PixelFactory creation guards", function () {
       "InvalidBps"
     );
   });
+
+  it("reverts with DeployFailed when uploaded bytecode does not match the expected constructor", async function () {
+    const [owner, creator] = await ethers.getSigners();
+    const mintPrice = ethers.utils.parseEther("0.01");
+    const Factory = await ethers.getContractFactory("PixelFactory");
+    const NFT = await ethers.getContractFactory("OnChainPixelNFT");
+    const Pool = await ethers.getContractFactory("PixelPool");
+
+    const factory = await Factory.connect(owner).deploy();
+    await factory.deployed();
+
+    await (await factory.connect(owner).setNFTCode(NFT.bytecode)).wait();
+    await (await factory.connect(owner).setPoolCode(Pool.bytecode)).wait();
+    await (await factory.connect(owner).setRouterCode(NFT.bytecode)).wait();
+
+    await expectCustomError(
+      factory.connect(creator).createCollection(
+        "FactoryPixels",
+        "FPXL",
+        4,
+        1,
+        1,
+        1000,
+        mintPrice,
+        6000,
+        1000,
+        palette16()
+      ),
+      "DeployFailed"
+    );
+  });
 });

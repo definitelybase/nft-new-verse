@@ -191,6 +191,7 @@ describe("Router sell edge cases", function () {
     // even when the view getSellPrice() returns 0
     let totalPaid = ethers.BigNumber.from(0);
     let sold = 0;
+    let terminalRevert = null;
     for (let i = 0; i < 3; i++) {
       await (await nft.connect(user).approve(router.address, i)).wait();
       const balBefore = await ethers.provider.getBalance(user.address);
@@ -202,13 +203,20 @@ describe("Router sell edge cases", function () {
         totalPaid = totalPaid.add(balAfter.add(gasUsed).sub(balBefore));
         sold++;
       } catch (err) {
-        const msg = err.message || "";
-        if (/PoolSellDisabled|PoolEmpty|SlippageExceeded/.test(msg)) break;
-        throw err; // unexpected revert — let it fail the test
+        terminalRevert = err;
+        break;
       }
     }
 
     const poolEthEnd = await pool.ethBalance();
+    if (terminalRevert) {
+      const msg = terminalRevert.message || "";
+      assert.match(
+        msg,
+        /PoolSellDisabled|PoolEmpty/,
+        `unexpected terminal revert: ${msg}`
+      );
+    }
     // Pool ETH should decrease by total payouts (fees stay in pool via _distFee)
     assert.ok(sold > 0, "At least one sell should have succeeded");
     assert.ok(poolEthStart.gt(poolEthEnd), "Pool ETH should decrease after sells");

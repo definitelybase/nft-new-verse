@@ -77,6 +77,32 @@ Build the frontend shell:
 npm run frontend:build
 ```
 
+Run a quick in-process local deploy:
+
+```bash
+npm run deploy:hardhat
+```
+
+Run a deploy against a local node:
+
+```bash
+npm run node
+npm run deploy:local
+```
+
+Run a direct deploy on Sepolia through Hardhat config:
+
+```bash
+SEPOLIA_RPC_URL=https://... DEPLOYER_KEY=0x... npx hardhat run scripts/deploy-local.js --network sepolia
+```
+
+Run the full factory deploy script:
+
+```bash
+npm run build
+SEPOLIA_RPC_URL=https://... DEPLOYER_KEY=0x... node scripts/deploy.js sepolia
+```
+
 ## Current Test Coverage
 
 The live Hardhat tests cover:
@@ -90,6 +116,7 @@ The live Hardhat tests cover:
 - market-state stress and solvency checks
 - staking fee accounting and edge cases
 - protocol-fee/admin-path invariants
+- deploy/config guards and constructor validation
 - factory and NFT admin access / withdraw paths
 - factory end-to-end collection deployment
 
@@ -107,6 +134,17 @@ The live Hardhat tests cover:
 - [build/PixelFactory.bin](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelFactory.bin)
 
 These artifacts are consumed by [scripts/deploy.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/deploy.js).
+
+## Deployment Paths
+
+There are now two supported deployment paths:
+
+- [scripts/deploy-local.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/deploy-local.js)
+  Direct deploy of `NFT + Pool + Router`. This is the cheap, practical path for local use and testnets.
+- [scripts/deploy.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/deploy.js)
+  Full factory-based deployment path. Useful when you want to validate the `Factory` flow itself.
+
+Both scripts now print a ready-to-paste `APP_CONFIG` block for the frontend and write a deployment JSON file.
 
 ## Notes
 
