@@ -17,7 +17,6 @@ interface ISetup {
 ///      createCollection() deploys NFT + Pool + Router via CREATE2,
 ///      wires permissions, and transfers ownership to the creator.
 contract PixelFactory is Ownable {
-    error NotInitialized();
     error InsufficientFee();
     error InvalidBps();
     error MissingBytecode();
@@ -26,17 +25,19 @@ contract PixelFactory is Ownable {
         address indexed creator,
         address nft,
         address pool,
-        address router,
-        string name,
-        string symbol
+        address router
     );
+    event NFTCodeUpdated(uint256 length);
+    event PoolCodeUpdated(uint256 length);
+    event RouterCodeUpdated(uint256 length);
+    event FactoryFeeUpdated(uint256 previousFee, uint256 newFee);
+    event FactoryWithdrawn(address indexed to, uint256 amount);
 
     struct Collection {
-        address nft;
         address pool;
         address router;
         address creator;
-        uint256 createdAt;
+        uint64 createdAt;
     }
 
     address[] public collections;
@@ -48,7 +49,6 @@ contract PixelFactory is Ownable {
     bytes public routerCode;
     
     uint256 public factoryFee;
-    bool public initialized;
 
     constructor() Ownable() {}
 
@@ -56,11 +56,17 @@ contract PixelFactory is Ownable {
     //                   SET BYTECODES (once)
     // ============================================================
 
-    function setNFTCode(bytes calldata code) external onlyOwner { nftCode = code; }
-    function setPoolCode(bytes calldata code) external onlyOwner { poolCode = code; }
-    function setRouterCode(bytes calldata code) external onlyOwner { 
-        routerCode = code; 
-        initialized = true; 
+    function setNFTCode(bytes calldata code) external onlyOwner {
+        nftCode = code;
+        emit NFTCodeUpdated(code.length);
+    }
+    function setPoolCode(bytes calldata code) external onlyOwner {
+        poolCode = code;
+        emit PoolCodeUpdated(code.length);
+    }
+    function setRouterCode(bytes calldata code) external onlyOwner {
+        routerCode = code;
+        emit RouterCodeUpdated(code.length);
     }
 
     // ============================================================
@@ -79,7 +85,6 @@ contract PixelFactory is Ownable {
         uint256 treasuryBps_,
         bytes calldata paletteRGB
     ) external payable returns (address nftAddr, address poolAddr, address routerAddr) {
-        if (!initialized) revert NotInitialized();
         if (nftCode.length == 0 || poolCode.length == 0 || routerCode.length == 0) revert MissingBytecode();
         if (msg.value < factoryFee) revert InsufficientFee();
         if (poolSeedBps_ + treasuryBps_ > 10000) revert InvalidBps();
@@ -116,10 +121,10 @@ contract PixelFactory is Ownable {
         ISetup(routerAddr).transferOwnership(msg.sender);
 
         // 6. Store
-        collectionInfo[nftAddr] = Collection(nftAddr, poolAddr, routerAddr, msg.sender, block.timestamp);
+        collectionInfo[nftAddr] = Collection(poolAddr, routerAddr, msg.sender, uint64(block.timestamp));
         collections.push(nftAddr);
 
-        emit CollectionCreated(msg.sender, nftAddr, poolAddr, routerAddr, name_, symbol_);
+        emit CollectionCreated(msg.sender, nftAddr, poolAddr, routerAddr);
     }
 
     function _deploy(bytes memory bytecode, uint256 salt) private returns (address addr) {
@@ -137,16 +142,22 @@ contract PixelFactory is Ownable {
     function getCollection(uint256 i) external view returns (
         address nft, address pool, address router, address creator, uint256 createdAt
     ) {
-        Collection memory c = collectionInfo[collections[i]];
-        return (c.nft, c.pool, c.router, c.creator, c.createdAt);
+        nft = collections[i];
+        Collection memory c = collectionInfo[nft];
+        return (nft, c.pool, c.router, c.creator, uint256(c.createdAt));
     }
 
     // ============================================================
     //                    ADMIN
     // ============================================================
 
-    function setFactoryFee(uint256 fee) external onlyOwner { factoryFee = fee; }
+    function setFactoryFee(uint256 fee) external onlyOwner {
+        emit FactoryFeeUpdated(factoryFee, fee);
+        factoryFee = fee;
+    }
     function withdraw() external onlyOwner {
-        (bool s, ) = msg.sender.call{value: address(this).balance}(""); require(s);
+        uint256 amount = address(this).balance;
+        (bool s, ) = msg.sender.call{value: amount}(""); require(s);
+        emit FactoryWithdrawn(msg.sender, amount);
     }
 }

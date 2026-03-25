@@ -38,6 +38,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     error RelistConditionsNotMet();
     error PoolBuyDisabled();
     error PoolSellDisabled();
+    error ZeroAddress();
 
     event NFTSold(address indexed seller, uint256 indexed tokenId, uint256 price, uint256 fee);
     event NFTBought(address indexed buyer, uint256 indexed tokenId, uint256 price, uint256 fee);
@@ -49,6 +50,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     event BuybackExecuted(uint256 bought, uint256 ethSpent, uint256 burned, uint256 vaulted);
     event VaultRelisted(uint256 count);
     event VaultBurned(uint256 count);
+    event RouterUpdated(address indexed previousRouter, address indexed newRouter);
     event MarketStateUpdated(
         MarketState indexed previousState,
         MarketState indexed newState,
@@ -120,6 +122,8 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     uint256 public longWindowBuys;
     uint256 public longWindowSells;
 
+    uint256 public oldestPoolListedAt;
+
     uint256[] private _vaultNfts;
     mapping(uint256 => uint256) private _vaultIdx;
     mapping(uint256 => bool) public isInVault;
@@ -190,13 +194,8 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     }
 
     function getOldestPoolInventoryAge() public view returns (uint256 age) {
-        uint256 length = _poolNfts.length;
-        for (uint256 i = 0; i < length; i++) {
-            uint256 listedAt = poolListedAt[_poolNfts[i]];
-            if (listedAt == 0) continue;
-            uint256 currentAge = block.timestamp - listedAt;
-            if (currentAge > age) age = currentAge;
-        }
+        if (_poolNfts.length == 0 || oldestPoolListedAt == 0) return 0;
+        return block.timestamp - oldestPoolListedAt;
     }
 
     function canSellIntoPool() public view returns (bool) {
@@ -213,7 +212,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     function sell(uint256 tokenId, uint256 minPrice) external nonReentrant whenNotPaused {
         _rollWindows();
         _refreshMarketState();
-        if (!canSellIntoPool()) revert PoolBuyDisabled();
+        if (!canSellIntoPool()) revert PoolSellDisabled();
         if (nftContract.ownerOf(tokenId) != msg.sender) revert NotNFTOwner();
         uint256 price = getSellPrice();
         if (price == 0 || price < minPrice) revert SlippageExceeded();
@@ -233,7 +232,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     function buy(uint256 maxPrice) external payable nonReentrant whenNotPaused returns (uint256 tokenId) {
         _rollWindows();
         _refreshMarketState();
-        if (!canBuyFromPool()) revert PoolSellDisabled();
+        if (!canBuyFromPool()) revert PoolBuyDisabled();
         if (_poolNfts.length == 0) revert PoolEmpty();
         uint256 price = getBuyPrice(); uint256 fee = (price * TRADE_FEE_BPS) / BPS; uint256 cost = price + fee;
         if (cost > maxPrice) revert SlippageExceeded(); if (msg.value < cost) revert InsufficientPayment();
@@ -251,7 +250,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     function buySpecific(uint256 tokenId, uint256 maxPrice) external payable nonReentrant whenNotPaused {
         _rollWindows();
         _refreshMarketState();
-        if (!canBuyFromPool()) revert PoolSellDisabled();
+        if (!canBuyFromPool()) revert PoolBuyDisabled();
         if (!isInPool[tokenId]) revert NFTNotInPool();
         uint256 price = getBuyPrice(); uint256 fee = (price * TRADE_FEE_BPS) / BPS; uint256 cost = price + fee;
         if (cost > maxPrice) revert SlippageExceeded(); if (msg.value < cost) revert InsufficientPayment();
@@ -267,8 +266,8 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
 
     // ---- Staking ----
     function stake(uint256 tokenId) external nonReentrant {
-        if (nftContract.ownerOf(tokenId) != msg.sender) revert NotNFTOwner();
         if (stakedBy[tokenId] != address(0)) revert AlreadyStaked();
+        if (nftContract.ownerOf(tokenId) != msg.sender) revert NotNFTOwner();
         _settle(msg.sender);
         nftContract.transferFrom(msg.sender, address(this), tokenId);
         stakedBy[tokenId] = msg.sender;
@@ -291,6 +290,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     }
     function claimFees() external nonReentrant {
         _settle(msg.sender); uint256 p = pendingRewards[msg.sender]; if (p == 0) revert NothingToClaim();
+        rewardDebt[msg.sender] = stakedCount[msg.sender] * accFeePerStake;
         pendingRewards[msg.sender] = 0; (bool ok,) = msg.sender.call{value: p}(""); if (!ok) revert TransferFailed();
         emit FeesClaimed(msg.sender, p);
     }
@@ -352,15 +352,16 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     }
 
     function burnAgedVaultInventory(uint256 maxCount) external nonReentrant returns (uint256 burned) {
-        uint256 length = _vaultNfts.length;
-        for (uint256 i = 0; i < maxCount && length > 0; i++) {
-            uint256 tid = _vaultNfts[length - 1];
-            if (block.timestamp - vaultStoredAt[tid] < VAULT_BURN_AGE) break;
+        uint256 idx = _vaultNfts.length;
+        while (idx > 0 && burned < maxCount) {
+            uint256 currentIdx = idx - 1;
+            uint256 tid = _vaultNfts[currentIdx];
+            idx = currentIdx;
+            if (block.timestamp - vaultStoredAt[tid] < VAULT_BURN_AGE) continue;
             _rmVault(tid);
             nftContract.protocolBurn(tid);
             totalBurned += 1;
             burned += 1;
-            length = _vaultNfts.length;
         }
         if (burned == 0) revert BuybackNotActive();
         emit VaultBurned(burned);
@@ -399,7 +400,11 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     function vaultSize() external view returns (uint256) { return _vaultNfts.length; }
 
     // ---- Admin ----
-    function setRouter(address r) external onlyOwner { router = r; }
+    function setRouter(address r) external onlyOwner {
+        if (r == address(0)) revert ZeroAddress();
+        emit RouterUpdated(router, r);
+        router = r;
+    }
     function pause() external onlyOwner { _pause(); }
     function unpause() external onlyOwner { _unpause(); }
     function claimProtocolFees() external onlyOwner {
@@ -415,14 +420,18 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         protocolFees += pr; ethBalance += p; treasuryBalance += b;
         if (totalStaked > 0) accFeePerStake += (s * 1e18) / totalStaked; else ethBalance += s;
     }
-    function _settle(address u) private { if (stakedCount[u] > 0) pendingRewards[u] += ((stakedCount[u] * accFeePerStake) - rewardDebt[u]) / 1e18; }
+    function _settle(address u) private { if (stakedCount[u] > 0) { pendingRewards[u] += ((stakedCount[u] * accFeePerStake) - rewardDebt[u]) / 1e18; rewardDebt[u] = stakedCount[u] * accFeePerStake; } }
     function _addPool(uint256 id) private {
         _poolIdx[id] = _poolNfts.length;
         _poolNfts.push(id);
         isInPool[id] = true;
         poolListedAt[id] = block.timestamp;
+        if (oldestPoolListedAt == 0 || block.timestamp < oldestPoolListedAt) {
+            oldestPoolListedAt = block.timestamp;
+        }
     }
     function _rmPool(uint256 id) private {
+        bool wasOldest = poolListedAt[id] == oldestPoolListedAt;
         uint256 i = _poolIdx[id];
         uint256 l = _poolNfts.length - 1;
         if (i != l) {
@@ -434,6 +443,18 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         delete _poolIdx[id];
         delete poolListedAt[id];
         isInPool[id] = false;
+        // Only recompute oldest when we removed the oldest item
+        if (_poolNfts.length == 0) {
+            oldestPoolListedAt = 0;
+        } else if (wasOldest) {
+            uint256 oldest = type(uint256).max;
+            uint256 length = _poolNfts.length;
+            for (uint256 j = 0; j < length; j++) {
+                uint256 t = poolListedAt[_poolNfts[j]];
+                if (t > 0 && t < oldest) oldest = t;
+            }
+            oldestPoolListedAt = oldest == type(uint256).max ? 0 : oldest;
+        }
     }
     function _addVault(uint256 id) private {
         _vaultIdx[id] = _vaultNfts.length;

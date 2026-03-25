@@ -209,6 +209,42 @@ describe("PixelPool + PixelRouter economics flows", function () {
     await expectRevert(nft.ownerOf(1));
   });
 
+  it("burnAgedVaultInventory burns old vault items even when the newest vault entry is still fresh", async function () {
+    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
+
+    await mintMany(router, user, mintPrice, 3);
+    await seedReserves(
+      pool,
+      owner,
+      ethers.utils.parseEther("6"),
+      ethers.utils.parseEther("0.13")
+    );
+
+    await increaseTime(LAUNCH_PROTECTION + 1);
+    await sellMany(router, nft, user, [0, 1, 2]);
+
+    await increaseTime(INVENTORY_STALE_AGE + 1);
+    await (await pool.connect(owner).executeBuyback()).wait();
+    await (await pool.connect(owner).executeBuyback()).wait();
+
+    assert.strictEqual((await pool.vaultSize()).toString(), "2");
+
+    await increaseTime(VAULT_BURN_AGE + 1);
+    await (await pool.connect(owner).executeBuyback()).wait();
+
+    assert.strictEqual((await pool.vaultSize()).toString(), "3");
+    assert.strictEqual((await nft.totalSupply()).toString(), "3");
+
+    await (await pool.connect(owner).burnAgedVaultInventory(10)).wait();
+
+    assert.strictEqual((await pool.vaultSize()).toString(), "1");
+    assert.strictEqual((await pool.totalBurned()).toString(), "2");
+    assert.strictEqual((await nft.totalSupply()).toString(), "1");
+    await expectRevert(nft.ownerOf(2));
+    await expectRevert(nft.ownerOf(1));
+    assert.strictEqual(await nft.ownerOf(0), pool.address);
+  });
+
   it("relist restores vault inventory to pool without increasing sell pressure", async function () {
     const { owner, user, nft, pool, router, mintPrice } = await deployStack();
 

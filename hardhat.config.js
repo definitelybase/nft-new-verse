@@ -11,6 +11,12 @@ module.exports = {
       }
     }
   },
+  networks: {
+    hardhat: {
+      gas: "auto",
+      blockGasLimit: 30000000,
+    },
+  },
   paths: {
     sources: "./contracts",
     tests: "./hardhat-test",

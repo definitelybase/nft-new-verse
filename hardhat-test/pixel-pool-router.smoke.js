@@ -120,6 +120,93 @@ describe("PixelPool + PixelRouter smoke suite", function () {
     );
   });
 
+  it("rescueNFT lets owner recover an NFT stuck in the router", async function () {
+    const { owner, user, nft, router, mintPrice } = await deployStack();
+
+    // Mint an NFT to user, then transfer it into the router (simulating a stuck state)
+    await (await router.connect(user)["mint(bytes)"](onePixel(), { value: mintPrice })).wait();
+    assert.strictEqual(await nft.ownerOf(0), user.address);
+
+    await (await nft.connect(user).transferFrom(user.address, router.address, 0)).wait();
+    assert.strictEqual(await nft.ownerOf(0), router.address);
+
+    // Non-owner cannot rescue
+    await expectCustomError(
+      router.connect(user).rescueNFT(0, user.address),
+      "Ownable: caller is not the owner"
+    );
+
+    // Owner rescues NFT back to user
+    await (await router.connect(owner).rescueNFT(0, user.address)).wait();
+    assert.strictEqual(await nft.ownerOf(0), user.address);
+  });
+
+  it("rescueETH lets owner recover ETH stuck in the router", async function () {
+    const { owner, user, router } = await deployStack();
+
+    // Send ETH directly to router (simulating stuck funds)
+    await (await user.sendTransaction({ to: router.address, value: ethers.utils.parseEther("0.5") })).wait();
+    const routerBal = await ethers.provider.getBalance(router.address);
+    assert.ok(routerBal.gt(0));
+
+    // Non-owner cannot rescue
+    await expectCustomError(
+      router.connect(user).rescueETH(user.address),
+      "Ownable: caller is not the owner"
+    );
+
+    // Owner rescues ETH
+    const balBefore = await ethers.provider.getBalance(user.address);
+    await (await router.connect(owner).rescueETH(user.address)).wait();
+    const balAfter = await ethers.provider.getBalance(user.address);
+
+    assert.ok(balAfter.gt(balBefore));
+    assert.strictEqual((await ethers.provider.getBalance(router.address)).toString(), "0");
+
+    // Reverts when no ETH to rescue
+    await expectCustomError(
+      router.connect(owner).rescueETH(user.address),
+      "TransferFailed"
+    );
+  });
+
+  it("rejects zero-address admin and rescue targets", async function () {
+    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
+
+    await expectCustomError(
+      router.connect(owner).setCreator(ethers.constants.AddressZero),
+      "ZeroAddress"
+    );
+
+    await expectCustomError(
+      pool.connect(owner).setRouter(ethers.constants.AddressZero),
+      "ZeroAddress"
+    );
+
+    await expectCustomError(
+      nft.connect(owner).setMinter(ethers.constants.AddressZero, true),
+      "ZeroAddress"
+    );
+
+    await expectCustomError(
+      nft.connect(owner).setBurner(ethers.constants.AddressZero, true),
+      "ZeroAddress"
+    );
+
+    await expectCustomError(
+      router.connect(owner).rescueETH(ethers.constants.AddressZero),
+      "ZeroAddress"
+    );
+
+    await (await router.connect(user)["mint(bytes)"](onePixel(), { value: mintPrice })).wait();
+    await (await nft.connect(user).transferFrom(user.address, router.address, 0)).wait();
+
+    await expectCustomError(
+      router.connect(owner).rescueNFT(0, ethers.constants.AddressZero),
+      "ZeroAddress"
+    );
+  });
+
   it("supports sell into pool and later buySpecific after market windows reset", async function () {
     const { owner, user, buyer, nft, pool, router, mintPrice } = await deployStack();
 
@@ -147,5 +234,29 @@ describe("PixelPool + PixelRouter smoke suite", function () {
     assert.strictEqual(await nft.ownerOf(0), buyer.address);
     assert.strictEqual((await pool.availableNFTs()).toString(), "0");
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "0");
+  });
+
+  it("refunds router buy overpayment back to the buyer instead of trapping ETH in the router", async function () {
+    const { owner, user, buyer, nft, pool, router, mintPrice } = await deployStack();
+
+    await (await router.connect(user)["mint(bytes)"](onePixel(2), { value: mintPrice })).wait();
+    await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("5"));
+
+    await increaseTime(LAUNCH_PROTECTION + 1);
+
+    await (await nft.connect(user).approve(router.address, 0)).wait();
+    await (await router.connect(user).sellNFT(0, 0)).wait();
+
+    await increaseTime(LONG_WINDOW + 1);
+
+    const floor = await pool.getFloorPrice();
+    const ask = addBps(floor, STABILIZATION_SPREAD_BPS);
+    const cost = addBps(ask, TRADE_FEE_BPS);
+    const overpay = addBps(cost, 100);
+
+    await (await router.connect(buyer).buySpecificNFT(0, overpay, { value: overpay })).wait();
+
+    assert.strictEqual(await nft.ownerOf(0), buyer.address);
+    assert.strictEqual((await ethers.provider.getBalance(router.address)).toString(), "0");
   });
 });

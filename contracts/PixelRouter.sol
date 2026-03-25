@@ -51,6 +51,7 @@ contract PixelRouter is Ownable, ReentrancyGuard {
     error TransferFailed();
     error MintFailed();
     error InvalidBps();
+    error ZeroAddress();
 
     // ============================================================
     //                        EVENTS
@@ -58,6 +59,12 @@ contract PixelRouter is Ownable, ReentrancyGuard {
 
     event Minted(address indexed minter, uint256 indexed tokenId, uint256 mintPrice, uint256 poolSeed);
     event Swapped(address indexed user, bool isBuy, uint256 indexed tokenId, uint256 price);
+    event MintPriceUpdated(uint256 previousPrice, uint256 newPrice);
+    event CreatorUpdated(address indexed previousCreator, address indexed newCreator);
+    event PoolSeedBpsUpdated(uint256 previousBps, uint256 newBps);
+    event TreasuryBpsUpdated(uint256 previousBps, uint256 newBps);
+    event NFTRescued(uint256 indexed tokenId, address indexed to);
+    event ETHRescued(address indexed to, uint256 amount);
 
     // ============================================================
     //                       STORAGE
@@ -197,19 +204,34 @@ contract PixelRouter is Ownable, ReentrancyGuard {
     /// @notice Buy an NFT from the pool when inventory sales are currently enabled
     /// @param maxPrice Maximum acceptable price (slippage protection)
     function buyNFT(uint256 maxPrice) external payable nonReentrant returns (uint256 tokenId) {
+        uint256 balanceBefore = address(this).balance - msg.value;
         tokenId = pool.buy{value: msg.value}(maxPrice);
+        uint256 refund = address(this).balance - balanceBefore;
 
         // Transfer NFT from pool (which sent it to router) to buyer
         nftContract.transferFrom(address(this), msg.sender, tokenId);
 
-        emit Swapped(msg.sender, true, tokenId, msg.value);
+        if (refund > 0) {
+            (bool success, ) = msg.sender.call{value: refund}("");
+            if (!success) revert TransferFailed();
+        }
+
+        emit Swapped(msg.sender, true, tokenId, msg.value - refund);
     }
 
     /// @notice Buy a specific NFT from the pool inventory
     function buySpecificNFT(uint256 tokenId, uint256 maxPrice) external payable nonReentrant {
+        uint256 balanceBefore = address(this).balance - msg.value;
         pool.buySpecific{value: msg.value}(tokenId, maxPrice);
+        uint256 refund = address(this).balance - balanceBefore;
         nftContract.transferFrom(address(this), msg.sender, tokenId);
-        emit Swapped(msg.sender, true, tokenId, msg.value);
+
+        if (refund > 0) {
+            (bool success, ) = msg.sender.call{value: refund}("");
+            if (!success) revert TransferFailed();
+        }
+
+        emit Swapped(msg.sender, true, tokenId, msg.value - refund);
     }
 
     // ============================================================
@@ -249,24 +271,46 @@ contract PixelRouter is Ownable, ReentrancyGuard {
 
     /// @notice Update mint price
     function setMintPrice(uint256 newPrice) external onlyOwner {
+        emit MintPriceUpdated(mintPrice, newPrice);
         mintPrice = newPrice;
     }
 
     /// @notice Update creator address
     function setCreator(address newCreator) external onlyOwner {
+        if (newCreator == address(0)) revert ZeroAddress();
+        emit CreatorUpdated(creator, newCreator);
         creator = newCreator;
     }
 
     /// @notice Update pool seed percentage
     function setPoolSeedBps(uint256 newBps) external onlyOwner {
         if (newBps + treasuryBps > 10000) revert InvalidBps();
+        emit PoolSeedBpsUpdated(poolSeedBps, newBps);
         poolSeedBps = newBps;
     }
 
     /// @notice Update treasury seed percentage
     function setTreasuryBps(uint256 newBps) external onlyOwner {
         if (poolSeedBps + newBps > 10000) revert InvalidBps();
+        emit TreasuryBpsUpdated(treasuryBps, newBps);
         treasuryBps = newBps;
+    }
+
+    /// @notice Rescue an NFT stuck in the router (e.g. from a failed sell flow)
+    function rescueNFT(uint256 tokenId, address to) external onlyOwner {
+        if (to == address(0)) revert ZeroAddress();
+        nftContract.transferFrom(address(this), to, tokenId);
+        emit NFTRescued(tokenId, to);
+    }
+
+    /// @notice Rescue ETH stuck in the router
+    function rescueETH(address to) external onlyOwner {
+        if (to == address(0)) revert ZeroAddress();
+        uint256 bal = address(this).balance;
+        if (bal == 0) revert TransferFailed();
+        (bool success, ) = to.call{value: bal}("");
+        if (!success) revert TransferFailed();
+        emit ETHRescued(to, bal);
     }
 
     // ============================================================

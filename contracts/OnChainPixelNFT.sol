@@ -29,6 +29,7 @@ contract OnChainPixelNFT is ERC721, Ownable, IOnChainPixel {
     error NotMinter();
     error NotBurner();
     error PublicMintDisabled();
+    error ZeroAddress();
 
     uint8 public constant MIN_SIZE = 1;
     uint8 public constant MAX_SIZE = 64;
@@ -227,10 +228,12 @@ contract OnChainPixelNFT is ERC721, Ownable, IOnChainPixel {
     }
 
     function setMinter(address minter, bool authorized) external onlyOwner {
+        if (authorized && minter == address(0)) revert ZeroAddress();
         isMinter[minter] = authorized;
     }
 
     function setBurner(address burner, bool authorized) external onlyOwner {
+        if (authorized && burner == address(0)) revert ZeroAddress();
         isBurner[burner] = authorized;
     }
 
@@ -252,7 +255,8 @@ contract OnChainPixelNFT is ERC721, Ownable, IOnChainPixel {
     }
 
     function withdraw() external onlyOwner {
-        (bool success,) = msg.sender.call{value: address(this).balance}("");
+        uint256 balance = address(this).balance;
+        (bool success,) = msg.sender.call{value: balance}("");
         if (!success) revert WithdrawFailed();
     }
 

@@ -308,7 +308,7 @@ describe("PixelPool longer scenarios", function () {
     const attemptedCost = addBps(addBps(await pool.getFloorPrice(), STABILIZATION_SPREAD_BPS), TRADE_FEE_BPS);
     await assert.rejects(
       router.connect(buyer).buySpecificNFT(0, attemptedCost, { value: attemptedCost }),
-      /PoolSellDisabled/
+      /PoolBuyDisabled/
     );
   });
 });
