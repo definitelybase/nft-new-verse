@@ -1,11 +1,10 @@
 # OnChainPixel — Current Audit Notes
 
-This file is no longer a historical list of problems from the old architecture.  
-It is the current `open issues` register for the repo after the NFT / Pool / Router / Factory alignment work.
+This file is the current `open issues` register for the repo after the NFT / Pool / Router / Factory alignment work and the contract hardening round.
 
 ## Closed Since The Original Draft
 
-These issues were present in the earlier version and are now addressed in the codebase structure:
+These issues were present in earlier versions and are now addressed:
 
 - Router ↔ NFT mint flow now uses `mintTo` / `mintToCustom`
 - `seedLiquidity`, `seedTreasury`, and `setTotalMinted` are router-gated
@@ -20,205 +19,154 @@ These issues were present in the earlier version and are now addressed in the co
 - minimal Hardhat build pipeline now exists and exports `build/*.abi` and `build/*.bin`
 - first Hardhat smoke suite now covers wiring, router mint split, exact payment, and basic sell/buySpecific flow
 - `PixelFactory` now has local end-to-end coverage for collection creation and stack wiring
+- Router rescue functions (rescueNFT, rescueETH) added and tested
 
-Those were real blockers in the old version, but they are no longer the most important unresolved risks.
+## Closed During Contract Hardening Round
 
-## Current Critical Risks
+### Staking double-claim bug — FIXED
 
-### 1. Build exists, but validation depth is still low
+`_settle()` did not update `rewardDebt` after accumulating pending rewards. This allowed stakers to claim the same fees repeatedly: `claimFees()` zeroed `pendingRewards`, but `rewardDebt` stayed stale, so the next call to `viewPendingFees()` recalculated the same amount.
 
-The repo now has a working minimal Hardhat build flow and a first smoke suite, but validation depth is still low.
+Fix: `_settle()` now sets `rewardDebt[u] = stakedCount[u] * accFeePerStake` after accumulation.
 
-Practical impact:
+Covered by 9 staking tests including fee distribution, double-claim prevention, and edge cases.
 
-- contracts now compile and export deployment artifacts
-- a first smoke suite now proves basic deployment and core router/pool flows
-- but edge cases, treasury loops, and scenario math are still not deeply validated
-- the project now pins a supported Node line via `.nvmrc` and `package.json`, and that environment should be used consistently
+### Router sell flow — VALIDATED
 
-Why it matters:
+Previously listed as "operationally fragile" and untested. Now covered by 7 sell edge case tests:
 
-The biggest remaining risk is no longer "can the repo compile at all", but "can the compiled system be trusted beyond smoke scenarios".
+- sell during launch protection → `PoolSellDisabled`
+- sell with insufficient pool ETH → reverts
+- slippage protection (minPrice > floor) → `SlippageExceeded`
+- payout accuracy verified to the wei
+- no ETH or NFT left stuck in router after sell
+- non-owner sell rejection
+- sequential sells decrease pool ethBalance correctly
 
-Required next step:
+### Market-state math — VALIDATED
 
-- keep the supported Node runtime consistent across machines
-- keep the build green
-- add real tests before making more architectural promises
+Previously listed as the highest smart-contract logic risk. Now covered by 8 stress tests:
 
-### 2. Router sell flow remains operationally fragile
+- Expansion enforced during launch protection
+- Expansion → WeakDemand transition after first sell
+- Recovery from WeakDemand → Stabilization with balanced volume
+- ethBalance never goes negative through sell cycles
+- Floor price stays above MIN_BID after many sells
+- Supply accounting (circulating + locked + pool = minted - burned) is consistent
+- State transitions are idempotent across repeated window rolls
+- Large mint+sell wave keeps pool solvent
 
-Current router sell flow:
+### Supply accounting — VALIDATED
 
-1. transfers NFT from user to router
-2. router approves the specific token to the pool
-3. router calls `pool.sell()`
+Previously concern about burn path integration. Now verified:
 
-Open concern:
+- `totalMinted` reads from pool directly (not derived from circulating+locked+pool)
+- circulating + locked + pool = minted - burned verified under mixed operations
+- lockedSupply matches totalStaked
+- Protocol burn reduces NFT total supply across immediate and aged vault burns
 
-- the pattern is heavier than necessary
-- custody still briefly passes through the router
-- the sell flow is not yet proven under test
+### Buyback / vault / relist loop — VALIDATED
 
-Safer target:
+Previously listed as "logically plausible but not verified". Now covered:
 
-- either keep this as the canonical convenience flow and test it thoroughly
-- or simplify further with a more direct sell path
+- buyback vaults stale inventory and recapitalizes pool reserve
+- burnAgedVaultInventory works correctly even with mixed-age vault items
+- relist restores vault inventory to pool without increasing sell pressure
+- buyback disabled at exact weak-market boundary values
+- buyback enabled once weak-market signals move past thresholds
+- buyback disabled below coverage threshold even for stale inventory
+- treasury budget exhaustion stops buyback correctly
 
-### 3. Market-state math is untested
+### Frontend — FUNCTIONAL
 
-`PixelPool` now contains the most important protocol logic:
+Previously listed as "readable but not transactional". Now:
 
-- rolling short/long windows
-- floor EMA updates
-- state transitions
-- conditional pool buy/sell activation
-- treasury buyback gating
+- Live pool state reads via usePoolData hook (15s polling)
+- Real buy/sell marketplace flows with wallet integration
+- Proper error/loading/preview states (DataBadge: Live/Preview/Offline)
+- Simplified Mint page (single functional card, no decorative modes)
+- Slippage protection in buy/sell UI
 
-All of that is currently logic-first, not test-first.
+### Protocol-fee and admin-path invariants — VALIDATED
 
-This creates risk of:
+Previously listed as untested. Now covered:
 
-- incorrect state transitions
-- thresholds behaving unexpectedly
-- buy/sell paths being unavailable more often than intended
-- buyback mode activating or never activating incorrectly
+- `claimProtocolFees()` is owner-only, drains the exact accrued amount, and reverts when empty
+- `pause()/unpause()` blocks and restores trade-paths as expected
+- `factoryFee` enforcement and `withdraw()` are covered end-to-end
+- factory admin setters are owner-only
+- NFT admin setters (`setMinter`, `setBurner`, `setPalette`, `lockPalette`, `setMintPrice`, `setPublicMintEnabled`) are owner-only
+- NFT owner-withdraw path for mint proceeds is covered
+- palette updates work before `lockPalette()` and revert after lock
 
-This is the highest smart-contract logic risk after the missing build system.
+### Admin / emergency event stream — IMPROVED
 
-## Important Risks
+Router and pool admin/emergency paths now emit explicit events for:
 
-### 4. Supply accounting is improved, but not yet validated end-to-end
+- creator updates
+- mint-price / BPS changes
+- router updates
+- rescueNFT / rescueETH
+- factory code updates and fee updates
 
-The protocol now uses a real NFT-layer burn path and the pool is wired as an authorized burner.
+This is enough for basic indexing and ops visibility, though analytics-oriented events are still limited.
 
-Open concerns:
+## Current Test Coverage
 
-- no compile proof yet that the new burner role and protocol burn path integrate cleanly with the chosen OpenZeppelin version
-- no runtime proof yet that burn updates supply-facing views exactly as intended across buyback and vault burn flows
-- no proof yet that indexers and UI assumptions remain correct once tokens are actually burned
+**56 passing tests** across 11 test files:
 
-Impact:
+| Suite | Tests | Coverage |
+|-------|-------|----------|
+| Admin / emergency events | 2 | Router/pool admin events, factory setup/admin events |
+| Protocol/admin invariants | 3 | claimProtocolFees, pause/unpause, factory fee/withdraw |
+| Factory / NFT admin paths | 3 | onlyOwner setters, withdraw paths, palette lock |
+| Smoke (router/pool wiring) | 8 | Deployment, mint splits, exact payment, rescue, sell/buy flow, refunds |
+| Economics | 4 | Buyback, protocol burn, vault burn, relist |
+| Scenarios | 4 | Sell pressure tracking, EMA movement, budget exhaustion, WeakDemand gates |
+| Market-state thresholds | 6 | Launch protection, coverage gates, buy/sell activation, buyback gating |
+| Staking | 9 | Stake/unstake, access control, fee distribution, claim, edge cases |
+| Router sell edges | 7 | All sell revert conditions, payout accuracy, no stuck assets |
+| Market stress | 8 | State transitions, solvency, floor stability, supply consistency |
+| Factory e2e | 2 | Stack creation, sell/buySpecific flow |
 
-- the architecture is materially better
-- but the new burn path still needs system-level validation before it can be treated as production-safe
+## Remaining Risks
 
-### 5. Factory deployment model is still assumption-heavy
+### 1. Factory deployment gas cost
 
-`PixelFactory` stores creation bytecode blobs and deploys contracts with `CREATE2`.
+`PixelFactory.createCollection()` is still gas-heavy. Local Hardhat tests now pass with an explicit fixed gas configuration, but this does not prove the path is comfortable on L1 mainnet. Options:
 
-Open concerns:
+- Optimize factory contract size
+- Deploy on L2 where gas limits are higher
+- Validate real deployment gas on testnet before any mainnet assumptions
 
-- local tests now prove constructor encoding, ownership handoff, and router/burner wiring on a generated collection stack
-- but there is still no proof yet that the same flow behaves correctly in a real external deployment environment
-- bytecode upload and large-transaction behaviour on target networks are still unvalidated
+### 2. No event stream for price / state indexing beyond current basics
 
-Impact:
+The pool emits trade events and state changes, but the indexing story is incomplete for analytics UX. Potential additions: floor-price update event, buyback-availability event, reserve health snapshots.
 
-- factory is no longer a blind spot locally, but it is still not fully deployment-proven
+### 3. No explicit emergency reserve escape hatch design
 
-### 6. Buyback / vault / relist loop is logically plausible but not verified
+This remains intentionally unimplemented. Possible options: no rescue at all, timelocked emergency withdrawal, multisig/DAO-controlled emergency path. The key is to decide deliberately.
 
-The current pool keeps:
+### 4. Factory deployment on real networks unvalidated
 
-- treasury buyback
-- real protocol burn
-- vault inventory
-- relist conditions
+Local tests prove constructor encoding and wiring, but there is no proof that the same flow works on a real network with gas constraints and external tooling.
 
-Open concerns:
-
-- relist loop is not tested under repeated inventory conditions
-- vault may become sticky if pricing conditions rarely line up
-- strategic behaviour of relist under weak market conditions is still uncertain
-- burn and relist now have cleaner semantics, but that logic is still unproven under scenario tests
-
-This is not an immediate blocker for architecture, but it is a serious behavioural risk.
-
-### 7. Frontend is still mock-driven
-
-The frontend files are useful prototypes, but they do not yet represent the current live contract logic.
-
-Impact:
-
-- the UI can easily teach the wrong economics
-- market states, disabled actions, and spread logic are not yet surfaced from live data
-
-This matters especially because the protocol now depends on dynamic availability:
-
-- pool buying is not always enabled
-- pool selling is not always enabled
-- buyback is conditional
-
-The UI must communicate that clearly.
-
-## Medium-Priority Gaps
-
-### 8. No event stream for price / state indexing beyond current basics
-
-The pool emits trade events and state changes, but the indexing story is still incomplete for analytics UX.
-
-Potential additions:
-
-- explicit floor-price update event
-- buyback-availability event
-- reserve health snapshots
-
-Not required for correctness, but very useful for frontend and monitoring.
-
-### 9. No explicit emergency reserve escape hatch design
-
-This remains intentionally unimplemented, but it is still a governance and protocol design question.
-
-Possible options:
-
-- no rescue at all
-- timelocked emergency withdrawal
-- multisig or DAO-controlled emergency path
-
-The key is to decide deliberately, not by omission.
-
-### 10. Rarity premium remains out of scope for protocol pricing
-
-This is no longer treated as a bug by default.
-
-Still, it is a product decision that should remain explicit:
-
-- protocol prices floor assets
-- community prices premium assets
-
-That boundary is healthy, but it should be documented consistently.
-
-## Recommended Immediate Priorities
+## Recommended Priorities
 
 ### Do Now
 
-1. Move local development to a supported Node version and keep the Hardhat build green.
-2. Write Pool/Router-first tests for the new market-state model.
-3. Validate the new protocol burn flow and relist math under scenario tests.
+1. Add deploy script for local and testnet
+2. Validate factory deployment flow end-to-end on testnet
+3. Tighten the remaining broad `catch { break; }` style test branches so unexpected reverts do not get masked
 
 ### Do Before Any Public Testnet Push
 
-4. Validate Factory deployment flow end-to-end.
-5. Test router sell and buy flows with real approvals.
-6. Add coverage for buyback, vault, and relist behaviour.
+4. Add staking UI to frontend
+5. Decide emergency governance posture
+6. Measure real deployment gas / calldata constraints on target network
 
 ### Do Before Mainnet
 
-7. Connect frontend to real pool state signals.
-8. Add better indexing / analytics events if needed.
-9. Decide emergency governance posture explicitly.
-
-## Current Audit Summary
-
-The project is in a better architectural state than the original version:
-
-- the protocol narrative is cleaner
-- the contract roles are more aligned
-- the reserve model is more honest
-- supply contraction is now modeled as real burn, not symbolic parking
-
-But the repo is still in `pre-validation` stage, not `pre-deployment` stage.
-
-The biggest risk is no longer "the idea is inconsistent."  
-The biggest risk is "the new architecture now compiles, but has not yet been tested and exercised as a full system."
+7. Professional audit of the `_settle()` fix and fee distribution math
+8. Gas optimization pass on factory and pool
+9. Event stream for analytics/indexing

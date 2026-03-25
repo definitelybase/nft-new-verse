@@ -18,6 +18,7 @@ Active project folders:
 - [docs](/Users/daniltkacev/Downloads/nft%20ponzo/docs)
 - [scripts](/Users/daniltkacev/Downloads/nft%20ponzo/scripts)
 - [frontend](/Users/daniltkacev/Downloads/nft%20ponzo/frontend)
+- [frontend/src](/Users/daniltkacev/Downloads/nft%20ponzo/frontend/src)
 - [hardhat-test](/Users/daniltkacev/Downloads/nft%20ponzo/hardhat-test)
 
 Archived / non-source-of-truth content:
@@ -41,6 +42,7 @@ Project files:
 
 - [package.json](/Users/daniltkacev/Downloads/nft%20ponzo/package.json)
 - [hardhat.config.js](/Users/daniltkacev/Downloads/nft%20ponzo/hardhat.config.js)
+- [vite.config.js](/Users/daniltkacev/Downloads/nft%20ponzo/vite.config.js)
 - [.nvmrc](/Users/daniltkacev/Downloads/nft%20ponzo/.nvmrc)
 
 ## Commands
@@ -63,6 +65,18 @@ Run the Hardhat test suite:
 npm test
 ```
 
+Run the frontend dev shell:
+
+```bash
+npm run frontend:dev
+```
+
+Build the frontend shell:
+
+```bash
+npm run frontend:build
+```
+
 ## Current Test Coverage
 
 The live Hardhat tests cover:
@@ -73,6 +87,10 @@ The live Hardhat tests cover:
 - sell / buySpecific flows
 - buyback, vault, relist, and burn behaviour
 - market-state thresholds and negative gates
+- market-state stress and solvency checks
+- staking fee accounting and edge cases
+- protocol-fee/admin-path invariants
+- factory and NFT admin access / withdraw paths
 - factory end-to-end collection deployment
 
 ## Deployment Artifacts
@@ -94,3 +112,21 @@ These artifacts are consumed by [scripts/deploy.js](/Users/daniltkacev/Downloads
 
 - The protocol docs are in [docs/PLAN.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/PLAN.md), [docs/AMM_ARCHITECTURE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AMM_ARCHITECTURE.md), and [docs/AUDIT.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AUDIT.md).
 - The frontend files are still prototypes and not yet a production UI.
+
+## Frontend App Config
+
+Frontend addresses and read settings live in [frontend/src/appConfig.js](/Users/daniltkacev/Downloads/nft%20ponzo/frontend/src/appConfig.js).
+
+Fill these once in code:
+
+```js
+export const APP_CONFIG = Object.freeze({
+  poolAddress: "0xYourPoolAddress",
+  routerAddress: "0xYourRouterAddress",
+  nftAddress: "0xYourNftAddress",
+  rpcUrl: "https://your-mainnet-rpc.example",
+  ethUsd: "2000",
+});
+```
+
+If `poolAddress` is empty, the UI stays in preview mode. `rpcUrl` should point to Ethereum mainnet.
