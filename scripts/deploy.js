@@ -108,13 +108,25 @@ async function main() {
   }
 
   const wallet = new ethers.Wallet(pk, provider);
+  const creatorAddress = process.env.CREATOR_ADDRESS || wallet.address;
+  const ownerAddress = process.env.OWNER_ADDRESS || process.env.SAFE_ADDRESS || wallet.address;
+  const shouldLockPalette = process.env.SKIP_PALETTE_LOCK !== "YES";
   const balance = await wallet.getBalance();
   const gasPrice = await provider.getGasPrice();
 
-  console.log(`\n🚀 OnChainPixel Full Deploy → ${network}`);
-  console.log(`📍 Deployer: ${wallet.address}`);
-  console.log(`💰 Balance: ${ethers.utils.formatEther(balance)} ETH`);
-  console.log(`⛽ Gas: ${ethers.utils.formatUnits(gasPrice, "gwei")} gwei\n`);
+  if (!ethers.utils.isAddress(creatorAddress) || creatorAddress === ethers.constants.AddressZero) {
+    throw new Error("CREATOR_ADDRESS must be a non-zero address");
+  }
+  if (!ethers.utils.isAddress(ownerAddress) || ownerAddress === ethers.constants.AddressZero) {
+    throw new Error("OWNER_ADDRESS/SAFE_ADDRESS must be a non-zero address");
+  }
+
+  console.log(`\nOnChainPixel Full Deploy -> ${network}`);
+  console.log(`Deployer: ${wallet.address}`);
+  console.log(`Creator:  ${creatorAddress}`);
+  console.log(`Owner:    ${ownerAddress}`);
+  console.log(`Balance: ${ethers.utils.formatEther(balance)} ETH`);
+  console.log(`Gas: ${ethers.utils.formatUnits(gasPrice, "gwei")} gwei\n`);
 
   const artifacts = {
     factory: loadArtifact("PixelFactory"),
@@ -124,33 +136,33 @@ async function main() {
   };
 
   // ---- Step 1: Deploy Factory ----
-  console.log("📦 Step 1/4: Deploying PixelFactory...");
+  console.log("Step 1/4: Deploying PixelFactory...");
   const factoryFactory = new ethers.ContractFactory(
     artifacts.factory.abi, artifacts.factory.bin, wallet
   );
   const factory = await factoryFactory.deploy({ gasLimit: 2_000_000 });
   let receipt = await factory.deployTransaction.wait();
-  console.log(`   ✅ Factory: ${factory.address} (${receipt.gasUsed.toLocaleString()} gas)\n`);
+  console.log(`   OK Factory: ${factory.address} (${receipt.gasUsed.toLocaleString()} gas)\n`);
 
   // ---- Step 2: Upload bytecodes ----
-  console.log("📤 Step 2/4: Uploading contract bytecodes to Factory...");
+  console.log("Step 2/4: Uploading contract bytecodes to Factory...");
   
   let tx;
   tx = await factory.setNFTCode(artifacts.nft.bin, { gasLimit: 5_000_000 });
   await tx.wait();
-  console.log("   ✅ NFT bytecode uploaded");
+  console.log("   OK NFT bytecode uploaded");
 
   tx = await factory.setPoolCode(artifacts.pool.bin, { gasLimit: 3_000_000 });
   await tx.wait();
-  console.log("   ✅ Pool bytecode uploaded");
+  console.log("   OK Pool bytecode uploaded");
 
   tx = await factory.setRouterCode(artifacts.router.bin, { gasLimit: 2_000_000 });
   await tx.wait();
-  console.log("   ✅ Router bytecode uploaded");
-  console.log("   ✅ Factory initialized\n");
+  console.log("   OK Router bytecode uploaded");
+  console.log("   OK Factory initialized\n");
 
   // ---- Step 3: Create collection ----
-  console.log("🎨 Step 3/4: Creating collection...");
+  console.log("Step 3/4: Creating collection...");
   const { name, symbol, bitDepth, defaultWidth, defaultHeight, maxSupply, mintPrice, poolSeedBps, treasuryBps, palette } = COLLECTION;
 
   tx = await factory.createCollection(
@@ -169,16 +181,44 @@ async function main() {
     throw new Error("CollectionCreated event missing expected addresses");
   }
 
-  console.log(`   ✅ Collection created! (${receipt.gasUsed.toLocaleString()} gas)`);
-  console.log(`   📍 NFT:    ${nftAddr}`);
-  console.log(`   📍 Pool:   ${poolAddr}`);
-  console.log(`   📍 Router: ${routerAddr}\n`);
+  console.log(`   OK Collection created (${receipt.gasUsed.toLocaleString()} gas)`);
+  console.log(`   NFT:    ${nftAddr}`);
+  console.log(`   Pool:   ${poolAddr}`);
+  console.log(`   Router: ${routerAddr}\n`);
 
   // ---- Step 4: Verify ----
-  console.log("🔍 Step 4/4: Verifying deployment...");
+  console.log("Step 4/4: Verifying deployment...");
   const nftContract = new ethers.Contract(nftAddr, artifacts.nft.abi, wallet);
   const poolContract = new ethers.Contract(poolAddr, artifacts.pool.abi, wallet);
   const routerContract = new ethers.Contract(routerAddr, artifacts.router.abi, wallet);
+
+  if (creatorAddress.toLowerCase() !== wallet.address.toLowerCase()) {
+    tx = await routerContract.setCreator(creatorAddress);
+    await tx.wait();
+    console.log(`   OK Router creator updated: ${creatorAddress}`);
+  }
+
+  if (shouldLockPalette) {
+    tx = await nftContract.lockPalette();
+    await tx.wait();
+    console.log("   OK Palette locked");
+  } else {
+    console.log("   WARN Palette left unlocked (SKIP_PALETTE_LOCK=YES)");
+  }
+
+  if (ownerAddress.toLowerCase() !== wallet.address.toLowerCase()) {
+    tx = await nftContract.transferOwnership(ownerAddress);
+    await tx.wait();
+    tx = await poolContract.transferOwnership(ownerAddress);
+    await tx.wait();
+    tx = await routerContract.transferOwnership(ownerAddress);
+    await tx.wait();
+    tx = await factory.transferOwnership(ownerAddress);
+    await tx.wait();
+    console.log(`   OK Ownership transferred to ${ownerAddress}`);
+  } else {
+    console.log("   OK Ownership retained by deployer");
+  }
 
   const bd = await nftContract.bitDepth();
   const [w, h] = await nftContract.defaultCanvasSize();
@@ -186,11 +226,15 @@ async function main() {
   const isMinter = await nftContract.isMinter(routerAddr);
   const isBurner = await nftContract.isBurner(poolAddr);
   const poolRouter = await poolContract.router();
+  const paletteLocked = await nftContract.paletteLocked();
 
   console.log(`   NFT: bitDepth=${bd}, canvas=${w}x${h}, palette=${ps} colors`);
   console.log(`   Router is minter: ${isMinter}`);
   console.log(`   Pool is burner: ${isBurner}`);
   console.log(`   Pool router set: ${poolRouter === routerAddr}`);
+  console.log(`   Palette locked: ${paletteLocked}`);
+  console.log(`   Creator of Router: ${await routerContract.creator()}`);
+  console.log(`   Owner of Factory: ${await factory.owner()}`);
   console.log(`   Owner of NFT: ${await nftContract.owner()}`);
   console.log(`   Owner of Pool: ${await poolContract.owner()}`);
   console.log(`   Owner of Router: ${await routerContract.owner()}`);
@@ -206,6 +250,9 @@ async function main() {
       router: routerAddr,
     },
     deployer: wallet.address,
+    creator: creatorAddress,
+    owner: ownerAddress,
+    paletteLocked,
     config: {
       name,
       symbol,
@@ -229,7 +276,7 @@ async function main() {
 
   fs.writeFileSync(`deployment-${network}.json`, JSON.stringify(deployInfo, null, 2));
 
-  console.log(`\n💾 Saved to deployment-${network}.json`);
+  console.log(`\nSaved to deployment-${network}.json`);
   console.log(`\n--- Paste into frontend/src/appConfig.js ---\n`);
   console.log(`export const APP_CONFIG = Object.freeze({
   poolAddress: "${poolAddr}",
@@ -238,12 +285,12 @@ async function main() {
   rpcUrl: "${rpc}",
   ethUsd: "2000",
 });`);
-  console.log(`\n🔗 Links:`);
+  console.log(`\nLinks:`);
   console.log(`   Factory: ${networkConfig.explorer}/address/${factory.address}`);
   console.log(`   NFT:     ${networkConfig.explorer}/address/${nftAddr}`);
   console.log(`   Pool:    ${networkConfig.explorer}/address/${poolAddr}`);
   console.log(`   Router:  ${networkConfig.explorer}/address/${routerAddr}`);
-  console.log(`\n✅ DONE! Collection is live. Mint via Router at ${routerAddr}`);
+  console.log(`\nDONE. Collection is live. Mint via Router at ${routerAddr}`);
 }
 
 main().catch(e => {

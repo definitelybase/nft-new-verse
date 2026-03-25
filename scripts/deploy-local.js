@@ -25,21 +25,32 @@ const PALETTE_16 = Buffer.from([
 ]);
 
 async function main() {
-  const [deployer, creator] = await ethers.getSigners();
+  const signers = await ethers.getSigners();
+  const deployer = signers[0];
+  const fallbackCreator = signers[1] || deployer;
+  if (!deployer) {
+    throw new Error("No deployer signer available for the selected network");
+  }
   const mintPrice = ethers.utils.parseEther("0.001");
   const network = await ethers.provider.getNetwork();
   const networkLabel = network.name === "unknown" && network.chainId === 31337 ? "hardhat" : network.name;
   const isLocal = network.chainId === 31337;
-  const creatorAddress = process.env.CREATOR_ADDRESS || creator.address;
+  const creatorAddress = process.env.CREATOR_ADDRESS || fallbackCreator.address;
+  const ownerAddress = process.env.OWNER_ADDRESS || process.env.SAFE_ADDRESS || deployer.address;
   const localSeedEth = process.env.LOCAL_POOL_SEED_ETH || "1";
+  const shouldLockPalette = process.env.SKIP_PALETTE_LOCK !== "YES";
 
   if (!ethers.utils.isAddress(creatorAddress) || creatorAddress === ethers.constants.AddressZero) {
     throw new Error("CREATOR_ADDRESS must be a non-zero address");
+  }
+  if (!ethers.utils.isAddress(ownerAddress) || ownerAddress === ethers.constants.AddressZero) {
+    throw new Error("OWNER_ADDRESS/SAFE_ADDRESS must be a non-zero address");
   }
 
   console.log(`\nNetwork: ${networkLabel} (chainId ${network.chainId})`);
   console.log(`Deployer: ${deployer.address}`);
   console.log(`Creator:  ${creatorAddress}`);
+  console.log(`Owner:    ${ownerAddress}`);
   console.log(`Balance:  ${ethers.utils.formatEther(await deployer.getBalance())} ETH\n`);
 
   let totalGas = ethers.BigNumber.from(0);
@@ -86,7 +97,16 @@ async function main() {
     throw new Error("Post-deploy wiring verification failed");
   }
 
-  // 5. Seed initial liquidity (local only — on testnet, seed manually)
+  // 5. Lock palette before handing ownership off
+  if (shouldLockPalette) {
+    tx = await nft.lockPalette();
+    await tx.wait();
+    console.log("Palette locked");
+  } else {
+    console.log("Palette left unlocked (SKIP_PALETTE_LOCK=YES)");
+  }
+
+  // 6. Seed initial liquidity (local only — on testnet, seed manually)
   if (isLocal) {
     const localSeedAmount = ethers.utils.parseEther(localSeedEth);
     tx = await pool.setRouter(deployer.address); await tx.wait();
@@ -95,7 +115,28 @@ async function main() {
     console.log(`Seeded ${localSeedEth} ETH into pool reserve (local only)`);
   }
 
-  // 6. Save deployment info
+  // 7. Transfer ownership to final owner / multisig
+  if (ownerAddress.toLowerCase() !== deployer.address.toLowerCase()) {
+    tx = await nft.transferOwnership(ownerAddress); await tx.wait();
+    tx = await pool.transferOwnership(ownerAddress); await tx.wait();
+    tx = await router.transferOwnership(ownerAddress); await tx.wait();
+    console.log(`Ownership transferred to ${ownerAddress}`);
+  } else {
+    console.log("Ownership retained by deployer");
+  }
+
+  const nftOwner = await nft.owner();
+  const poolOwner = await pool.owner();
+  const routerOwner = await router.owner();
+  if (
+    nftOwner.toLowerCase() !== ownerAddress.toLowerCase() ||
+    poolOwner.toLowerCase() !== ownerAddress.toLowerCase() ||
+    routerOwner.toLowerCase() !== ownerAddress.toLowerCase()
+  ) {
+    throw new Error("Ownership handoff verification failed");
+  }
+
+  // 8. Save deployment info
   const rpcUrl = isLocal ? "http://127.0.0.1:8545" : "";
   const deployInfo = {
     network: networkLabel,
@@ -105,6 +146,8 @@ async function main() {
     router: router.address,
     deployer: deployer.address,
     creator: creatorAddress,
+    owner: ownerAddress,
+    paletteLocked: shouldLockPalette,
     totalGas: totalGas.toString(),
     appConfig: {
       poolAddress: pool.address,

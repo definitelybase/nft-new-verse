@@ -93,14 +93,26 @@ npm run deploy:local
 Run a direct deploy on Sepolia through Hardhat config:
 
 ```bash
-SEPOLIA_RPC_URL=https://... DEPLOYER_KEY=0x... npx hardhat run scripts/deploy-local.js --network sepolia
+SEPOLIA_RPC_URL=https://... DEPLOYER_KEY=0x... OWNER_ADDRESS=0xYourSafe CREATOR_ADDRESS=0xCreator npx hardhat run scripts/deploy-local.js --network sepolia
 ```
 
 Run the full factory deploy script:
 
 ```bash
 npm run build
-SEPOLIA_RPC_URL=https://... DEPLOYER_KEY=0x... node scripts/deploy.js sepolia
+SEPOLIA_RPC_URL=https://... DEPLOYER_KEY=0x... OWNER_ADDRESS=0xYourSafe CREATOR_ADDRESS=0xCreator node scripts/deploy.js sepolia
+```
+
+Verify a live deployment after ownership handoff:
+
+```bash
+RPC_URL=https://... npm run verify:deploy -- deployment-11155111.json
+```
+
+Transfer ownership of an existing deployment to a Safe:
+
+```bash
+NEW_OWNER_ADDRESS=0xYourSafe npx hardhat run scripts/transfer-ownership.js --network sepolia
 ```
 
 ## Current Test Coverage
@@ -118,6 +130,7 @@ The live Hardhat tests cover:
 - protocol-fee/admin-path invariants
 - deploy/config guards and constructor validation
 - factory and NFT admin access / withdraw paths
+- palette lock + ownership handoff to multisig owner
 - factory end-to-end collection deployment
 
 ## Deployment Artifacts
@@ -145,6 +158,23 @@ There are now two supported deployment paths:
   Full factory-based deployment path. Useful when you want to validate the `Factory` flow itself.
 
 Both scripts now print a ready-to-paste `APP_CONFIG` block for the frontend and write a deployment JSON file.
+
+Both scripts also support the safer launch flow:
+
+- `OWNER_ADDRESS` or `SAFE_ADDRESS` for final ownership handoff
+- `CREATOR_ADDRESS` for the economic creator address when it differs from deployer
+- palette lock enabled by default before ownership handoff
+- optional `SKIP_PALETTE_LOCK=YES` only when you intentionally want to keep the palette mutable during setup
+- router replacement is immediate only during initial launch protection / setup; after that it must be queued and applied after the on-chain delay
+
+Recommended live rollout:
+
+1. Deploy with `OWNER_ADDRESS=0xYourSafe`
+2. Confirm NFT / Pool / Router ownership moved to the Safe
+3. Confirm palette is locked
+4. Run `npm run verify:deploy -- deployment-11155111.json`
+
+If you accidentally deployed to an EOA owner first, you can still hand off the existing deployment afterwards with `transfer-ownership.js`.
 
 ## Notes
 

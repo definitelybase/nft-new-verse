@@ -3,6 +3,8 @@ const { ethers } = require("hardhat");
 
 const POOL_SEED_BPS = 6000;
 const TREASURY_BPS = 1000;
+const LAUNCH_PROTECTION = 6 * 60 * 60;
+const ROUTER_CHANGE_DELAY = 48 * 60 * 60;
 
 function palette16() {
   return ethers.utils.hexlify([
@@ -33,6 +35,11 @@ function getParsedLog(receipt, contract, name) {
     }
   }
   assert.fail(`Missing event ${name}`);
+}
+
+async function increaseTime(seconds) {
+  await ethers.provider.send("evm_increaseTime", [seconds]);
+  await ethers.provider.send("evm_mine", []);
 }
 
 async function deployStack() {
@@ -105,7 +112,30 @@ describe("Admin and emergency events", function () {
     assert.strictEqual(event.args.previousBps.toString(), "1000");
     assert.strictEqual(event.args.newBps.toString(), "1500");
 
+    await increaseTime(LAUNCH_PROTECTION + 1);
+
+    receipt = await (await pool.connect(owner).setRouter(other.address)).wait();
+    event = getEvent(receipt, "RouterChangeQueued");
+    assert.strictEqual(event.args.currentRouter, router.address);
+    assert.strictEqual(event.args.pendingRouter, other.address);
+
+    await assert.rejects(
+      pool.connect(owner).applyRouterUpdate(),
+      /RouterChangeNotReady/
+    );
+
+    receipt = await (await pool.connect(owner).cancelRouterUpdate()).wait();
+    event = getEvent(receipt, "RouterChangeCancelled");
+    assert.strictEqual(event.args.pendingRouter, other.address);
+
     receipt = await (await pool.connect(owner).setRouter(owner.address)).wait();
+    event = getEvent(receipt, "RouterChangeQueued");
+    assert.strictEqual(event.args.currentRouter, router.address);
+    assert.strictEqual(event.args.pendingRouter, owner.address);
+
+    await increaseTime(ROUTER_CHANGE_DELAY + 1);
+
+    receipt = await (await pool.connect(owner).applyRouterUpdate()).wait();
     event = getEvent(receipt, "RouterUpdated");
     assert.strictEqual(event.args.previousRouter, router.address);
     assert.strictEqual(event.args.newRouter, owner.address);

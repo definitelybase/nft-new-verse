@@ -193,4 +193,66 @@ describe("Factory and NFT admin paths", function () {
       "PaletteAlreadyLocked"
     );
   });
+
+  it("supports palette lock before ownership handoff to a multisig owner", async function () {
+    const [owner, multisig] = await ethers.getSigners();
+    const mintPrice = ethers.utils.parseEther("0.01");
+
+    const NFT = await ethers.getContractFactory("OnChainPixelNFT");
+    const Pool = await ethers.getContractFactory("PixelPool");
+    const Router = await ethers.getContractFactory("PixelRouter");
+
+    const nft = await NFT.connect(owner).deploy(
+      "OnChainPixels",
+      "OCPX",
+      4,
+      1,
+      1,
+      1000,
+      mintPrice,
+      palette16()
+    );
+    await nft.deployed();
+
+    const pool = await Pool.connect(owner).deploy(nft.address, mintPrice);
+    await pool.deployed();
+
+    const router = await Router.connect(owner).deploy(
+      nft.address,
+      pool.address,
+      owner.address,
+      mintPrice,
+      6000,
+      1000
+    );
+    await router.deployed();
+
+    await (await nft.connect(owner).setMinter(router.address, true)).wait();
+    await (await nft.connect(owner).setBurner(pool.address, true)).wait();
+    await (await pool.connect(owner).setRouter(router.address)).wait();
+
+    await (await nft.connect(owner).lockPalette()).wait();
+    assert.strictEqual(await nft.paletteLocked(), true);
+
+    await (await nft.connect(owner).transferOwnership(multisig.address)).wait();
+    await (await pool.connect(owner).transferOwnership(multisig.address)).wait();
+    await (await router.connect(owner).transferOwnership(multisig.address)).wait();
+
+    assert.strictEqual(await nft.owner(), multisig.address);
+    assert.strictEqual(await pool.owner(), multisig.address);
+    assert.strictEqual(await router.owner(), multisig.address);
+
+    await assert.rejects(
+      nft.connect(owner).setMintPrice(ethers.utils.parseEther("0.02")),
+      /Ownable: caller is not the owner/
+    );
+
+    await (await router.connect(multisig).setCreator(multisig.address)).wait();
+    assert.strictEqual(await router.creator(), multisig.address);
+
+    await expectCustomError(
+      nft.connect(multisig).setPalette(alternatePalette16()),
+      "PaletteAlreadyLocked"
+    );
+  });
 });

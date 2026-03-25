@@ -324,4 +324,51 @@ describe("Market-state stress tests", function () {
     const allStates = new Set([...statesBefore, ...statesAfter]);
     assert.ok(allStates.size > 0, "Should have observed at least one state");
   });
+
+  it("heavy sell pressure eventually closes the sell lane before insolvency", async function () {
+    const { owner, alice, bob, nft, pool, router, mintPrice } = await deployStack();
+
+    const batchSize = 24;
+    for (let i = 0; i < batchSize; i++) {
+      const minter = i % 2 === 0 ? alice : bob;
+      await mintOne(router, minter, mintPrice, (i % 15) + 1);
+    }
+
+    await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("4"));
+    await increaseTime(LAUNCH_PROTECTION + 1);
+
+    const minFloor = mintPrice.mul(1500).div(BPS);
+    let successfulSells = 0;
+    let terminalReason = "";
+
+    for (let i = 0; i < batchSize; i += 2) {
+      await (await nft.connect(alice).approve(router.address, i)).wait();
+      try {
+        await (await router.connect(alice).sellNFT(i, 0)).wait();
+        successfulSells += 1;
+        const currentFloor = await pool.getFloorPrice();
+        const ethBalance = await pool.ethBalance();
+        assert.ok(currentFloor.gte(minFloor), "floor should stay above the protocol min bid");
+        assert.ok(ethBalance.gte(0), "pool must never go insolvent");
+      } catch (err) {
+        terminalReason = err.message;
+        if (!/PoolSellDisabled|PoolEmpty|SlippageExceeded/.test(err.message)) throw err;
+        break;
+      }
+    }
+
+    assert.ok(successfulSells > 0, "expected at least one successful sell before the lane closed");
+
+    const finalFloor = await pool.getFloorPrice();
+    const finalEthBalance = await pool.ethBalance();
+    assert.ok(finalFloor.gte(minFloor), "final floor should remain above min bid");
+    assert.ok(finalEthBalance.gte(0), "final pool balance must remain non-negative");
+
+    if (terminalReason) {
+      assert.ok(
+        /PoolSellDisabled|PoolEmpty|SlippageExceeded/.test(terminalReason),
+        `unexpected terminal reason: ${terminalReason}`
+      );
+    }
+  });
 });

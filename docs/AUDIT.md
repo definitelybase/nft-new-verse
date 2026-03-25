@@ -123,23 +123,46 @@ Constructor and config validation is tighter now:
 
 This reduces the chance of bad local/testnet deployments silently producing broken state.
 
+### Ownership handoff and palette finalization — IMPROVED
+
+The deployment scripts now support a safer live rollout path:
+
+- `OWNER_ADDRESS` / `SAFE_ADDRESS` can receive final ownership of NFT, Pool, Router, and Factory
+- `CREATOR_ADDRESS` can be separated from deployer
+- palette lock is applied by default before ownership handoff
+- deployment JSON now records final owner and palette-lock status
+
+This does not replace a timelock or audit, but it removes the "single hot wallet owns everything forever" default from the deploy path.
+
+### Router replacement hardening — IMPROVED
+
+`PixelPool.setRouter()` is no longer a fully instant owner power once the protocol is live:
+
+- initial router setup still works immediately
+- router changes remain immediate during the launch-protection/bootstrap window
+- after launch protection, owner must first queue a new router and only later apply it
+- pending router updates can be cancelled before execution
+
+This preserves practical setup flexibility while making post-launch router swaps visible and non-instant.
+
 ## Current Test Coverage
 
-**68 passing tests** across 13 test files:
+**70 passing tests** across 13 test files:
 
 | Suite | Tests | Coverage |
 |-------|-------|----------|
-| Admin / emergency events | 2 | Router/pool admin events, factory setup/admin events |
+| Admin / emergency events | 3 | Router/pool admin events, factory setup/admin events, mint-side accounting events |
 | Protocol/admin invariants | 3 | claimProtocolFees, pause/unpause, factory fee/withdraw |
 | Deploy/config guards | 4 | zero-price rejects, dependency validation, factory create guards |
-| Factory / NFT admin paths | 3 | onlyOwner setters, withdraw paths, palette lock |
+| PixelFactory creation guards | 4 | empty bytecode rejects, missing bytecode, invalid BPS, DeployFailed path |
+| Factory / NFT admin paths | 4 | onlyOwner setters, withdraw paths, palette lock, multisig handoff |
 | Smoke (router/pool wiring) | 11 | Deployment, mint splits, exact payment, rescue, constructor/config guards, sell/buy flow, refunds |
 | Economics | 4 | Buyback, protocol burn, vault burn, relist |
 | Scenarios | 4 | Sell pressure tracking, EMA movement, budget exhaustion, WeakDemand gates |
 | Market-state thresholds | 6 | Launch protection, coverage gates, buy/sell activation, buyback gating |
 | Staking | 9 | Stake/unstake, access control, fee distribution, claim, edge cases |
 | Router sell edges | 7 | All sell revert conditions, payout accuracy, no stuck assets |
-| Market stress | 8 | State transitions, solvency, floor stability, supply consistency |
+| Market stress | 9 | State transitions, solvency, floor stability, supply consistency, heavy sell-lane closure |
 | Factory e2e | 2 | Stack creation, sell/buySpecific flow |
 
 ## Remaining Risks
@@ -168,18 +191,21 @@ Local tests prove constructor encoding and wiring, but there is no proof that th
 
 ### Do Now
 
-1. Validate direct deploy path on Sepolia and capture real gas + addresses
-2. Validate factory deployment flow end-to-end on testnet
-3. Keep deployment JSON and frontend appConfig in sync after each live deploy
+1. Transfer live ownership to a multisig through `OWNER_ADDRESS` / `SAFE_ADDRESS`
+2. Lock palette before any public mint
+3. Validate direct deploy path on Sepolia and capture real gas + addresses
+4. Validate factory deployment flow end-to-end on testnet
+5. Keep deployment JSON and frontend appConfig in sync after each live deploy
 
 ### Do Before Any Public Testnet Push
 
-4. Add staking UI to frontend
-5. Decide emergency governance posture
-6. Measure real deployment gas / calldata constraints on target network
+6. Add staking UI to frontend
+7. Decide emergency governance posture
+8. Measure real deployment gas / calldata constraints on target network
 
 ### Do Before Mainnet
 
-7. Professional audit of the `_settle()` fix and fee distribution math
-8. Gas optimization pass on factory and pool
-9. Event stream for analytics/indexing
+9. Move delayed router updates under multisig control in production
+10. Professional audit of the `_settle()` fix and fee distribution math
+11. Gas optimization pass on factory and pool
+12. Event stream for analytics/indexing

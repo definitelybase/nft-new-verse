@@ -40,6 +40,9 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     error PoolSellDisabled();
     error ZeroAddress();
     error InvalidDependency();
+    error RouterChangePending();
+    error RouterChangeNotReady();
+    error RouterChangeNotPending();
 
     event NFTSold(address indexed seller, uint256 indexed tokenId, uint256 price, uint256 fee);
     event NFTBought(address indexed buyer, uint256 indexed tokenId, uint256 price, uint256 fee);
@@ -53,6 +56,8 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     event BuybackExecuted(uint256 bought, uint256 ethSpent, uint256 burned, uint256 vaulted);
     event VaultRelisted(uint256 count);
     event VaultBurned(uint256 count);
+    event RouterChangeQueued(address indexed currentRouter, address indexed pendingRouter, uint256 activateAt);
+    event RouterChangeCancelled(address indexed pendingRouter);
     event RouterUpdated(address indexed previousRouter, address indexed newRouter);
     event MarketStateUpdated(
         MarketState indexed previousState,
@@ -87,10 +92,13 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     uint256 public constant INVENTORY_STALE_AGE = 7 days;
     uint256 public constant VAULT_BURN_AGE = 14 days;
     uint256 public constant RELIST_PROFIT_BPS = 2000;
+    uint256 public constant ROUTER_CHANGE_DELAY = 48 hours;
 
     IERC721Burnable public immutable nftContract;
     uint256 public immutable mintPrice;
     address public router;
+    address public pendingRouter;
+    uint256 public pendingRouterEta;
     uint256 public immutable launchTimestamp;
 
     uint256 public ethBalance;
@@ -413,8 +421,32 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     // ---- Admin ----
     function setRouter(address r) external onlyOwner {
         if (r == address(0)) revert ZeroAddress();
-        emit RouterUpdated(router, r);
-        router = r;
+        if (pendingRouter != address(0)) revert RouterChangePending();
+        if (router == address(0) || block.timestamp < launchTimestamp + LAUNCH_PROTECTION) {
+            emit RouterUpdated(router, r);
+            router = r;
+            return;
+        }
+        pendingRouter = r;
+        pendingRouterEta = block.timestamp + ROUTER_CHANGE_DELAY;
+        emit RouterChangeQueued(router, r, pendingRouterEta);
+    }
+    function applyRouterUpdate() external onlyOwner {
+        address next = pendingRouter;
+        if (next == address(0)) revert RouterChangeNotPending();
+        if (block.timestamp < pendingRouterEta) revert RouterChangeNotReady();
+        address previous = router;
+        delete pendingRouter;
+        delete pendingRouterEta;
+        router = next;
+        emit RouterUpdated(previous, next);
+    }
+    function cancelRouterUpdate() external onlyOwner {
+        address queued = pendingRouter;
+        if (queued == address(0)) revert RouterChangeNotPending();
+        delete pendingRouter;
+        delete pendingRouterEta;
+        emit RouterChangeCancelled(queued);
     }
     function pause() external onlyOwner { _pause(); }
     function unpause() external onlyOwner { _unpause(); }

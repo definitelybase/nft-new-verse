@@ -1,4 +1,6 @@
 import React, { Suspense, lazy, useState, useRef, useCallback, useEffect } from "react";
+import { MetalButton } from "./MetalButton";
+import { ThemeSwitch } from "./ThemeSwitch";
 
 const Cd = lazy(() => import("./ascii/cd"));
 
@@ -14,6 +16,27 @@ const DEFAULT_PALETTE = [
   "#00cccc", "#ff3399", "#336633", "#663300",
   "#cccccc", "#666666", "#ffccaa", "#3399ff",
 ];
+
+const UI = {
+  bg: "var(--editor-bg)",
+  text: "var(--editor-text)",
+  textDim: "var(--editor-text-dim)",
+  textMuted: "var(--editor-text-muted)",
+  textSoft: "var(--editor-text-soft)",
+  textFaint: "var(--editor-text-faint)",
+  panel: "var(--editor-panel)",
+  border: "1px solid var(--editor-border)",
+  borderStrong: "1px solid var(--editor-border-strong)",
+  borderSoft: "1px solid var(--editor-border-soft)",
+  button: "var(--editor-button)",
+  buttonActive: "var(--editor-button-active)",
+  accent: "var(--editor-accent)",
+  accentGlow: "var(--editor-accent-glow)",
+  previewBg: "var(--editor-preview-bg)",
+  code: "var(--editor-code)",
+  gold: "var(--editor-gold)",
+  titleGradient: "var(--editor-title-gradient)",
+};
 
 function hexToBytes3(hex) {
   const c = hex.replace("#", "");
@@ -120,7 +143,7 @@ const templates = {
   },
 };
 
-export default function OnChainPixelEditor() {
+export default function OnChainPixelEditor({ themeMode, onToggleTheme }) {
   const [grid, setGrid] = useState(templates.blank);
   const [selectedColor, setSelectedColor] = useState(1);
   const [palette, setPalette] = useState([...DEFAULT_PALETTE]);
@@ -224,28 +247,34 @@ export default function OnChainPixelEditor() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#0a0a0f",
-      color: "#e0e0e0",
+      background: UI.bg,
+      color: UI.text,
       fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
       padding: "20px",
       userSelect: "none",
     }}>
       {/* Header */}
-      <div style={{ textAlign: "center", marginBottom: 24 }}>
-        <h1 style={{
-          fontSize: 22,
-          fontWeight: 800,
-          background: "linear-gradient(135deg, #00ff88 0%, #00ccff 50%, #9966ff 100%)",
+      <div style={{ marginBottom: 24, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+        <div style={{ flex: 1 }} />
+        <div style={{ textAlign: "center" }}>
+          <h1 style={{
+            fontSize: 22,
+            fontWeight: 800,
+            background: UI.titleGradient,
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           margin: 0,
           letterSpacing: "0.05em",
-        }}>
-          ON-CHAIN PIXEL NFT
-        </h1>
-        <p style={{ fontSize: 11, color: "#666", margin: "4px 0 0" }}>
-          SSTORE2 · 16-color palette · 512 bytes per NFT · ~$0.03 on Base
-        </p>
+          }}>
+            ON-CHAIN PIXEL NFT
+          </h1>
+          <p style={{ fontSize: 11, color: UI.textDim, margin: "4px 0 0" }}>
+            SSTORE2 · 16-color palette · 512 bytes per NFT · live payload editor
+          </p>
+        </div>
+        <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+          <ThemeSwitch themeMode={themeMode} onToggle={onToggleTheme} size="md" />
+        </div>
       </div>
 
       <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
@@ -259,10 +288,10 @@ export default function OnChainPixelEditor() {
               display: "grid",
               gridTemplateColumns: `repeat(${GRID}, ${CELL}px)`,
               gap: GAP,
-              background: "#111118",
+              background: UI.panel,
               padding: 8,
               borderRadius: 8,
-              border: "1px solid #222",
+              border: UI.border,
               cursor: tool === "eyedrop" ? "crosshair" : tool === "fill" ? "cell" : "pointer",
             }}
           >
@@ -292,56 +321,53 @@ export default function OnChainPixelEditor() {
               { id: "fill", label: "🪣 Fill", key: "F" },
               { id: "eyedrop", label: "💧 Pick", key: "I" },
             ].map(t => (
-              <button
+              <MetalButton
                 key={t.id}
                 onClick={() => setTool(t.id)}
+                tone={tool === t.id ? "accent" : "ghost"}
+                active={tool === t.id}
+                size="xs"
                 style={{
-                  padding: "6px 12px",
-                  fontSize: 11,
-                  background: tool === t.id ? "#00ff8833" : "#1a1a24",
-                  border: tool === t.id ? "1px solid #00ff88" : "1px solid #333",
-                  borderRadius: 6,
-                  color: tool === t.id ? "#00ff88" : "#888",
-                  cursor: "pointer",
-                  fontFamily: "inherit",
+                  minHeight: 32,
+                  padding: "6px 11px",
                 }}
               >
                 {t.label}
-              </button>
+              </MetalButton>
             ))}
-            <button
+            <MetalButton
               onClick={undo}
+              tone="ghost"
+              size="xs"
               style={{
-                padding: "6px 12px", fontSize: 11,
-                background: "#1a1a24", border: "1px solid #333",
-                borderRadius: 6, color: "#888", cursor: "pointer",
-                fontFamily: "inherit",
+                minHeight: 32,
+                padding: "6px 11px",
               }}
             >
               ↩ Undo
-            </button>
+            </MetalButton>
           </div>
 
           {/* Templates */}
           <div style={{ display: "flex", gap: 6, marginTop: 8, justifyContent: "center" }}>
-            <span style={{ fontSize: 10, color: "#555", lineHeight: "28px" }}>Templates:</span>
+            <span style={{ fontSize: 10, color: UI.textFaint, lineHeight: "28px" }}>Templates:</span>
             {[
               { id: "blank", label: "Clear" },
               { id: "agent", label: "Random Agent" },
               { id: "heart", label: "Heart" },
             ].map(t => (
-              <button
+              <MetalButton
                 key={t.id}
                 onClick={() => { pushHistory(); setGrid(templates[t.id]()); }}
+                tone="ghost"
+                size="xs"
                 style={{
-                  padding: "4px 10px", fontSize: 10,
-                  background: "#1a1a24", border: "1px solid #333",
-                  borderRadius: 4, color: "#aaa", cursor: "pointer",
-                  fontFamily: "inherit",
+                  minHeight: 28,
+                  padding: "4px 10px",
                 }}
               >
                 {t.label}
-              </button>
+              </MetalButton>
             ))}
           </div>
         </div>
@@ -350,10 +376,10 @@ export default function OnChainPixelEditor() {
         <div style={{ width: 260 }}>
           {/* Palette */}
           <div style={{
-            background: "#111118", borderRadius: 8,
-            padding: 12, border: "1px solid #222", marginBottom: 12,
+            background: UI.panel, borderRadius: 8,
+            padding: 12, border: UI.border, marginBottom: 12,
           }}>
-            <div style={{ fontSize: 10, color: "#666", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            <div style={{ fontSize: 10, color: UI.textDim, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
               Palette (16 colors · on-chain)
             </div>
             <div style={{
@@ -367,14 +393,14 @@ export default function OnChainPixelEditor() {
                     style={{
                       width: 28, height: 28, background: color,
                       borderRadius: 4, cursor: "pointer",
-                      border: selectedColor === i ? "2px solid #00ff88" : "2px solid transparent",
-                      boxShadow: selectedColor === i ? "0 0 8px #00ff8844" : "none",
+                      border: selectedColor === i ? `2px solid ${UI.accent}` : "2px solid transparent",
+                      boxShadow: selectedColor === i ? `0 0 8px ${UI.accentGlow}` : "none",
                       transition: "all 0.15s",
                     }}
                   />
                   <span style={{
                     position: "absolute", bottom: -10, left: "50%", transform: "translateX(-50%)",
-                    fontSize: 7, color: "#444",
+                    fontSize: 7, color: UI.textFaint,
                   }}>{i}</span>
                 </div>
               ))}
@@ -391,17 +417,21 @@ export default function OnChainPixelEditor() {
                   }}
                   style={{ width: 40, height: 30, border: "none", background: "none", cursor: "pointer" }}
                 />
-                <span style={{ fontSize: 10, color: "#888" }}>
+                <span style={{ fontSize: 10, color: UI.textMuted }}>
                   Editing color #{editingPalette}
                 </span>
-                <button
+                <MetalButton
                   onClick={() => setEditingPalette(null)}
+                  tone="ghost"
+                  size="xs"
                   style={{
-                    marginLeft: "auto", padding: "2px 8px", fontSize: 10,
-                    background: "#222", border: "1px solid #444", borderRadius: 3,
-                    color: "#aaa", cursor: "pointer",
+                    marginLeft: "auto",
+                    minHeight: 26,
+                    padding: "4px 8px",
                   }}
-                >done</button>
+                >
+                  done
+                </MetalButton>
               </div>
             )}
           </div>
@@ -409,10 +439,10 @@ export default function OnChainPixelEditor() {
           {/* Stats */}
           {showStats && (
             <div style={{
-              background: "#111118", borderRadius: 8,
-              padding: 12, border: "1px solid #222", marginBottom: 12,
+              background: UI.panel, borderRadius: 8,
+              padding: 12, border: UI.border, marginBottom: 12,
             }}>
-              <div style={{ fontSize: 10, color: "#666", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              <div style={{ fontSize: 10, color: UI.textDim, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
                 On-Chain Stats
               </div>
               {[
@@ -427,11 +457,11 @@ export default function OnChainPixelEditor() {
                 <div key={i} style={{
                   display: "flex", justifyContent: "space-between",
                   padding: "3px 0", fontSize: 11,
-                  borderBottom: "1px solid #1a1a24",
+                  borderBottom: `1px solid ${UI.button}`,
                 }}>
-                  <span style={{ color: "#666" }}>{s.label}</span>
+                  <span style={{ color: UI.textDim }}>{s.label}</span>
                   <span style={{
-                    color: s.highlight ? "#00ff88" : "#ccc",
+                    color: s.highlight ? UI.accent : UI.text,
                     fontWeight: s.highlight ? 700 : 400,
                   }}>{s.value}</span>
                 </div>
@@ -441,10 +471,10 @@ export default function OnChainPixelEditor() {
 
           {/* Preview */}
           <div style={{
-            background: "#111118", borderRadius: 8,
-            padding: 12, border: "1px solid #222", marginBottom: 12,
+            background: UI.panel, borderRadius: 8,
+            padding: 12, border: UI.border, marginBottom: 12,
           }}>
-            <div style={{ fontSize: 10, color: "#666", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            <div style={{ fontSize: 10, color: UI.textDim, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
               NFT Preview (rendered from data)
             </div>
           <div
@@ -454,10 +484,10 @@ export default function OnChainPixelEditor() {
         </div>
 
           <div style={{
-            background: "#111118", borderRadius: 8,
-            padding: 12, border: "1px solid #222", marginBottom: 12,
+            background: UI.panel, borderRadius: 8,
+            padding: 12, border: UI.border, marginBottom: 12,
           }}>
-            <div style={{ fontSize: 10, color: "#666", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            <div style={{ fontSize: 10, color: UI.textDim, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
               ASCII CD
             </div>
             {!showAsciiCd ? (
@@ -465,34 +495,30 @@ export default function OnChainPixelEditor() {
                 style={{
                   borderRadius: 4,
                   overflow: "hidden",
-                  background: "#0a0a12",
+                  background: UI.previewBg,
                   minHeight: 160,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 10,
-                  color: "#666",
+                  color: UI.textDim,
                 }}
               >
                 <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em" }}>
                   ASCII CD is optional
                 </div>
-                <button
+                <MetalButton
                   onClick={() => setShowAsciiCd(true)}
+                  tone="accent"
+                  size="sm"
                   style={{
+                    minHeight: 36,
                     padding: "8px 12px",
-                    borderRadius: 999,
-                    border: "1px solid #333",
-                    background: "#171722",
-                    color: "#ccc",
-                    cursor: "pointer",
-                    fontFamily: "inherit",
-                    fontSize: 11,
                   }}
                 >
                   Load ASCII CD
-                </button>
+                </MetalButton>
               </div>
             ) : (
               <Suspense
@@ -501,12 +527,12 @@ export default function OnChainPixelEditor() {
                     style={{
                       borderRadius: 4,
                       overflow: "hidden",
-                      background: "#0a0a12",
+                      background: UI.previewBg,
                       minHeight: 160,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      color: "#666",
+                      color: UI.textDim,
                       fontSize: 10,
                       textTransform: "uppercase",
                       letterSpacing: "0.1em",
@@ -520,7 +546,7 @@ export default function OnChainPixelEditor() {
                   style={{
                     borderRadius: 4,
                     overflow: "hidden",
-                    background: "#0a0a12",
+                    background: UI.previewBg,
                     minHeight: 160,
                     display: "flex",
                     alignItems: "center",
@@ -537,31 +563,33 @@ export default function OnChainPixelEditor() {
 
           {/* Export */}
           <div style={{ display: "flex", gap: 6 }}>
-            <button
+            <MetalButton
               onClick={() => setShowCode(!showCode)}
+              tone={showCode ? "accent" : "ghost"}
+              active={showCode}
+              size="sm"
+              block
               style={{
-                flex: 1, padding: "8px", fontSize: 11,
-                background: showCode ? "#00ff8822" : "#1a1a24",
-                border: showCode ? "1px solid #00ff88" : "1px solid #333",
-                borderRadius: 6, color: showCode ? "#00ff88" : "#aaa",
-                cursor: "pointer", fontFamily: "inherit",
+                flex: 1,
+                minHeight: 38,
               }}
             >
               {showCode ? "Hide" : "Show"} Calldata
-            </button>
-            <button
+            </MetalButton>
+            <MetalButton
               onClick={() => {
                 navigator.clipboard?.writeText(packedHex);
               }}
+              tone="ghost"
+              size="sm"
+              block
               style={{
-                flex: 1, padding: "8px", fontSize: 11,
-                background: "#1a1a24", border: "1px solid #333",
-                borderRadius: 6, color: "#aaa", cursor: "pointer",
-                fontFamily: "inherit",
+                flex: 1,
+                minHeight: 38,
               }}
             >
               Copy Hex
-            </button>
+            </MetalButton>
           </div>
         </div>
       </div>
@@ -570,41 +598,41 @@ export default function OnChainPixelEditor() {
       {showCode && (
         <div style={{
           maxWidth: 820, margin: "16px auto 0",
-          background: "#111118", borderRadius: 8,
-          padding: 16, border: "1px solid #222",
+          background: UI.panel, borderRadius: 8,
+          padding: 16, border: UI.border,
         }}>
-          <div style={{ fontSize: 10, color: "#666", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+          <div style={{ fontSize: 10, color: UI.textDim, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
             Packed Calldata (512 bytes · ready for mint)
           </div>
           <div style={{
-            fontSize: 9, wordBreak: "break-all", color: "#00ff88",
+            fontSize: 9, wordBreak: "break-all", color: UI.accent,
             lineHeight: 1.6, fontFamily: "'JetBrains Mono', monospace",
-            background: "#0a0a12", padding: 12, borderRadius: 4,
+            background: UI.previewBg, padding: 12, borderRadius: 4,
             maxHeight: 120, overflow: "auto",
           }}>
             {packedHex}
           </div>
 
-          <div style={{ marginTop: 12, fontSize: 10, color: "#666" }}>
+          <div style={{ marginTop: 12, fontSize: 10, color: UI.textDim }}>
             <div style={{ marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.1em" }}>
               Solidity mint call:
             </div>
             <code style={{
-              fontSize: 9, color: "#9966ff", display: "block",
-              background: "#0a0a12", padding: 8, borderRadius: 4,
+              fontSize: 9, color: UI.code, display: "block",
+              background: UI.previewBg, padding: 8, borderRadius: 4,
               wordBreak: "break-all",
             }}>
               {`contract.mint(msg.sender, ${packedHex.slice(0, 40)}..., "MyAgent")`}
             </code>
           </div>
 
-          <div style={{ marginTop: 12, fontSize: 10, color: "#666" }}>
+          <div style={{ marginTop: 12, fontSize: 10, color: UI.textDim }}>
             <div style={{ marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.1em" }}>
               Palette as bytes3[16]:
             </div>
             <code style={{
-              fontSize: 9, color: "#ffcc00", display: "block",
-              background: "#0a0a12", padding: 8, borderRadius: 4,
+              fontSize: 9, color: UI.gold, display: "block",
+              background: UI.previewBg, padding: 8, borderRadius: 4,
               wordBreak: "break-all",
             }}>
               [{palette.map(c => `0x${c.replace("#", "")}`).join(", ")}]
@@ -613,7 +641,7 @@ export default function OnChainPixelEditor() {
         </div>
       )}
 
-      <p style={{ textAlign: "center", fontSize: 9, color: "#333", marginTop: 20 }}>
+      <p style={{ textAlign: "center", fontSize: 9, color: UI.textFaint, marginTop: 20 }}>
         Double-click palette color to edit · Ctrl+Z to undo · 32×32 grid · 4-bit per pixel
       </p>
     </div>
