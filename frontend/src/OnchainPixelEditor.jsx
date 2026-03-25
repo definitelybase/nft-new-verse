@@ -1,8 +1,11 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import React, { Suspense, lazy, useState, useRef, useCallback, useEffect } from "react";
+
+const Cd = lazy(() => import("./ascii/cd"));
 
 const GRID = 32;
 const CELL = 14;
 const GAP = 1;
+const MINT_PAYLOAD_STORAGE_KEY = "onchainpixel.mintPayload";
 
 // Default 16-color palette (CryptoPunks-inspired + extras)
 const DEFAULT_PALETTE = [
@@ -125,6 +128,7 @@ export default function OnChainPixelEditor() {
   const [tool, setTool] = useState("draw"); // draw, erase, fill, eyedrop
   const [showCode, setShowCode] = useState(false);
   const [showStats, setShowStats] = useState(true);
+  const [showAsciiCd, setShowAsciiCd] = useState(false);
   const [editingPalette, setEditingPalette] = useState(null);
   const [history, setHistory] = useState([]);
   const canvasRef = useRef(null);
@@ -192,6 +196,11 @@ export default function OnChainPixelEditor() {
   const bytesUsed = 512;
   const usedColors = new Set(grid.flat()).size;
   const nonEmptyPixels = grid.flat().filter(c => c !== 0).length;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(MINT_PAYLOAD_STORAGE_KEY, packedHex);
+  }, [packedHex]);
 
   // Rough gas estimate
   const estimatedGasL1 = 180000;
@@ -438,10 +447,92 @@ export default function OnChainPixelEditor() {
             <div style={{ fontSize: 10, color: "#666", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
               NFT Preview (rendered from data)
             </div>
-            <div
-              style={{ width: "100%", aspectRatio: "1", borderRadius: 4, overflow: "hidden" }}
-              dangerouslySetInnerHTML={{ __html: exportSVG() }}
-            />
+          <div
+            style={{ width: "100%", aspectRatio: "1", borderRadius: 4, overflow: "hidden" }}
+            dangerouslySetInnerHTML={{ __html: exportSVG() }}
+          />
+        </div>
+
+          <div style={{
+            background: "#111118", borderRadius: 8,
+            padding: 12, border: "1px solid #222", marginBottom: 12,
+          }}>
+            <div style={{ fontSize: 10, color: "#666", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              ASCII CD
+            </div>
+            {!showAsciiCd ? (
+              <div
+                style={{
+                  borderRadius: 4,
+                  overflow: "hidden",
+                  background: "#0a0a12",
+                  minHeight: 160,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 10,
+                  color: "#666",
+                }}
+              >
+                <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                  ASCII CD is optional
+                </div>
+                <button
+                  onClick={() => setShowAsciiCd(true)}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: 999,
+                    border: "1px solid #333",
+                    background: "#171722",
+                    color: "#ccc",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    fontSize: 11,
+                  }}
+                >
+                  Load ASCII CD
+                </button>
+              </div>
+            ) : (
+              <Suspense
+                fallback={
+                  <div
+                    style={{
+                      borderRadius: 4,
+                      overflow: "hidden",
+                      background: "#0a0a12",
+                      minHeight: 160,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#666",
+                      fontSize: 10,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em",
+                    }}
+                  >
+                    Loading CD...
+                  </div>
+                }
+              >
+                <div
+                  style={{
+                    borderRadius: 4,
+                    overflow: "hidden",
+                    background: "#0a0a12",
+                    minHeight: 160,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <div style={{ transform: "scale(0.84)", transformOrigin: "center center" }}>
+                    <Cd />
+                  </div>
+                </div>
+              </Suspense>
+            )}
           </div>
 
           {/* Export */}
