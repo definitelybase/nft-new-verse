@@ -43,7 +43,9 @@ const MOCK_POOL = {
   ethBalance: 0,
   floor: 0,
   sellPrice: 0,
+  sellPayout: 0,
   buyPrice: 0,
+  buyCost: 0,
   totalMinted: 0,
   totalStaked: 0,
   poolNfts: 0,
@@ -546,7 +548,7 @@ function PixelPayloadPreview({ payloadHex }) {
   );
 }
 
-function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode, onToggleTheme }) {
+function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode, onToggleTheme, targetChainId }) {
   const items = [
     { id: "home", label: "Home" },
     { id: "mint", label: "Mint" },
@@ -660,7 +662,7 @@ function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode, onTogg
             <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{
                 width: 7, height: 7, borderRadius: "50%",
-                background: SUPPORTED_CHAINS.includes(wallet.chainId) ? COLORS.green : COLORS.yellow,
+                background: wallet.chainId === targetChainId ? COLORS.green : COLORS.yellow,
               }} />
               {shortAddress(wallet.account)}
             </span>
@@ -879,8 +881,8 @@ function PoolViz({ pool, className = "", style }) {
           <div style={{ marginTop: 8, color: COLORS.yellow, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>{pool.floor} ETH</div>
         </FrostCard>
         <FrostCard style={{ padding: 14, background: COLORS.surfaceStrong, borderRadius: 24, minHeight: 108, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-          <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Ask quote</div>
-          <div style={{ marginTop: 8, color: COLORS.green, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>{pool.buyPrice} ETH</div>
+          <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Ask total</div>
+          <div style={{ marginTop: 8, color: COLORS.green, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>{pool.buyCost || pool.buyPrice} ETH</div>
         </FrostCard>
       </div>
     </FrostCard>
@@ -892,7 +894,7 @@ function LiquiditySystemOverview({ className = "", style }) {
     { label: "Pool reserve", value: "60%", sub: "Every mint seeds floor liquidity.", tone: COLORS.accent },
     { label: "Treasury lane", value: "10%", sub: "Buyback and burn pressure valve.", tone: COLORS.purple },
     { label: "Protocol ops", value: "30%", sub: "Funds rollout, maintenance and collection support.", tone: COLORS.yellow },
-    { label: "Staker fees", value: "5 / 5%", sub: "From each buy and sell, paid to stakers.", tone: COLORS.green },
+    { label: "Staker fees", value: "10% fee share", sub: "10% of each trade fee is routed to stakers.", tone: COLORS.green },
   ];
 
   const zones = [
@@ -1217,18 +1219,28 @@ function TxStatusBar({ txStatus, txHash, chainId }) {
   );
 }
 
-const SUPPORTED_CHAINS = ["1", "11155111", "84532", "31337"];
 const CHAIN_LABELS = { "1": "Ethereum", "11155111": "Sepolia", "84532": "Base Sepolia", "31337": "Hardhat" };
 
-function checkChain(wallet) {
-  if (wallet?.chainId && !SUPPORTED_CHAINS.includes(wallet.chainId)) {
-    return `Wrong network (chainId ${wallet.chainId}). Switch to Ethereum, Sepolia, or Base Sepolia.`;
+function getTargetChainId(appConfig) {
+  return String(appConfig?.chainId || "11155111");
+}
+
+function getTargetChainLabel(appConfig) {
+  const targetChainId = getTargetChainId(appConfig);
+  return CHAIN_LABELS[targetChainId] || `Chain ${targetChainId}`;
+}
+
+function checkChain(wallet, appConfig) {
+  const targetChainId = getTargetChainId(appConfig);
+  if (wallet?.chainId && wallet.chainId !== targetChainId) {
+    return `Wrong network (chainId ${wallet.chainId}). Switch to ${getTargetChainLabel(appConfig)}.`;
   }
   return null;
 }
 
-async function switchToChain(targetChainId) {
+async function switchToChain(appConfig) {
   if (!window.ethereum) return;
+  const targetChainId = getTargetChainId(appConfig);
   try {
     await window.ethereum.request({
       method: "wallet_switchEthereumChain",
@@ -1239,8 +1251,8 @@ async function switchToChain(targetChainId) {
   }
 }
 
-function WrongChainBanner({ wallet }) {
-  const chainErr = checkChain(wallet);
+function WrongChainBanner({ wallet, appConfig }) {
+  const chainErr = checkChain(wallet, appConfig);
   if (!chainErr || !wallet?.account) return null;
   return (
     <div style={{
@@ -1250,7 +1262,7 @@ function WrongChainBanner({ wallet }) {
     }}>
       <span style={{ color: COLORS.yellow, fontFamily: fonts, fontSize: 11 }}>{chainErr}</span>
       <MetalButton
-        onClick={() => switchToChain("11155111")}
+        onClick={() => switchToChain(appConfig)}
         tone="yellow"
         size="xs"
         style={{
@@ -1259,7 +1271,7 @@ function WrongChainBanner({ wallet }) {
           whiteSpace: "nowrap",
         }}
       >
-        Switch to Sepolia
+        Switch to {getTargetChainLabel(appConfig)}
       </MetalButton>
     </div>
   );
@@ -1283,7 +1295,7 @@ function MintPage({ wallet, onConnectWallet, appConfig, pool, isLive, poolError 
   const mintedCount = Number(pool.totalMinted || 0);
   const mintedProgress = Math.min((mintedCount / MINT_TARGET_SUPPLY) * 100, 100);
   const stageLabel = isLive ? "Public mint live" : "Preview mode";
-  const networkLabel = wallet?.chainId ? CHAIN_LABELS[String(wallet.chainId)] || `Chain ${wallet.chainId}` : "Connect wallet";
+  const networkLabel = wallet?.chainId ? CHAIN_LABELS[String(wallet.chainId)] || `Chain ${wallet.chainId}` : getTargetChainLabel(appConfig);
   const mintMainColumns = isCompactMintLayout ? "1fr" : "minmax(0, 0.94fr) minmax(360px, 0.92fr)";
   const mintMiniColumns = isCompactMintLayout ? "1fr" : "repeat(3, minmax(0, 1fr))";
 
@@ -1319,7 +1331,7 @@ function MintPage({ wallet, onConnectWallet, appConfig, pool, isLive, poolError 
       return;
     }
     if (!routerAddress) { setTxStatus("Router address not set in appConfig."); return; }
-    const chainErr = checkChain(wallet);
+    const chainErr = checkChain(wallet, appConfig);
     if (chainErr) { setTxStatus(chainErr); return; }
     if (!payloadValid) { setTxStatus("Need a valid 512-byte payload from the Pixel Editor."); return; }
 
@@ -1458,7 +1470,7 @@ function MintPage({ wallet, onConnectWallet, appConfig, pool, isLive, poolError 
               >
                 {isSubmitting ? "Minting..." : payloadValid ? `Mint for ${mintPriceLabel}` : "Draw pixel art first"}
               </MetalButton>
-              <WrongChainBanner wallet={wallet} />
+              <WrongChainBanner wallet={wallet} appConfig={appConfig} />
               <TxStatusBar txStatus={txStatus} txHash={txHash} chainId={wallet?.chainId} />
             </div>
           </FrostCard>
@@ -1711,7 +1723,7 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
   async function handleBuy() {
     if (!wallet?.provider || !wallet?.account) { setTxStatus("Connect wallet first."); return; }
     if (!routerAddress) { setTxStatus("Router address not set."); return; }
-    const chainErr = checkChain(wallet);
+    const chainErr = checkChain(wallet, appConfig);
     if (chainErr) { setTxStatus(chainErr); return; }
     if (!pool.canBuy) { setTxStatus("Pool buying is currently disabled (need Stabilization + inventory)."); return; }
 
@@ -1742,7 +1754,7 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
   async function handleSell() {
     if (!wallet?.provider || !wallet?.account) { setTxStatus("Connect wallet first."); return; }
     if (!routerAddress || !nftAddress) { setTxStatus("Router or NFT address not set."); return; }
-    const chainErr = checkChain(wallet);
+    const chainErr = checkChain(wallet, appConfig);
     if (chainErr) { setTxStatus(chainErr); return; }
     if (!pool.canSell) { setTxStatus("Pool selling is currently disabled (need post-launch + coverage)."); return; }
 
@@ -2036,8 +2048,8 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
 
                 <div style={{ display: "grid", gridTemplateColumns: isCompactMarketLayout ? "1fr" : "repeat(3, 1fr)", gap: 12, marginTop: 16, alignItems: "stretch" }}>
                   <FrostCard style={{ padding: 14, background: COLORS.surfaceStrong, borderRadius: 18, minHeight: 104, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Ask quote</div>
-                    <div style={{ marginTop: 8, color: COLORS.green, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>{pool.buyPrice ? fmtEth(pool.buyPrice) : "—"}</div>
+                    <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Total cost</div>
+                    <div style={{ marginTop: 8, color: COLORS.green, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>{pool.buyCost ? fmtEth(pool.buyCost) : "—"}</div>
                   </FrostCard>
                   <FrostCard style={{ padding: 14, background: COLORS.surfaceStrong, borderRadius: 18, minHeight: 104, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                     <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Inventory</div>
@@ -2063,9 +2075,9 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
                       opacity: isSubmitting ? 0.7 : 1,
                     }}
                   >
-                    {isSubmitting ? "Buying..." : pool.canBuy ? `Buy for ~${fmtEth(pool.buyPrice)}` : "Buy disabled"}
+                    {isSubmitting ? "Buying..." : pool.canBuy ? `Buy for ~${fmtEth(pool.buyCost || pool.buyPrice)}` : "Buy disabled"}
                   </MetalButton>
-                  <WrongChainBanner wallet={wallet} />
+                  <WrongChainBanner wallet={wallet} appConfig={appConfig} />
                   <TxStatusBar txStatus={txStatus} txHash={txHash} chainId={wallet?.chainId} />
                 </div>
               </div>
@@ -2134,7 +2146,7 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
                   >
                     {isSubmitting ? "Selling..." : pool.canSell ? `Sell for ~${fmtEth(pool.sellPrice)}` : "Sell disabled"}
                   </MetalButton>
-                  <WrongChainBanner wallet={wallet} />
+                  <WrongChainBanner wallet={wallet} appConfig={appConfig} />
                   <TxStatusBar txStatus={txStatus} txHash={txHash} chainId={wallet?.chainId} />
                 </div>
               </div>
@@ -2355,7 +2367,7 @@ function StakingPage({ pool, isLive, wallet, onConnectWallet, appConfig, poolErr
   async function handleStake() {
     if (!wallet?.provider || !wallet?.account) { setTxStatus("Connect wallet first."); return; }
     if (!poolAddress || !nftAddress) { setTxStatus("Pool or NFT address not set."); return; }
-    const chainErr = checkChain(wallet);
+    const chainErr = checkChain(wallet, appConfig);
     if (chainErr) { setTxStatus(chainErr); return; }
 
     const tokenId = selectedStakeTokenId;
@@ -2398,7 +2410,7 @@ function StakingPage({ pool, isLive, wallet, onConnectWallet, appConfig, poolErr
 
   async function handleUnstake(tokenId) {
     if (!wallet?.provider || !wallet?.account) { setTxStatus("Connect wallet first."); return; }
-    const chainErr = checkChain(wallet);
+    const chainErr = checkChain(wallet, appConfig);
     if (chainErr) { setTxStatus(chainErr); return; }
 
     try {
@@ -2420,7 +2432,7 @@ function StakingPage({ pool, isLive, wallet, onConnectWallet, appConfig, poolErr
 
   async function handleClaim() {
     if (!wallet?.provider || !wallet?.account) { setTxStatus("Connect wallet first."); return; }
-    const chainErr = checkChain(wallet);
+    const chainErr = checkChain(wallet, appConfig);
     if (chainErr) { setTxStatus(chainErr); return; }
 
     try {
@@ -2558,7 +2570,7 @@ function StakingPage({ pool, isLive, wallet, onConnectWallet, appConfig, poolErr
             Claim staking rewards
           </div>
           <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
-            Stakers earn a share of trade fees from both sides of the market (5% on buys and 5% on sells). Fees accumulate automatically and can be claimed at any time. Unstaking also pays out pending rewards.
+            Stakers earn 10% of the protocol trade fee from both sides of the market. Fees accumulate automatically and can be claimed at any time. Unstaking also pays out pending rewards.
           </div>
 
           <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
@@ -2599,7 +2611,9 @@ function buildPoolView(liveData) {
     ethBalance: liveData.ethBalance,
     floor: liveData.floor,
     sellPrice: liveData.sellPrice,
+    sellPayout: liveData.sellPayout,
     buyPrice: liveData.buyPrice,
+    buyCost: liveData.buyCost,
     totalMinted: liveData.totalMinted,
     totalStaked: liveData.lockedSupply,
     poolNfts: liveData.poolNfts,
@@ -2621,6 +2635,7 @@ function buildPoolView(liveData) {
 
 export default function OnchainPixelSite({ appConfig, wallet, onConnectWallet, themeMode, onToggleTheme }) {
   const [page, setPage] = useState("home");
+  const targetChainId = getTargetChainId(appConfig);
   const { data: liveData, error: poolError, loading: poolLoading } = usePoolData({
     poolAddress: appConfig?.poolAddress,
     routerAddress: appConfig?.routerAddress,
@@ -2649,6 +2664,7 @@ export default function OnchainPixelSite({ appConfig, wallet, onConnectWallet, t
         onConnectWallet={onConnectWallet}
         themeMode={themeMode}
         onToggleTheme={onToggleTheme}
+        targetChainId={targetChainId}
       />
       {page === "home" && <HomePage setPage={setPage} pool={pool} isLive={isLive} poolError={poolError} />}
       {page === "mint" && <MintPage wallet={wallet} onConnectWallet={onConnectWallet} appConfig={appConfig} pool={pool} isLive={isLive} poolError={poolError} />}

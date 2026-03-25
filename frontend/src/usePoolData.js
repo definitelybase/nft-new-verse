@@ -9,6 +9,12 @@ function fmt(bn, decimals = 18) {
   return Number(ethers.utils.formatUnits(bn, decimals));
 }
 
+function fmtFeeAdjusted(bn, feeBps, direction) {
+  const fee = bn.mul(feeBps).div(10000);
+  const adjusted = direction === "subtract" ? bn.sub(fee) : bn.add(fee);
+  return Number(ethers.utils.formatUnits(adjusted, 18));
+}
+
 /**
  * Reads live pool + router state. Returns null while loading.
  * Falls back to rpcUrl if no wallet provider is available.
@@ -83,12 +89,18 @@ export default function usePoolData({ poolAddress, routerAddress, rpcUrl, ethUsd
       const poolETH = fmt(metrics.poolETH);
       const emc = fmt(metrics.effectiveMarketCap);
       const liqRatio = Number(metrics.liquidityRatio) / 100; // BPS → %
+      const sellPrice = prices ? fmt(prices.sellPrice) : 0;
+      const buyPrice = prices ? fmt(prices.buyPrice) : 0;
+      const sellPayout = prices ? fmtFeeAdjusted(prices.sellPrice, 250, "subtract") : 0;
+      const buyCost = prices ? fmtFeeAdjusted(prices.buyPrice, 250, "add") : 0;
 
       setData({
         // prices (pool-only fallback when router is absent)
         floor,
-        sellPrice: prices ? fmt(prices.sellPrice) : 0,
-        buyPrice: prices ? fmt(prices.buyPrice) : 0,
+        sellPrice,
+        sellPayout,
+        buyPrice,
+        buyCost,
         floorUsd: floor * ethUsdNum,
 
         // supply
