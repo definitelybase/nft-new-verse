@@ -18,7 +18,8 @@
     "deploy:hardhat": "hardhat run scripts/deploy-local.js --network hardhat",
     "deploy:local": "hardhat run scripts/deploy-local.js --network localhost",
     "verify:deploy": "node scripts/verify-deployment.js",
-    "transfer:ownership": "hardhat run scripts/transfer-ownership.js"
+    "transfer:ownership": "hardhat run scripts/transfer-ownership.js",
+    "keeper:market": "node scripts/market-keeper.js"
   },
   "dependencies": {
     "ethers": "^5.7.2",

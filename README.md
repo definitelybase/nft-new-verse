@@ -176,6 +176,38 @@ Recommended live rollout:
 
 If you accidentally deployed to an EOA owner first, you can still hand off the existing deployment afterwards with `transfer-ownership.js`.
 
+## Safe / Keeper Flow
+
+The pool now expects external market updates from your operator / Safe layer:
+
+- `setExternalMarketSnapshot(sales24h, activeListings, externalFloor)`
+- `confirmExternalSale(tokenId, salePrice)`
+
+Use [scripts/market-keeper.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/market-keeper.js) to prepare Safe-ready payloads.
+
+Snapshot example:
+
+```bash
+RPC_URL="https://1rpc.io/sepolia" \
+npm run keeper:market -- snapshot deployment-11155111.json 35 800 0.012
+```
+
+External sale confirmation:
+
+```bash
+RPC_URL="https://1rpc.io/sepolia" \
+npm run keeper:market -- confirm-sale deployment-11155111.json 42 0.0135
+```
+
+The script prints:
+
+- current pool owner and whether it is a Safe / contract
+- protocol floor and reference supply
+- derived market ratios for the snapshot
+- a Safe transaction payload with `to`, `value`, and `data`
+
+If the current owner is still an EOA and you intentionally want to send directly, set `SEND_TX=YES` plus `PRIVATE_KEY` or `DEPLOYER_KEY`.
+
 ## Notes
 
 - The protocol docs are in [docs/PLAN.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/PLAN.md), [docs/AMM_ARCHITECTURE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AMM_ARCHITECTURE.md), and [docs/AUDIT.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AUDIT.md).

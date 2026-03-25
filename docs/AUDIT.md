@@ -205,8 +205,9 @@ Local tests prove constructor encoding and wiring, but there is no proof that th
 1. Transfer live ownership to a multisig through `OWNER_ADDRESS` / `SAFE_ADDRESS`
 2. Lock palette before any public mint
 3. Validate direct deploy path on Sepolia and capture real gas + addresses
-4. Validate factory deployment flow end-to-end on testnet
-5. Keep deployment JSON and frontend appConfig in sync after each live deploy
+4. Run the Safe / keeper path for `setExternalMarketSnapshot()` and `confirmExternalSale()`
+5. Validate factory deployment flow end-to-end on testnet
+6. Keep deployment JSON and frontend appConfig in sync after each live deploy
 
 ### Do Before Any Public Testnet Push
 
