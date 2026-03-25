@@ -20,6 +20,7 @@ contract PixelFactory is Ownable {
     error InsufficientFee();
     error InvalidBps();
     error MissingBytecode();
+    error TransferFailed();
 
     event CollectionCreated(
         address indexed creator,
@@ -57,14 +58,17 @@ contract PixelFactory is Ownable {
     // ============================================================
 
     function setNFTCode(bytes calldata code) external onlyOwner {
+        if (code.length == 0) revert MissingBytecode();
         nftCode = code;
         emit NFTCodeUpdated(code.length);
     }
     function setPoolCode(bytes calldata code) external onlyOwner {
+        if (code.length == 0) revert MissingBytecode();
         poolCode = code;
         emit PoolCodeUpdated(code.length);
     }
     function setRouterCode(bytes calldata code) external onlyOwner {
+        if (code.length == 0) revert MissingBytecode();
         routerCode = code;
         emit RouterCodeUpdated(code.length);
     }
@@ -157,7 +161,8 @@ contract PixelFactory is Ownable {
     }
     function withdraw() external onlyOwner {
         uint256 amount = address(this).balance;
-        (bool s, ) = msg.sender.call{value: amount}(""); require(s);
+        (bool s, ) = msg.sender.call{value: amount}("");
+        if (!s) revert TransferFailed();
         emit FactoryWithdrawn(msg.sender, amount);
     }
 }
