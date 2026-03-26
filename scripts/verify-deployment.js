@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { ethers } = require("ethers");
+const { Contract, JsonRpcProvider, ZeroAddress, getAddress } = require("ethers-v6");
 
 function loadArtifact(name) {
   const hardhatArtifactPath = path.join(
@@ -39,7 +39,7 @@ function readDeployment(fileArg, networkArg) {
 }
 
 function normalizeAddress(value) {
-  return ethers.utils.getAddress(value);
+  return getAddress(value);
 }
 
 function check(label, ok, details, failures) {
@@ -75,19 +75,19 @@ async function main() {
     : "";
   const expectedOwner = normalizeAddress(json.owner);
   const expectedCreator = normalizeAddress(json.creator);
-  const expectedListingVault = json.listingVault ? normalizeAddress(json.listingVault) : ethers.constants.AddressZero;
+  const expectedListingVault = json.listingVault ? normalizeAddress(json.listingVault) : ZeroAddress;
   const hasFactory = Boolean(json.factory);
   const factoryAddress = hasFactory ? normalizeAddress(json.factory) : "";
 
-  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-  const nft = new ethers.Contract(nftAddress, loadArtifact("OnChainPixelNFT"), provider);
-  const pool = new ethers.Contract(poolAddress, loadArtifact("PixelPool"), provider);
-  const router = new ethers.Contract(routerAddress, loadArtifact("PixelRouter"), provider);
+  const provider = new JsonRpcProvider(rpcUrl);
+  const nft = new Contract(nftAddress, loadArtifact("OnChainPixelNFT"), provider);
+  const pool = new Contract(poolAddress, loadArtifact("PixelPool"), provider);
+  const router = new Contract(routerAddress, loadArtifact("PixelRouter"), provider);
   const market = marketAddress
-    ? new ethers.Contract(marketAddress, loadArtifact("PixelMarketplace"), provider)
+    ? new Contract(marketAddress, loadArtifact("PixelMarketplace"), provider)
     : null;
   const factory = hasFactory
-    ? new ethers.Contract(factoryAddress, loadArtifact("PixelFactory"), provider)
+    ? new Contract(factoryAddress, loadArtifact("PixelFactory"), provider)
     : null;
 
   const failures = [];
@@ -137,8 +137,8 @@ async function main() {
   check("Palette locked", paletteLocked === true, `${paletteLocked}`, failures);
   check(
     "No pending router change",
-    pendingRouter === ethers.constants.AddressZero && pendingRouterEta.eq(0),
-    `${pendingRouter} / eta ${pendingRouterEta.toString()}`,
+    pendingRouter === ZeroAddress && pendingRouterEta === 0n,
+    `${pendingRouter} / eta ${String(pendingRouterEta)}`,
     failures
   );
 

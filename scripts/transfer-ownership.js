@@ -1,9 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 const { ethers } = require("hardhat");
+const { getAddress } = require("ethers-v6");
 
 function normalizeAddress(value) {
-  return ethers.utils.getAddress(value);
+  return getAddress(value);
 }
 
 function resolveDeploymentFile(explicitFile, chainId) {

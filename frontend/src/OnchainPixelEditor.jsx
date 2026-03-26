@@ -2,7 +2,7 @@ import React, { Suspense, lazy, useState, useRef, useCallback, useEffect } from 
 import { MetalButton } from "./MetalButton";
 import { ThemeSwitch } from "./ThemeSwitch";
 
-const Cd = lazy(() => import("./ascii/cd"));
+const Cd = lazy(() => import("./components/AsciiCd"));
 
 const GRID = 32;
 const CELL = 14;

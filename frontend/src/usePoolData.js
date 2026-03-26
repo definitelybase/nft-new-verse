@@ -1,12 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
-import { ethers } from "ethers";
+import { Contract, JsonRpcProvider, formatUnits } from "ethers-v6";
 import { PIXEL_POOL_ABI, PIXEL_ROUTER_ABI } from "./pixelRouterAbi";
 
 const MARKET_STATES = ["Expansion", "Stabilization", "WeakDemand"];
 const POLL_INTERVAL = 15_000; // 15s
 
 function fmt(bn, decimals = 18) {
-  return Number(ethers.utils.formatUnits(bn, decimals));
+  return Number(formatUnits(bn, decimals));
 }
 
 /**
@@ -29,7 +29,7 @@ export default function usePoolData({ poolAddress, routerAddress, rpcUrl, ethUsd
     let provider = walletProvider || null;
     if (!provider && rpcUrl) {
       try {
-        provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+        provider = new JsonRpcProvider(rpcUrl);
       } catch {
         setData(null);
         setError("Invalid rpcUrl.");
@@ -46,10 +46,10 @@ export default function usePoolData({ poolAddress, routerAddress, rpcUrl, ethUsd
     }
 
     try {
-      const pool = new ethers.Contract(poolAddress, PIXEL_POOL_ABI, provider);
+      const pool = new Contract(poolAddress, PIXEL_POOL_ABI, provider);
       const hasRouter = Boolean(routerAddress);
       const router = hasRouter
-        ? new ethers.Contract(routerAddress, PIXEL_ROUTER_ABI, provider)
+        ? new Contract(routerAddress, PIXEL_ROUTER_ABI, provider)
         : null;
 
       // Pool reads always work; router reads are optional
@@ -86,7 +86,7 @@ export default function usePoolData({ poolAddress, routerAddress, rpcUrl, ethUsd
       const sellPrice = prices ? fmt(prices.sellPrice) : 0;
       const listingPrice = prices ? fmt(prices.listingPrice) : 0;
       const sellPayout = prices
-        ? Number(ethers.utils.formatUnits(prices.sellPrice.sub(prices.sellPrice.mul(250).div(10000)), 18))
+        ? Number(formatUnits(prices.sellPrice - (prices.sellPrice * 250n) / 10000n, 18))
         : 0;
 
       setData({
@@ -115,8 +115,8 @@ export default function usePoolData({ poolAddress, routerAddress, rpcUrl, ethUsd
         liqRatio,
 
         // market state
-        marketState: MARKET_STATES[state] || "Unknown",
-        marketStateIdx: state,
+        marketState: MARKET_STATES[Number(state)] || "Unknown",
+        marketStateIdx: Number(state),
         canSell: poolState ? poolState.poolBuysEnabled : false,
         listingEnabled: poolState ? poolState.listingEnabled : false,
         purchaseRateBps: poolState ? Number(poolState.purchaseRateBps) : 0,

@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect, useState } from "react";
-import { ethers } from "ethers";
+import { BrowserProvider } from "ethers-v6";
 import { APP_CONFIG } from "./appConfig";
 import { MetalButton } from "./MetalButton";
 import { ThemeModeProvider } from "./ThemeModeContext";
@@ -279,18 +279,19 @@ function useWalletStatus() {
       return undefined;
     }
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    const provider = new BrowserProvider(window.ethereum);
 
     async function syncWallet(nextAccounts) {
       try {
         const accounts = nextAccounts || (await provider.send("eth_accounts", []));
         const network = await provider.getNetwork();
+        const chainId = Number(network.chainId);
         setWallet({
           hasProvider: true,
           provider,
           account: accounts[0] || "",
-          chainId: String(network.chainId),
-          chainName: getChainName(network.chainId),
+          chainId: String(chainId),
+          chainName: getChainName(chainId),
           status: accounts[0] ? "connected" : "available",
           error: "",
         });
@@ -328,16 +329,17 @@ function useWalletStatus() {
 
   async function connectWallet() {
     if (typeof window === "undefined" || !window.ethereum) return;
-    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    const provider = new BrowserProvider(window.ethereum);
     try {
       const accounts = await provider.send("eth_requestAccounts", []);
       const network = await provider.getNetwork();
+      const chainId = Number(network.chainId);
       setWallet({
         hasProvider: true,
         provider,
         account: accounts[0] || "",
-        chainId: String(network.chainId),
-        chainName: getChainName(network.chainId),
+        chainId: String(chainId),
+        chainName: getChainName(chainId),
         status: accounts[0] ? "connected" : "available",
         error: "",
       });

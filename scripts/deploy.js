@@ -12,8 +12,17 @@
  * 
  * Result: Fully deployed collection with NFT + Pool + Router, all wired.
  */
-
-const { ethers } = require("ethers");
+const {
+  Contract,
+  ContractFactory,
+  JsonRpcProvider,
+  Wallet,
+  ZeroAddress,
+  formatEther,
+  formatUnits,
+  isAddress,
+  parseEther,
+} = require("ethers-v6");
 const fs = require("fs");
 const path = require("path");
 
@@ -69,7 +78,7 @@ const COLLECTION = {
   defaultWidth: 32,
   defaultHeight: 32,
   maxSupply: 10000,
-  mintPrice: ethers.utils.parseEther("0.001"),
+  mintPrice: parseEther("0.001"),
   poolSeedBps: 6000,  // 60%
   treasuryBps: 1000,  // 10%
   palette: PALETTE_16,
@@ -99,33 +108,33 @@ async function main() {
     throw new Error('Mainnet deploy blocked. Re-run with CONFIRM_MAINNET=YES once you really want it.');
   }
 
-  const provider = new ethers.providers.JsonRpcProvider(rpc);
+  const provider = new JsonRpcProvider(rpc);
   const providerNetwork = await provider.getNetwork();
-  if (providerNetwork.chainId !== networkConfig.chainId) {
+  if (Number(providerNetwork.chainId) !== networkConfig.chainId) {
     throw new Error(
       `RPC/network mismatch: requested ${network} but RPC returned chainId ${providerNetwork.chainId}`
     );
   }
 
-  const wallet = new ethers.Wallet(pk, provider);
+  const wallet = new Wallet(pk, provider);
   const creatorAddress = process.env.CREATOR_ADDRESS || wallet.address;
   const ownerAddress = process.env.OWNER_ADDRESS || process.env.SAFE_ADDRESS || wallet.address;
   const shouldLockPalette = process.env.SKIP_PALETTE_LOCK !== "YES";
-  const balance = await wallet.getBalance();
-  const gasPrice = await provider.getGasPrice();
+  const balance = await provider.getBalance(wallet.address);
+  const gasPrice = (await provider.getFeeData()).gasPrice ?? 0n;
 
-  if (!ethers.utils.isAddress(creatorAddress) || creatorAddress === ethers.constants.AddressZero) {
+  if (!isAddress(creatorAddress) || creatorAddress === ZeroAddress) {
     throw new Error("CREATOR_ADDRESS must be a non-zero address");
   }
-  if (!ethers.utils.isAddress(ownerAddress) || ownerAddress === ethers.constants.AddressZero) {
+  if (!isAddress(ownerAddress) || ownerAddress === ZeroAddress) {
     throw new Error("OWNER_ADDRESS/SAFE_ADDRESS must be a non-zero address");
   }
   console.log(`\nOnChainPixel Full Deploy -> ${network}`);
   console.log(`Deployer: ${wallet.address}`);
   console.log(`Creator:  ${creatorAddress}`);
   console.log(`Owner:    ${ownerAddress}`);
-  console.log(`Balance: ${ethers.utils.formatEther(balance)} ETH`);
-  console.log(`Gas: ${ethers.utils.formatUnits(gasPrice, "gwei")} gwei\n`);
+  console.log(`Balance: ${formatEther(balance)} ETH`);
+  console.log(`Gas: ${formatUnits(gasPrice, "gwei")} gwei\n`);
 
   const artifacts = {
     factory: loadArtifact("PixelFactory"),
@@ -137,12 +146,13 @@ async function main() {
 
   // ---- Step 1: Deploy Factory ----
   console.log("Step 1/4: Deploying PixelFactory...");
-  const factoryFactory = new ethers.ContractFactory(
+  const factoryFactory = new ContractFactory(
     artifacts.factory.abi, artifacts.factory.bin, wallet
   );
   const factory = await factoryFactory.deploy({ gasLimit: 2_000_000 });
-  let receipt = await factory.deployTransaction.wait();
-  console.log(`   OK Factory: ${factory.address} (${receipt.gasUsed.toLocaleString()} gas)\n`);
+  const factoryAddress = await factory.getAddress();
+  let receipt = await factory.deploymentTransaction().wait();
+  console.log(`   OK Factory: ${factoryAddress} (${receipt.gasUsed.toLocaleString()} gas)\n`);
 
   // ---- Step 2: Upload bytecodes ----
   console.log("Step 2/4: Uploading contract bytecodes to Factory...");
@@ -177,7 +187,15 @@ async function main() {
   receipt = await tx.wait();
 
   // Parse event to get addresses
-  const event = receipt.events?.find(e => e.event === "CollectionCreated");
+  const event = receipt.logs
+    .map((log) => {
+      try {
+        return factory.interface.parseLog(log);
+      } catch {
+        return null;
+      }
+    })
+    .find((parsed) => parsed?.name === "CollectionCreated");
   const nftAddr = event?.args?.nft;
   const poolAddr = event?.args?.pool;
   const routerAddr = event?.args?.router;
@@ -194,10 +212,10 @@ async function main() {
 
   // ---- Step 4: Verify ----
   console.log("Step 4/4: Verifying deployment...");
-  const nftContract = new ethers.Contract(nftAddr, artifacts.nft.abi, wallet);
-  const poolContract = new ethers.Contract(poolAddr, artifacts.pool.abi, wallet);
-  const routerContract = new ethers.Contract(routerAddr, artifacts.router.abi, wallet);
-  const marketContract = new ethers.Contract(marketAddr, artifacts.market.abi, wallet);
+  const nftContract = new Contract(nftAddr, artifacts.nft.abi, wallet);
+  const poolContract = new Contract(poolAddr, artifacts.pool.abi, wallet);
+  const routerContract = new Contract(routerAddr, artifacts.router.abi, wallet);
+  const marketContract = new Contract(marketAddr, artifacts.market.abi, wallet);
 
   if (creatorAddress.toLowerCase() !== wallet.address.toLowerCase()) {
     tx = await routerContract.setCreator(creatorAddress);
@@ -256,7 +274,7 @@ async function main() {
   const deployInfo = {
     network,
     chainId: providerNetwork.chainId,
-    factory: factory.address,
+    factory: factoryAddress,
     collection: {
       nft: nftAddr,
       pool: poolAddr,
@@ -305,7 +323,7 @@ async function main() {
   ethUsd: "2000",
 });`);
   console.log(`\nLinks:`);
-  console.log(`   Factory: ${networkConfig.explorer}/address/${factory.address}`);
+  console.log(`   Factory: ${networkConfig.explorer}/address/${factoryAddress}`);
   console.log(`   NFT:     ${networkConfig.explorer}/address/${nftAddr}`);
   console.log(`   Pool:    ${networkConfig.explorer}/address/${poolAddr}`);
   console.log(`   Router:  ${networkConfig.explorer}/address/${routerAddr}`);

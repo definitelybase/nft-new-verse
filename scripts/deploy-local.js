@@ -16,6 +16,7 @@
 const { ethers } = require("hardhat");
 const fs = require("fs");
 const path = require("path");
+const { ZeroAddress, formatEther, isAddress, parseEther } = require("ethers-v6");
 
 const PALETTE_16 = Buffer.from([
   0x00,0x00,0x00, 0xFF,0x00,0x00, 0x00,0xFF,0x00, 0x00,0x00,0xFF,
@@ -31,7 +32,7 @@ async function main() {
   if (!deployer) {
     throw new Error("No deployer signer available for the selected network");
   }
-  const mintPrice = ethers.utils.parseEther("0.001");
+  const mintPrice = parseEther("0.001");
   const network = await ethers.provider.getNetwork();
   const networkLabel = network.name === "unknown" && network.chainId === 31337 ? "hardhat" : network.name;
   const isLocal = network.chainId === 31337;
@@ -41,10 +42,10 @@ async function main() {
   const shouldLockPalette = process.env.SKIP_PALETTE_LOCK !== "YES";
   const marketFeeBps = Number(process.env.MARKETPLACE_FEE_BPS || "250");
 
-  if (!ethers.utils.isAddress(creatorAddress) || creatorAddress === ethers.constants.AddressZero) {
+  if (!isAddress(creatorAddress) || creatorAddress === ZeroAddress) {
     throw new Error("CREATOR_ADDRESS must be a non-zero address");
   }
-  if (!ethers.utils.isAddress(ownerAddress) || ownerAddress === ethers.constants.AddressZero) {
+  if (!isAddress(ownerAddress) || ownerAddress === ZeroAddress) {
     throw new Error("OWNER_ADDRESS/SAFE_ADDRESS must be a non-zero address");
   }
   if (!Number.isFinite(marketFeeBps) || marketFeeBps < 0 || marketFeeBps > 10000) {
@@ -55,9 +56,9 @@ async function main() {
   console.log(`Deployer: ${deployer.address}`);
   console.log(`Creator:  ${creatorAddress}`);
   console.log(`Owner:    ${ownerAddress}`);
-  console.log(`Balance:  ${ethers.utils.formatEther(await deployer.getBalance())} ETH\n`);
+  console.log(`Balance:  ${formatEther(BigInt((await deployer.getBalance()).toString()))} ETH\n`);
 
-  let totalGas = ethers.BigNumber.from(0);
+  let totalGas = 0n;
 
   // 1. Deploy NFT
   const NFT = await ethers.getContractFactory("OnChainPixelNFT");
@@ -67,14 +68,14 @@ async function main() {
     mintPrice, PALETTE_16
   );
   let r = await nft.deployTransaction.wait();
-  totalGas = totalGas.add(r.gasUsed);
+  totalGas += BigInt(r.gasUsed.toString());
   console.log(`NFT:    ${nft.address} (${r.gasUsed.toLocaleString()} gas)`);
 
   // 2. Deploy Pool
   const Pool = await ethers.getContractFactory("PixelPool");
   const pool = await Pool.deploy(nft.address, mintPrice);
   r = await pool.deployTransaction.wait();
-  totalGas = totalGas.add(r.gasUsed);
+  totalGas += BigInt(r.gasUsed.toString());
   console.log(`Pool:   ${pool.address} (${r.gasUsed.toLocaleString()} gas)`);
 
   // 3. Deploy Router
@@ -84,14 +85,14 @@ async function main() {
     mintPrice, 6000, 1000
   );
   r = await router.deployTransaction.wait();
-  totalGas = totalGas.add(r.gasUsed);
+  totalGas += BigInt(r.gasUsed.toString());
   console.log(`Router: ${router.address} (${r.gasUsed.toLocaleString()} gas)`);
 
   // 4. Deploy Marketplace
   const Marketplace = await ethers.getContractFactory("PixelMarketplace");
   const market = await Marketplace.deploy(nft.address, pool.address, marketFeeBps);
   r = await market.deployTransaction.wait();
-  totalGas = totalGas.add(r.gasUsed);
+  totalGas += BigInt(r.gasUsed.toString());
   console.log(`Market: ${market.address} (${r.gasUsed.toLocaleString()} gas)`);
 
   // 5. Wire permissions
@@ -121,7 +122,7 @@ async function main() {
 
   // 7. Seed initial liquidity (local only — on testnet, seed manually)
   if (isLocal) {
-    const localSeedAmount = ethers.utils.parseEther(localSeedEth);
+    const localSeedAmount = parseEther(localSeedEth);
     tx = await pool.setRouter(deployer.address); await tx.wait();
     tx = await pool.seedLiquidity({ value: localSeedAmount }); await tx.wait();
     tx = await pool.setRouter(router.address); await tx.wait();
@@ -166,7 +167,7 @@ async function main() {
     owner: ownerAddress,
     listingVault: market.address,
     paletteLocked: shouldLockPalette,
-    totalGas: totalGas.toString(),
+    totalGas: String(totalGas),
     appConfig: {
       chainId: String(network.chainId),
       poolAddress: pool.address,

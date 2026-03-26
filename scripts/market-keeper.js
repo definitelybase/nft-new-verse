@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { ethers } = require("ethers");
+const { Contract, JsonRpcProvider, Wallet, formatEther, getAddress, parseEther } = require("ethers-v6");
 
 const MARKET_STATES = ["Expansion", "Stabilization", "WeakDemand"];
 
@@ -22,7 +22,7 @@ function loadArtifact(name) {
 }
 
 function normalizeAddress(value) {
-  return ethers.utils.getAddress(value);
+  return getAddress(value);
 }
 
 function readDeployment(fileArg, networkArg) {
@@ -50,16 +50,16 @@ function parsePriceInput(value) {
     throw new Error("Missing price value");
   }
   if (value.startsWith("0x")) {
-    return ethers.BigNumber.from(value);
+    return BigInt(value);
   }
   if (value.includes(".")) {
-    return ethers.utils.parseEther(value);
+    return parseEther(value);
   }
-  return ethers.BigNumber.from(value);
+  return BigInt(value);
 }
 
 function fmtEth(value) {
-  return `${ethers.utils.formatEther(value)} ETH`;
+  return `${formatEther(value)} ETH`;
 }
 
 function toSafeTx(target, data, note) {
@@ -78,17 +78,17 @@ function predictState({ now, launchTimestamp, launchProtection, purchaseRateBps,
   }
 
   if (
-    purchaseRateBps.gte(expansionPurchaseRateBps) &&
-    listingPressureBps.lte(expansionListingPressureBps) &&
-    floorRatioBps.gte(expansionFloorRatioBps)
+    purchaseRateBps >= expansionPurchaseRateBps &&
+    listingPressureBps <= expansionListingPressureBps &&
+    floorRatioBps >= expansionFloorRatioBps
   ) {
     return "Expansion";
   }
 
   if (
-    purchaseRateBps.lt(weakDemandPurchaseRateBps) ||
-    listingPressureBps.gt(weakDemandListingPressureBps) ||
-    floorRatioBps.lt(weakDemandFloorRatioBps)
+    purchaseRateBps < weakDemandPurchaseRateBps ||
+    listingPressureBps > weakDemandListingPressureBps ||
+    floorRatioBps < weakDemandFloorRatioBps
   ) {
     return "WeakDemand";
   }
@@ -106,7 +106,7 @@ async function maybeSendDirect(provider, ownerAddress, poolAddress, data) {
     throw new Error("SEND_TX=YES requires PRIVATE_KEY or DEPLOYER_KEY");
   }
 
-  const signer = new ethers.Wallet(privateKey, provider);
+  const signer = new Wallet(privateKey, provider);
   const signerAddress = normalizeAddress(signer.address);
   if (signerAddress !== ownerAddress) {
     throw new Error(`Direct send signer ${signerAddress} is not the current owner ${ownerAddress}`);
@@ -155,12 +155,12 @@ async function main() {
     throw new Error("Missing RPC URL. Set RPC_URL or store rpcUrl in deployment JSON.");
   }
 
-  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+  const provider = new JsonRpcProvider(rpcUrl);
   const poolAddress = normalizeAddress(json.collection ? json.collection.pool : json.pool);
   const nftAddress = normalizeAddress(json.collection ? json.collection.nft : json.nft);
 
-  const pool = new ethers.Contract(poolAddress, loadArtifact("PixelPool"), provider);
-  const nft = new ethers.Contract(nftAddress, loadArtifact("OnChainPixelNFT"), provider);
+  const pool = new Contract(poolAddress, loadArtifact("PixelPool"), provider);
+  const nft = new Contract(nftAddress, loadArtifact("OnChainPixelNFT"), provider);
   const ownerAddress = normalizeAddress(await pool.owner());
   const ownerCode = await provider.getCode(ownerAddress);
   const currentState = MARKET_STATES[Number(await pool.marketState())] || "Unknown";
@@ -186,17 +186,17 @@ async function main() {
       throw new Error("snapshot requires <sales24h> <activeListings> <externalFloorEthOrWei>");
     }
 
-    const sales24h = ethers.BigNumber.from(sales24hRaw);
-    const activeListings = ethers.BigNumber.from(activeListingsRaw);
+    const sales24h = BigInt(sales24hRaw);
+    const activeListings = BigInt(activeListingsRaw);
     const externalFloor = parsePriceInput(externalFloorRaw);
-    const purchaseRateBps = referenceSupply.isZero() ? ethers.constants.Zero : sales24h.mul(10000).div(referenceSupply);
-    const listingPressureBps = referenceSupply.isZero() ? ethers.constants.Zero : activeListings.mul(10000).div(referenceSupply);
-    const floorRatioBps = protocolFloor.isZero() ? ethers.BigNumber.from(10000) : externalFloor.mul(10000).div(protocolFloor);
+    const purchaseRateBps = referenceSupply === 0n ? 0n : (sales24h * 10000n) / referenceSupply;
+    const listingPressureBps = referenceSupply === 0n ? 0n : (activeListings * 10000n) / referenceSupply;
+    const floorRatioBps = protocolFloor === 0n ? 10000n : (externalFloor * 10000n) / protocolFloor;
 
     const nextState = predictState({
       now: nowBlock.timestamp,
-      launchTimestamp: launchTimestamp.toNumber(),
-      launchProtection: launchProtection.toNumber(),
+      launchTimestamp: Number(launchTimestamp),
+      launchProtection: Number(launchProtection),
       purchaseRateBps,
       listingPressureBps,
       floorRatioBps,
@@ -246,7 +246,7 @@ async function main() {
     throw new Error("confirm-sale requires <tokenId> <salePriceEthOrWei>");
   }
 
-  const tokenId = ethers.BigNumber.from(tokenIdRaw);
+  const tokenId = BigInt(tokenIdRaw);
   const salePrice = parsePriceInput(salePriceRaw);
   const pending = await pool.pendingExternalSale(tokenId);
   const fromPoolInventory = pending ? await pool.pendingExternalSaleFromPool(tokenId) : false;
