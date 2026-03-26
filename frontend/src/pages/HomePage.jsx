@@ -6,10 +6,10 @@ import { DataBadge, Eyebrow, FrostCard } from "../components/ui";
 
 function HeroGallery({ pool }) {
   const tiles = [
-    { desc: "Human dark · afro blue · scar", image: "/featured-nfts/0.svg" },
-    { desc: "Human pale · beanie blonde · rare", image: "/featured-nfts/1.svg" },
-    { desc: "Human light · short purple · turtleneck", image: "/featured-nfts/2.svg" },
-    { desc: "Human pale · flat blue · gold earring", image: "/featured-nfts/3.svg" },
+    { title: "Permanent art", desc: "SSTORE2-backed data", image: "/featured-nfts/0.svg" },
+    { title: "Live market", desc: "Pool-aware pricing", image: "/featured-nfts/1.svg" },
+    { title: "Instant exits", desc: "Floor-liquidity thesis", image: "/featured-nfts/2.svg" },
+    { title: "On-chain render", desc: "SVG output", image: "/featured-nfts/3.svg" },
   ];
 
   return (
@@ -143,11 +143,24 @@ function HeroGallery({ pool }) {
               </div>
               <div
                 style={{
+                  color: COLORS.text,
+                  fontFamily: fontDisplay,
+                  fontSize: 18,
+                  fontWeight: 600,
+                  lineHeight: 1.1,
+                  textAlign: "left",
+                }}
+              >
+                {tile.title}
+              </div>
+              <div
+                style={{
                   color: COLORS.textMuted,
                   fontFamily: fonts,
                   fontSize: 11,
                   lineHeight: 1.7,
                   textAlign: "left",
+                  marginTop: 8,
                 }}
               >
                 {tile.desc}
