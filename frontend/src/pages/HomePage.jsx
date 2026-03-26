@@ -6,10 +6,10 @@ import { DataBadge, Eyebrow, FrostCard } from "../components/ui";
 
 function HeroGallery({ pool }) {
   const tiles = [
-    { title: "OnChainPixel #0", desc: "Human dark · afro blue · scar", image: "/featured-nfts/0.svg", size: 112 },
-    { title: "OnChainPixel #1", desc: "Human pale · beanie blonde · rare", image: "/featured-nfts/1.svg", size: 88 },
-    { title: "OnChainPixel #2", desc: "Human light · short purple · turtleneck", image: "/featured-nfts/2.svg", size: 88 },
-    { title: "OnChainPixel #3", desc: "Human pale · flat blue · gold earring", image: "/featured-nfts/3.svg", size: 88 },
+    { desc: "Human dark · afro blue · scar", image: "/featured-nfts/0.svg", size: 112 },
+    { desc: "Human pale · beanie blonde · rare", image: "/featured-nfts/1.svg", size: 88 },
+    { desc: "Human light · short purple · turtleneck", image: "/featured-nfts/2.svg", size: 88 },
+    { desc: "Human pale · flat blue · gold earring", image: "/featured-nfts/3.svg", size: 88 },
   ];
 
   return (
@@ -93,7 +93,7 @@ function HeroGallery({ pool }) {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         {tiles.map((tile, index) => (
           <FrostCard
-            key={tile.title}
+            key={tile.image}
             hoverable
             className="site-reveal site-hover-lift"
             style={{
@@ -105,7 +105,7 @@ function HeroGallery({ pool }) {
               ...revealStyle(140 + index * 70),
             }}
           >
-            <div style={{ display: "flex", justifyContent: index === 0 ? "center" : "flex-start" }}>
+            <div style={{ display: "flex", justifyContent: "center" }}>
               <div className="site-drift" style={driftStyle(index * 360, 7 + index)}>
                 <div
                   style={{
@@ -123,7 +123,7 @@ function HeroGallery({ pool }) {
                 >
                   <img
                     src={tile.image}
-                    alt={tile.title}
+                    alt={tile.desc}
                     style={{
                       width: "100%",
                       height: "100%",
@@ -136,10 +136,7 @@ function HeroGallery({ pool }) {
               </div>
             </div>
             <div>
-              <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600 }}>
-                {tile.title}
-              </div>
-              <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, marginTop: 6, lineHeight: 1.55 }}>
+              <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.55 }}>
                 {tile.desc}
               </div>
             </div>
