@@ -295,25 +295,6 @@ function LiquiditySystemOverview({ className = "", style }) {
             }}
           >
             <svg viewBox="0 0 920 420" preserveAspectRatio="xMidYMid meet" style={{ display: "block", width: "100%", height: "100%" }}>
-              <defs>
-                <linearGradient id="premiumLine" x1="0%" x2="100%" y1="0%" y2="0%">
-                  <stop offset="0%" stopColor="#E4B84E" />
-                  <stop offset="33%" stopColor="#E4B84E" />
-                  <stop offset="34%" stopColor="#AE8BFF" />
-                  <stop offset="66%" stopColor="#AE8BFF" />
-                  <stop offset="67%" stopColor="#76AEEB" />
-                  <stop offset="100%" stopColor="#76AEEB" />
-                </linearGradient>
-                <linearGradient id="floorLane" x1="0%" x2="100%" y1="0%" y2="0%">
-                  <stop offset="0%" stopColor="#D6B861" />
-                  <stop offset="33%" stopColor="#D6B861" />
-                  <stop offset="34%" stopColor="#B79AF0" />
-                  <stop offset="66%" stopColor="#B79AF0" />
-                  <stop offset="67%" stopColor="#8AA5D2" />
-                  <stop offset="100%" stopColor="#8AA5D2" />
-                </linearGradient>
-              </defs>
-
               <rect x="0" y="0" width="306.7" height="420" fill="rgba(228,184,78,0.08)" />
               <rect x="306.7" y="0" width="306.7" height="420" fill="rgba(174,139,255,0.08)" />
               <rect x="613.4" y="0" width="306.6" height="420" fill="rgba(118,174,235,0.08)" />
@@ -329,24 +310,47 @@ function LiquiditySystemOverview({ className = "", style }) {
               <line x1="613.4" y1="36" x2="872" y2="36" stroke="rgba(118,174,235,0.34)" strokeWidth="2" />
 
               <path
-                d="M68 300 C168 294, 246 278, 320 252 C402 224, 504 206, 613.4 204"
+                d="M68 300 C168 294, 246 278, 306.7 258"
                 fill="none"
-                stroke="url(#floorLane)"
+                stroke="#D6B861"
                 strokeWidth="10"
+                strokeLinecap="round"
+              />
+              <path
+                d="M306.7 258 C402 224, 504 206, 613.4 204"
+                fill="none"
+                stroke="#B79AF0"
+                strokeWidth="8"
                 strokeLinecap="round"
               />
               <path
                 d="M613.4 204 C692 202, 774 214, 852 244"
                 fill="none"
-                stroke="rgba(118,174,235,0.62)"
+                stroke="#8AA5D2"
                 strokeWidth="8"
                 strokeDasharray="16 12"
                 strokeLinecap="round"
               />
               <path
-                d="M68 248 C160 238, 248 210, 332 170 C428 124, 542 94, 668 80 C756 72, 822 76, 860 84"
+                d="M68 248 C160 238, 248 210, 306.7 170"
                 fill="none"
-                stroke="url(#premiumLine)"
+                stroke="#E4B84E"
+                strokeWidth="6"
+                strokeDasharray="16 12"
+                strokeLinecap="round"
+              />
+              <path
+                d="M306.7 170 C428 124, 542 94, 613.4 86"
+                fill="none"
+                stroke="#AE8BFF"
+                strokeWidth="6"
+                strokeDasharray="16 12"
+                strokeLinecap="round"
+              />
+              <path
+                d="M613.4 86 C756 72, 822 76, 860 84"
+                fill="none"
+                stroke="#76AEEB"
                 strokeWidth="6"
                 strokeDasharray="16 12"
                 strokeLinecap="round"
@@ -363,12 +367,11 @@ function LiquiditySystemOverview({ className = "", style }) {
               <text x="764" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Strong market</text>
 
               <text x="78" y="142" fill="rgba(228,184,78,0.94)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Weak demand / buyback zone</text>
-              <rect x="200" y="284" width="214" height="28" rx="14" fill="rgba(255,255,255,0.56)" />
-              <text x="214" y="302" fill="rgba(123,89,214,0.98)" fontSize="12" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.8">Stabilization / release zone</text>
-              <rect x="520" y="226" width="214" height="28" rx="14" fill="rgba(255,255,255,0.56)" />
-              <text x="534" y="244" fill="rgba(79,137,212,0.98)" fontSize="12" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.8">Expansion / market leads</text>
-              <rect x="514" y="252" width="226" height="24" rx="12" fill="rgba(255,255,255,0.48)" />
-              <text x="528" y="268" fill="rgba(79,137,212,0.98)" fontSize="11" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.6">sell-to-pool closes here</text>
+              <rect x="184" y="286" width="246" height="28" rx="14" fill="rgba(255,255,255,0.56)" />
+              <text x="198" y="304" fill="rgba(123,89,214,0.98)" fontSize="12" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.8">Stabilization / release zone</text>
+              <rect x="496" y="228" width="236" height="46" rx="16" fill="rgba(255,255,255,0.56)" />
+              <text x="510" y="246" fill="rgba(79,137,212,0.98)" fontSize="12" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.8">Expansion / market leads</text>
+              <text x="510" y="264" fill="rgba(79,137,212,0.98)" fontSize="11" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.6">sell-to-pool closes here</text>
             </svg>
           </div>
         </FrostCard>
