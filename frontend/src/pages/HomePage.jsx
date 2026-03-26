@@ -2,14 +2,14 @@ import React from "react";
 import { MetalButton } from "../MetalButton";
 import { COLORS, fonts, fontDisplay } from "../utils/constants";
 import { driftStyle, fmtEth, revealStyle } from "../utils/helpers";
-import { DataBadge, Eyebrow, FrostCard, PixelAvatar } from "../components/ui";
+import { DataBadge, Eyebrow, FrostCard } from "../components/ui";
 
 function HeroGallery({ pool }) {
   const tiles = [
-    { title: "Permanent art", desc: "SSTORE2-backed data", seed: 11, size: 112 },
-    { title: "Live market", desc: "Pool-aware pricing", seed: 87, size: 88 },
-    { title: "Instant exits", desc: "Floor-liquidity thesis", seed: 61, size: 88 },
-    { title: "On-chain render", desc: "SVG output", seed: 122, size: 88 },
+    { title: "OnChainPixel #0", desc: "Human dark · afro blue · scar", image: "/featured-nfts/0.svg", size: 112 },
+    { title: "OnChainPixel #1", desc: "Human pale · beanie blonde · rare", image: "/featured-nfts/1.svg", size: 88 },
+    { title: "OnChainPixel #2", desc: "Human light · short purple · turtleneck", image: "/featured-nfts/2.svg", size: 88 },
+    { title: "OnChainPixel #3", desc: "Human pale · flat blue · gold earring", image: "/featured-nfts/3.svg", size: 88 },
   ];
 
   return (
@@ -107,7 +107,32 @@ function HeroGallery({ pool }) {
           >
             <div style={{ display: "flex", justifyContent: index === 0 ? "center" : "flex-start" }}>
               <div className="site-drift" style={driftStyle(index * 360, 7 + index)}>
-                <PixelAvatar size={tile.size} seed={tile.seed} />
+                <div
+                  style={{
+                    width: tile.size,
+                    height: tile.size,
+                    borderRadius: 22,
+                    border: `1px solid ${COLORS.border}`,
+                    background: "rgba(255,255,255,0.04)",
+                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 28px rgba(0,0,0,0.12)",
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img
+                    src={tile.image}
+                    alt={tile.title}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      imageRendering: "pixelated",
+                      display: "block",
+                    }}
+                  />
+                </div>
               </div>
             </div>
             <div>
