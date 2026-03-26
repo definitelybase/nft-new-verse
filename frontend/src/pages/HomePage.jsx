@@ -15,7 +15,7 @@ function HeroGallery({ pool }) {
   const heroStats = [
     { label: "Mint split", value: "60 / 10 / 30", tone: COLORS.accent },
     { label: "Market lane", value: "Native P2P", tone: COLORS.purple },
-    { label: "Staker take", value: "10% fee share", tone: COLORS.green },
+    { label: "Trade fee", value: "2.5% routed", tone: COLORS.green },
   ];
 
   return (
@@ -211,7 +211,7 @@ function LiquiditySystemOverview({ className = "", style }) {
     { label: "Pool reserve", value: "60%", sub: "Every mint seeds floor liquidity.", tone: COLORS.accent },
     { label: "Treasury lane", value: "10%", sub: "Buyback and burn pressure valve.", tone: COLORS.purple },
     { label: "Protocol ops", value: "30%", sub: "Funds rollout, maintenance and collection support.", tone: COLORS.yellow },
-    { label: "Staker fees", value: "10% fee share", sub: "10% of each trade fee is routed to stakers.", tone: COLORS.green },
+    { label: "Trade fee", value: "2.5%", sub: "Each trade feeds the pool, treasury, and the protocol loop.", tone: COLORS.green },
   ];
 
   const zones = [
