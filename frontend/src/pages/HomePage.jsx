@@ -12,6 +12,11 @@ function HeroGallery({ pool }) {
     { title: "Instant exits", desc: "Floor-liquidity thesis", image: `/collection/images/${FEATURED_COLLECTION_IDS[2]}.svg` },
     { title: "On-chain render", desc: "SVG output", image: `/collection/images/${FEATURED_COLLECTION_IDS[3]}.svg` },
   ];
+  const heroStats = [
+    { label: "Mint split", value: "60 / 10 / 30", tone: COLORS.accent },
+    { label: "Market lane", value: "Native P2P", tone: COLORS.purple },
+    { label: "Staker take", value: "10% fee share", tone: COLORS.green },
+  ];
 
   return (
     <div
@@ -19,16 +24,15 @@ function HeroGallery({ pool }) {
         display: "grid",
         gridTemplateColumns: "1.05fr 0.95fr",
         gap: 12,
-        minHeight: 500,
+        minHeight: 428,
       }}
     >
       <FrostCard
         className="site-reveal"
         style={{
-          padding: 30,
+          padding: 28,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
           overflow: "hidden",
           position: "relative",
           ...revealStyle(80),
@@ -62,7 +66,7 @@ function HeroGallery({ pool }) {
           </div>
           <p
             style={{
-              margin: "22px 0 0",
+              margin: "18px 0 0",
               maxWidth: 500,
               color: COLORS.textMuted,
               fontFamily: fonts,
@@ -73,6 +77,38 @@ function HeroGallery({ pool }) {
             A gallery-first NFT protocol where the collection, the market, and the floor
             quote all live on-chain. The interface should feel like a curated room, not a dashboard graveyard.
           </p>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+              gap: 10,
+              marginTop: 22,
+            }}
+          >
+            {heroStats.map((item) => (
+              <div
+                key={item.label}
+                style={{
+                  padding: "14px 14px 12px",
+                  borderRadius: 18,
+                  border: `1px solid ${COLORS.border}`,
+                  background: "rgba(255,255,255,0.04)",
+                  minHeight: 88,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                  {item.label}
+                </div>
+                <div style={{ marginTop: 8, color: item.tone, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600, lineHeight: 1.05 }}>
+                  {item.value}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div
@@ -82,7 +118,7 @@ function HeroGallery({ pool }) {
             display: "flex",
             gap: 10,
             flexWrap: "wrap",
-            marginTop: 28,
+            marginTop: 18,
           }}
         >
           <Eyebrow tone="green">Floor {fmtEth(pool?.floor)}</Eyebrow>
@@ -98,8 +134,8 @@ function HeroGallery({ pool }) {
             hoverable
             className="site-reveal site-hover-lift"
             style={{
-              padding: 18,
-              minHeight: 206,
+              padding: 16,
+              minHeight: 176,
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
@@ -150,8 +186,8 @@ function HeroGallery({ pool }) {
                 <div className="site-drift" style={driftStyle(index * 360, 7 + index)}>
                   <div
                     style={{
-                      width: 92,
-                      height: 92,
+                      width: 108,
+                      height: 108,
                       borderRadius: 22,
                       border: `1px solid ${COLORS.border}`,
                       background: "rgba(255,255,255,0.04)",
@@ -199,8 +235,8 @@ function LiquiditySystemOverview({ className = "", style }) {
   ];
 
   return (
-    <FrostCard className={className} style={{ padding: 24, ...style }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 24 }}>
+    <FrostCard className={className} style={{ padding: 20, ...style }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18 }}>
         <div>
           <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 28, fontWeight: 600, letterSpacing: -0.9 }}>
             How liquidity works
@@ -214,7 +250,7 @@ function LiquiditySystemOverview({ className = "", style }) {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, alignItems: "stretch" }}>
         {splitCards.map((item) => (
-          <FrostCard key={item.label} style={{ padding: 16, background: COLORS.surfaceStrong, borderRadius: 24, minHeight: 164, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <FrostCard key={item.label} style={{ padding: 16, background: COLORS.surfaceStrong, borderRadius: 24, minHeight: 136, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
               {item.label}
             </div>
@@ -228,7 +264,7 @@ function LiquiditySystemOverview({ className = "", style }) {
         ))}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 14, marginTop: 16, alignItems: "stretch" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 14, marginTop: 14, alignItems: "stretch" }}>
         <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 24, display: "flex", flexDirection: "column", minHeight: 100 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 12 }}>
             <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
@@ -269,7 +305,7 @@ function LiquiditySystemOverview({ className = "", style }) {
               background: "linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.03))",
               flex: 1,
               display: "flex",
-              minHeight: 360,
+              minHeight: 320,
             }}
           >
             <svg viewBox="0 0 920 420" preserveAspectRatio="xMidYMid meet" style={{ display: "block", width: "100%", height: "100%" }}>
@@ -342,14 +378,14 @@ function LiquiditySystemOverview({ className = "", style }) {
           <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
             What the pool actually does
           </div>
-          <div style={{ marginTop: 14, display: "grid", gap: 12 }}>
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
             {[
               ["Mint", "A fresh mint routes capital into the reserve on day one instead of waiting for secondary demand."],
               ["Quote the floor", "The protocol only tries to guarantee the collection floor. Rare pieces still price above it in the market."],
               ["Absorb weakness", "If demand fades, treasury and burn logic can remove stale inventory instead of pretending infinite liquidity exists."],
               ["Reward conviction", "Stakers earn a slice of both buy-side and sell-side fees for locking supply and tightening the market."],
             ].map(([title, body]) => (
-              <div key={title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface }}>
+              <div key={title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, minHeight: 124 }}>
                 <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
                   {title}
                 </div>
@@ -388,7 +424,7 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
     <div style={{ width: "calc(100vw - 24px)", margin: "0 auto", padding: "118px 12px 64px" }}>
       <HeroGallery pool={pool} />
 
-      <div className="site-reveal-soft" style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 16, alignItems: "center", ...revealStyle(320) }}>
+      <div className="site-reveal-soft" style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 12, alignItems: "center", ...revealStyle(320) }}>
         <MetalButton onClick={() => setPage("mint")} tone="accent">
           Open mint room
         </MetalButton>
@@ -401,7 +437,7 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
         <DataBadge isLive={isLive} error={poolError} />
       </div>
 
-      <FrostCard className="site-reveal" style={{ padding: 20, marginTop: 26, ...revealStyle(620) }}>
+      <FrostCard className="site-reveal" style={{ padding: 18, marginTop: 22, ...revealStyle(620) }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
           <div>
             <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 24, fontWeight: 600, letterSpacing: -0.8 }}>
@@ -414,9 +450,9 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
           <Eyebrow tone="purple">Core notes</Eyebrow>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10, marginTop: 16, alignItems: "stretch" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10, marginTop: 14, alignItems: "stretch" }}>
           {features.map((feature, index) => (
-            <FrostCard key={feature.title} className="site-reveal" style={{ padding: 18, background: COLORS.surfaceStrong, minHeight: 168, display: "flex", flexDirection: "column", justifyContent: "space-between", ...revealStyle(680 + index * 70) }}>
+            <FrostCard key={feature.title} className="site-reveal" style={{ padding: 16, background: COLORS.surfaceStrong, minHeight: 144, display: "flex", flexDirection: "column", justifyContent: "space-between", ...revealStyle(680 + index * 70) }}>
               <Eyebrow tone={feature.tone}>Protocol note</Eyebrow>
               <div style={{ marginTop: 12, color: COLORS.text, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600, letterSpacing: -0.7 }}>
                 {feature.title}
