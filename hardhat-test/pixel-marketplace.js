@@ -30,6 +30,10 @@ async function increaseTime(seconds) {
   await ethers.provider.send("evm_mine", []);
 }
 
+async function expectCustomError(promise, errorName) {
+  await assert.rejects(promise, new RegExp(errorName));
+}
+
 async function deployStack() {
   const [owner, creator, user, buyer, other] = await ethers.getSigners();
   const mintPrice = ethers.utils.parseEther("0.01");
@@ -120,5 +124,79 @@ describe("PixelMarketplace", function () {
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "0");
     assert.strictEqual(await pool.pendingExternalSale(0), false);
     assert.ok((await pool.ethBalance()).gt(ethBalanceBefore));
+  });
+
+  it("blocks reentrancy through onERC721Received and keeps the second listing active", async function () {
+    const { owner, user, buyer, nft, router, market, mintPrice } = await deployStack();
+
+    const ReenteringBuyer = await ethers.getContractFactory("MarketplaceReenteringBuyer");
+    const attacker = await ReenteringBuyer.deploy(market.address);
+    await attacker.deployed();
+
+    await (await router.connect(user)["mint(bytes)"](onePixel(5), { value: mintPrice })).wait();
+    await (await router.connect(user)["mint(bytes)"](onePixel(6), { value: mintPrice })).wait();
+    await (await nft.connect(user).setApprovalForAll(market.address, true)).wait();
+
+    const listingPriceOne = ethers.utils.parseEther("0.012");
+    const listingPriceTwo = ethers.utils.parseEther("0.013");
+
+    await (await market.connect(user).createListing(0, listingPriceOne)).wait();
+    await (await market.connect(user).createListing(1, listingPriceTwo)).wait();
+
+    await owner.sendTransaction({ to: attacker.address, value: listingPriceTwo });
+    await (await attacker.attackBuy(1, 2, listingPriceTwo, { value: listingPriceOne })).wait();
+
+    assert.strictEqual(await nft.ownerOf(0), attacker.address);
+    assert.strictEqual(await nft.ownerOf(1), market.address);
+    assert.strictEqual(await attacker.attemptedReentry(), true);
+    assert.strictEqual(await attacker.failedReentry(), true);
+
+    const secondListing = await market.listings(2);
+    assert.strictEqual(secondListing.active, true);
+    assert.strictEqual(secondListing.tokenId.toString(), "1");
+  });
+
+  it("rejects direct safe transfers into the marketplace outside the protocol flow", async function () {
+    const { user, nft, router, market, mintPrice } = await deployStack();
+
+    await (await router.connect(user)["mint(bytes)"](onePixel(7), { value: mintPrice })).wait();
+
+    await expectCustomError(
+      nft.connect(user)["safeTransferFrom(address,address,uint256)"](user.address, market.address, 0),
+      "UnknownProtocolTransfer"
+    );
+  });
+
+  it("does not allow the same listing to be bought twice and prunes old sales from the 24h window", async function () {
+    const { user, buyer, other, nft, router, market, mintPrice } = await deployStack();
+
+    await (await router.connect(user)["mint(bytes)"](onePixel(8), { value: mintPrice })).wait();
+    await (await router.connect(user)["mint(bytes)"](onePixel(9), { value: mintPrice })).wait();
+    await (await nft.connect(user).setApprovalForAll(market.address, true)).wait();
+
+    const firstPrice = ethers.utils.parseEther("0.014");
+    const secondPrice = ethers.utils.parseEther("0.016");
+
+    await (await market.connect(user).createListing(0, firstPrice)).wait();
+    await (await market.connect(user).createListing(1, secondPrice)).wait();
+
+    await (await market.connect(buyer).buyListing(1, { value: firstPrice })).wait();
+    await expectCustomError(
+      market.connect(other).buyListing(1, { value: firstPrice }),
+      "ListingNotActive"
+    );
+
+    let snapshot = await market.getMarketSnapshot();
+    assert.strictEqual(snapshot.sales24h.toString(), "1");
+    assert.strictEqual(snapshot.listedCount.toString(), "1");
+
+    await increaseTime((24 * 60 * 60) + 1);
+    snapshot = await market.getMarketSnapshot();
+    assert.strictEqual(snapshot.sales24h.toString(), "0");
+
+    await (await market.connect(other).buyListing(2, { value: secondPrice })).wait();
+    snapshot = await market.getMarketSnapshot();
+    assert.strictEqual(snapshot.sales24h.toString(), "1");
+    assert.strictEqual(snapshot.listedCount.toString(), "0");
   });
 });
