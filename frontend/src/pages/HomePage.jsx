@@ -6,10 +6,10 @@ import { DataBadge, Eyebrow, FrostCard } from "../components/ui";
 
 function HeroGallery({ pool }) {
   const tiles = [
-    { desc: "Human dark · afro blue · scar", image: "/featured-nfts/0.svg", size: 112 },
-    { desc: "Human pale · beanie blonde · rare", image: "/featured-nfts/1.svg", size: 88 },
-    { desc: "Human light · short purple · turtleneck", image: "/featured-nfts/2.svg", size: 88 },
-    { desc: "Human pale · flat blue · gold earring", image: "/featured-nfts/3.svg", size: 88 },
+    { desc: "Human dark · afro blue · scar", image: "/featured-nfts/0.svg" },
+    { desc: "Human pale · beanie blonde · rare", image: "/featured-nfts/1.svg" },
+    { desc: "Human light · short purple · turtleneck", image: "/featured-nfts/2.svg" },
+    { desc: "Human pale · flat blue · gold earring", image: "/featured-nfts/3.svg" },
   ];
 
   return (
@@ -97,20 +97,27 @@ function HeroGallery({ pool }) {
             hoverable
             className="site-reveal site-hover-lift"
             style={{
-              padding: 16,
-              minHeight: 206,
+              padding: 18,
+              minHeight: 180,
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
+              alignItems: "center",
               ...revealStyle(140 + index * 70),
             }}
           >
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "92px minmax(0, 1fr)",
+                alignItems: "center",
+                gap: 18,
+                width: "100%",
+              }}
+            >
               <div className="site-drift" style={driftStyle(index * 360, 7 + index)}>
                 <div
                   style={{
-                    width: tile.size,
-                    height: tile.size,
+                    width: 92,
+                    height: 92,
                     borderRadius: 22,
                     border: `1px solid ${COLORS.border}`,
                     background: "rgba(255,255,255,0.04)",
@@ -134,9 +141,15 @@ function HeroGallery({ pool }) {
                   />
                 </div>
               </div>
-            </div>
-            <div>
-              <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.55 }}>
+              <div
+                style={{
+                  color: COLORS.textMuted,
+                  fontFamily: fonts,
+                  fontSize: 11,
+                  lineHeight: 1.7,
+                  textAlign: "left",
+                }}
+              >
                 {tile.desc}
               </div>
             </div>
