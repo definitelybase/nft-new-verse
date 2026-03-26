@@ -215,9 +215,9 @@ function LiquiditySystemOverview({ className = "", style }) {
   ];
 
   const zones = [
-    { label: "Expansion", color: "rgba(124, 183, 246, 0.12)", border: "rgba(124,183,246,0.22)" },
-    { label: "Stabilization", color: "rgba(186, 156, 255, 0.12)", border: "rgba(186,156,255,0.22)" },
     { label: "Weak demand", color: "rgba(244, 207, 102, 0.12)", border: "rgba(244,207,102,0.22)" },
+    { label: "Stabilization", color: "rgba(186, 156, 255, 0.12)", border: "rgba(186,156,255,0.22)" },
+    { label: "Expansion", color: "rgba(124, 183, 246, 0.12)", border: "rgba(124,183,246,0.22)" },
   ];
 
   return (
@@ -296,20 +296,21 @@ function LiquiditySystemOverview({ className = "", style }) {
           >
             <svg viewBox="0 0 920 420" preserveAspectRatio="xMidYMid meet" style={{ display: "block", width: "100%", height: "100%" }}>
               <defs>
-                <linearGradient id="floorLine" x1="0%" x2="100%" y1="0%" y2="0%">
-                  <stop offset="0%" stopColor="#7CB7F6" />
+                <linearGradient id="premiumLine" x1="0%" x2="100%" y1="0%" y2="0%">
+                  <stop offset="0%" stopColor="#F4CF66" />
                   <stop offset="55%" stopColor="#BA9CFF" />
-                  <stop offset="100%" stopColor="#F4CF66" />
+                  <stop offset="100%" stopColor="#7CB7F6" />
                 </linearGradient>
-                <linearGradient id="quoteLane" x1="0%" x2="100%" y1="0%" y2="0%">
-                  <stop offset="0%" stopColor="rgba(255,255,255,0.18)" />
-                  <stop offset="100%" stopColor="rgba(255,255,255,0.36)" />
+                <linearGradient id="floorLane" x1="0%" x2="100%" y1="0%" y2="0%">
+                  <stop offset="0%" stopColor="#F4CF66" />
+                  <stop offset="55%" stopColor="#BA9CFF" />
+                  <stop offset="100%" stopColor="#8DA8D8" />
                 </linearGradient>
               </defs>
 
-              <rect x="0" y="0" width="306.7" height="420" fill="rgba(124,183,246,0.06)" />
+              <rect x="0" y="0" width="306.7" height="420" fill="rgba(244,207,102,0.06)" />
               <rect x="306.7" y="0" width="306.7" height="420" fill="rgba(186,156,255,0.06)" />
-              <rect x="613.4" y="0" width="306.6" height="420" fill="rgba(244,207,102,0.06)" />
+              <rect x="613.4" y="0" width="306.6" height="420" fill="rgba(124,183,246,0.06)" />
 
               {[86, 168, 250, 332].map((y) => (
                 <line key={y} x1="46" y1={y} x2="872" y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" />
@@ -319,43 +320,44 @@ function LiquiditySystemOverview({ className = "", style }) {
               ))}
 
               <path
-                d="M60 276 C140 270, 210 248, 288 214 C350 188, 420 166, 520 156 C610 148, 700 158, 860 220"
+                d="M68 300 C168 294, 246 278, 320 252 C402 224, 504 206, 610 204"
                 fill="none"
-                stroke="url(#floorLine)"
+                stroke="url(#floorLane)"
                 strokeWidth="10"
                 strokeLinecap="round"
               />
               <path
-                d="M60 216 C154 208, 236 178, 320 138 C406 98, 522 82, 654 92 C742 100, 810 126, 860 160"
+                d="M610 204 C692 202, 774 214, 852 244"
                 fill="none"
-                stroke="url(#quoteLane)"
-                strokeWidth="7"
+                stroke="rgba(141,168,216,0.56)"
+                strokeWidth="8"
                 strokeDasharray="16 12"
                 strokeLinecap="round"
               />
               <path
-                d="M60 332 C152 326, 254 318, 360 304 C470 292, 596 286, 694 288 C778 290, 832 298, 860 306"
+                d="M68 248 C160 238, 248 210, 332 170 C428 124, 542 94, 668 80 C756 72, 822 76, 860 84"
                 fill="none"
-                stroke="rgba(110,231,183,0.3)"
+                stroke="url(#premiumLine)"
                 strokeWidth="6"
-                strokeDasharray="10 14"
+                strokeDasharray="16 12"
                 strokeLinecap="round"
               />
 
-              <circle cx="232" cy="234" r="13" fill="#7CB7F6" />
-              <circle cx="316" cy="202" r="13" fill="#BA9CFF" />
-              <circle cx="610" cy="158" r="13" fill="#F4CF66" />
+              <circle cx="220" cy="286" r="13" fill="#F4CF66" />
+              <circle cx="450" cy="220" r="13" fill="#BA9CFF" />
+              <circle cx="724" cy="208" r="13" fill="#7CB7F6" />
 
-              <text x="74" y="52" fill="rgba(255,255,255,0.56)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="1">HIGHER PREMIUM ASKS</text>
-              <text x="74" y="378" fill="rgba(255,255,255,0.56)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="1">FLOOR BID / EXIT LANE</text>
+              <text x="74" y="52" fill="rgba(255,255,255,0.56)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="1">MARKET PREMIUM / P2P PRICE</text>
+              <text x="74" y="378" fill="rgba(255,255,255,0.56)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="1">PROTOCOL FLOOR / EXIT LANE</text>
 
-              <text x="46" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Low demand</text>
+              <text x="46" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Weak market</text>
               <text x="406" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Balanced</text>
-              <text x="780" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Hot market</text>
+              <text x="764" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Strong market</text>
 
-              <text x="86" y="244" fill="rgba(124,183,246,0.9)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Expansion</text>
-              <text x="332" y="188" fill="rgba(186,156,255,0.92)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Stabilization</text>
-              <text x="640" y="146" fill="rgba(244,207,102,0.92)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Weak demand / treasury zone</text>
+              <text x="78" y="142" fill="rgba(244,207,102,0.92)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Weak demand / buyback zone</text>
+              <text x="350" y="154" fill="rgba(186,156,255,0.92)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Stabilization / release zone</text>
+              <text x="654" y="126" fill="rgba(124,183,246,0.92)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Expansion / market leads</text>
+              <text x="654" y="228" fill="rgba(141,168,216,0.78)" fontSize="11" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.6">sell-to-pool closes here</text>
             </svg>
           </div>
         </FrostCard>
