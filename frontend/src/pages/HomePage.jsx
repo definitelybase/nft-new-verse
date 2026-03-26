@@ -157,10 +157,13 @@ function HeroGallery({ pool }) {
                 style={{
                   color: COLORS.textMuted,
                   fontFamily: fonts,
-                  fontSize: 11,
-                  lineHeight: 1.7,
+                  fontSize: 13,
+                  lineHeight: 1.35,
                   textAlign: "left",
                   marginTop: 8,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
                 }}
               >
                 {tile.desc}
