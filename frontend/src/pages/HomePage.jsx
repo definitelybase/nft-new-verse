@@ -297,20 +297,26 @@ function LiquiditySystemOverview({ className = "", style }) {
             <svg viewBox="0 0 920 420" preserveAspectRatio="xMidYMid meet" style={{ display: "block", width: "100%", height: "100%" }}>
               <defs>
                 <linearGradient id="premiumLine" x1="0%" x2="100%" y1="0%" y2="0%">
-                  <stop offset="0%" stopColor="#F4CF66" />
-                  <stop offset="55%" stopColor="#BA9CFF" />
-                  <stop offset="100%" stopColor="#7CB7F6" />
+                  <stop offset="0%" stopColor="#E4B84E" />
+                  <stop offset="33%" stopColor="#E4B84E" />
+                  <stop offset="34%" stopColor="#AE8BFF" />
+                  <stop offset="66%" stopColor="#AE8BFF" />
+                  <stop offset="67%" stopColor="#76AEEB" />
+                  <stop offset="100%" stopColor="#76AEEB" />
                 </linearGradient>
                 <linearGradient id="floorLane" x1="0%" x2="100%" y1="0%" y2="0%">
-                  <stop offset="0%" stopColor="#F4CF66" />
-                  <stop offset="55%" stopColor="#BA9CFF" />
-                  <stop offset="100%" stopColor="#8DA8D8" />
+                  <stop offset="0%" stopColor="#D6B861" />
+                  <stop offset="33%" stopColor="#D6B861" />
+                  <stop offset="34%" stopColor="#B79AF0" />
+                  <stop offset="66%" stopColor="#B79AF0" />
+                  <stop offset="67%" stopColor="#8AA5D2" />
+                  <stop offset="100%" stopColor="#8AA5D2" />
                 </linearGradient>
               </defs>
 
-              <rect x="0" y="0" width="306.7" height="420" fill="rgba(244,207,102,0.06)" />
-              <rect x="306.7" y="0" width="306.7" height="420" fill="rgba(186,156,255,0.06)" />
-              <rect x="613.4" y="0" width="306.6" height="420" fill="rgba(124,183,246,0.06)" />
+              <rect x="0" y="0" width="306.7" height="420" fill="rgba(228,184,78,0.08)" />
+              <rect x="306.7" y="0" width="306.7" height="420" fill="rgba(174,139,255,0.08)" />
+              <rect x="613.4" y="0" width="306.6" height="420" fill="rgba(118,174,235,0.08)" />
 
               {[86, 168, 250, 332].map((y) => (
                 <line key={y} x1="46" y1={y} x2="872" y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" />
@@ -318,6 +324,9 @@ function LiquiditySystemOverview({ className = "", style }) {
               {[306.7, 613.4].map((x) => (
                 <line key={x} x1={x} y1="36" x2={x} y2="366" stroke="rgba(255,255,255,0.09)" strokeDasharray="8 11" strokeWidth="1.5" />
               ))}
+              <line x1="46" y1="36" x2="306.7" y2="36" stroke="rgba(228,184,78,0.34)" strokeWidth="2" />
+              <line x1="306.7" y1="36" x2="613.4" y2="36" stroke="rgba(174,139,255,0.34)" strokeWidth="2" />
+              <line x1="613.4" y1="36" x2="872" y2="36" stroke="rgba(118,174,235,0.34)" strokeWidth="2" />
 
               <path
                 d="M68 300 C168 294, 246 278, 320 252 C402 224, 504 206, 610 204"
@@ -329,7 +338,7 @@ function LiquiditySystemOverview({ className = "", style }) {
               <path
                 d="M610 204 C692 202, 774 214, 852 244"
                 fill="none"
-                stroke="rgba(141,168,216,0.56)"
+                stroke="rgba(118,174,235,0.62)"
                 strokeWidth="8"
                 strokeDasharray="16 12"
                 strokeLinecap="round"
@@ -343,9 +352,9 @@ function LiquiditySystemOverview({ className = "", style }) {
                 strokeLinecap="round"
               />
 
-              <circle cx="220" cy="286" r="13" fill="#F4CF66" />
-              <circle cx="450" cy="220" r="13" fill="#BA9CFF" />
-              <circle cx="724" cy="208" r="13" fill="#7CB7F6" />
+              <circle cx="220" cy="286" r="13" fill="#E4B84E" />
+              <circle cx="450" cy="220" r="13" fill="#AE8BFF" />
+              <circle cx="724" cy="208" r="13" fill="#76AEEB" />
 
               <text x="74" y="52" fill="rgba(255,255,255,0.56)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="1">MARKET PREMIUM / P2P PRICE</text>
               <text x="74" y="378" fill="rgba(255,255,255,0.56)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="1">PROTOCOL FLOOR / EXIT LANE</text>
@@ -354,10 +363,10 @@ function LiquiditySystemOverview({ className = "", style }) {
               <text x="406" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Balanced</text>
               <text x="764" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Strong market</text>
 
-              <text x="78" y="142" fill="rgba(244,207,102,0.92)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Weak demand / buyback zone</text>
-              <text x="350" y="154" fill="rgba(186,156,255,0.92)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Stabilization / release zone</text>
-              <text x="654" y="126" fill="rgba(124,183,246,0.92)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Expansion / market leads</text>
-              <text x="654" y="228" fill="rgba(141,168,216,0.78)" fontSize="11" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.6">sell-to-pool closes here</text>
+              <text x="78" y="142" fill="rgba(228,184,78,0.94)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Weak demand / buyback zone</text>
+              <text x="350" y="154" fill="rgba(174,139,255,0.94)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Stabilization / release zone</text>
+              <text x="654" y="126" fill="rgba(118,174,235,0.94)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Expansion / market leads</text>
+              <text x="654" y="228" fill="rgba(118,174,235,0.82)" fontSize="11" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.6">sell-to-pool closes here</text>
             </svg>
           </div>
         </FrostCard>
