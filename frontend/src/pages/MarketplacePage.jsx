@@ -402,10 +402,14 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
                   <MetalButton
                     key={density}
                     onClick={() => setGridDensity(density)}
-                    tone={gridDensity === density ? "purple" : "ghost"}
+                    tone="ghost"
                     active={gridDensity === density}
                     size="xs"
-                    style={{ minWidth: 42, padding: "8px 10px" }}
+                    style={{
+                      minWidth: 42,
+                      padding: "8px 10px",
+                      opacity: gridDensity === density ? 1 : 0.84,
+                    }}
                   >
                     {density}
                   </MetalButton>
