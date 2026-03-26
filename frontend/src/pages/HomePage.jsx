@@ -329,14 +329,14 @@ function LiquiditySystemOverview({ className = "", style }) {
               <line x1="613.4" y1="36" x2="872" y2="36" stroke="rgba(118,174,235,0.34)" strokeWidth="2" />
 
               <path
-                d="M68 300 C168 294, 246 278, 320 252 C402 224, 504 206, 610 204"
+                d="M68 300 C168 294, 246 278, 320 252 C402 224, 504 206, 613.4 204"
                 fill="none"
                 stroke="url(#floorLane)"
                 strokeWidth="10"
                 strokeLinecap="round"
               />
               <path
-                d="M610 204 C692 202, 774 214, 852 244"
+                d="M613.4 204 C692 202, 774 214, 852 244"
                 fill="none"
                 stroke="rgba(118,174,235,0.62)"
                 strokeWidth="8"
@@ -352,9 +352,8 @@ function LiquiditySystemOverview({ className = "", style }) {
                 strokeLinecap="round"
               />
 
-              <circle cx="220" cy="286" r="13" fill="#E4B84E" />
-              <circle cx="450" cy="220" r="13" fill="#AE8BFF" />
-              <circle cx="724" cy="208" r="13" fill="#76AEEB" />
+              <circle cx="306.7" cy="258" r="13" fill="#AE8BFF" />
+              <circle cx="613.4" cy="204" r="13" fill="#76AEEB" />
 
               <text x="74" y="52" fill="rgba(255,255,255,0.56)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="1">MARKET PREMIUM / P2P PRICE</text>
               <text x="74" y="378" fill="rgba(255,255,255,0.56)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="1">PROTOCOL FLOOR / EXIT LANE</text>
@@ -364,12 +363,12 @@ function LiquiditySystemOverview({ className = "", style }) {
               <text x="764" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Strong market</text>
 
               <text x="78" y="142" fill="rgba(228,184,78,0.94)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Weak demand / buyback zone</text>
-              <rect x="336" y="134" width="244" height="28" rx="14" fill="rgba(255,255,255,0.52)" />
-              <text x="350" y="152" fill="rgba(123,89,214,0.98)" fontSize="12" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.8">Stabilization / release zone</text>
-              <rect x="640" y="106" width="216" height="28" rx="14" fill="rgba(255,255,255,0.52)" />
-              <text x="654" y="124" fill="rgba(79,137,212,0.98)" fontSize="12" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.8">Expansion / market leads</text>
-              <rect x="638" y="212" width="184" height="24" rx="12" fill="rgba(255,255,255,0.48)" />
-              <text x="652" y="228" fill="rgba(79,137,212,0.98)" fontSize="11" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.6">sell-to-pool closes here</text>
+              <rect x="200" y="284" width="214" height="28" rx="14" fill="rgba(255,255,255,0.56)" />
+              <text x="214" y="302" fill="rgba(123,89,214,0.98)" fontSize="12" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.8">Stabilization / release zone</text>
+              <rect x="520" y="226" width="214" height="28" rx="14" fill="rgba(255,255,255,0.56)" />
+              <text x="534" y="244" fill="rgba(79,137,212,0.98)" fontSize="12" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.8">Expansion / market leads</text>
+              <rect x="514" y="252" width="226" height="24" rx="12" fill="rgba(255,255,255,0.48)" />
+              <text x="528" y="268" fill="rgba(79,137,212,0.98)" fontSize="11" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.6">sell-to-pool closes here</text>
             </svg>
           </div>
         </FrostCard>
