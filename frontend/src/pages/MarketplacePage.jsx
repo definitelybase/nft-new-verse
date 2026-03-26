@@ -3,8 +3,9 @@ import { Contract } from "ethers-v6";
 import { ERC721_ABI, PIXEL_ROUTER_ABI } from "../pixelRouterAbi";
 import { MetalButton } from "../MetalButton";
 import { COLORS, fonts, fontDisplay } from "../utils/constants";
+import { FEATURED_COLLECTION_IDS, GENERATED_COLLECTION } from "../utils/generatedCollection";
 import { checkChain, fmtEth, revealStyle } from "../utils/helpers";
-import { DataBadge, Eyebrow, FrostCard, PixelAvatar, PoolViz, TxStatusBar, WrongChainBanner } from "../components/ui";
+import { DataBadge, Eyebrow, FrostCard, PoolViz, TxStatusBar, WrongChainBanner } from "../components/ui";
 
 export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolError }) {
   const [tab, setTab] = useState("listing");
@@ -22,7 +23,7 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
 
   const routerAddress = appConfig?.routerAddress || "";
   const nftAddress = appConfig?.nftAddress || "";
-  const collectionSupply = 10000;
+  const collectionSupply = GENERATED_COLLECTION.length;
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
@@ -37,30 +38,31 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
   }, []);
 
   const marketItems = useMemo(() => {
-    const backgrounds = ["Lilac", "Sky", "Coral", "Cream", "Volt", "Night"];
-    const headwear = ["Beanie", "Halo", "Cap", "Bucket", "Mohawk", "None"];
-    const faces = ["Plain", "Shades", "Visor", "Scar", "Pipe", "Mask"];
     const baseFloor = Number(pool.floor || 0);
     const fallbackFloor = 0.0425;
     const anchor = baseFloor > 0 ? baseFloor : fallbackFloor;
+    const tierMultiplier = {
+      Common: 1,
+      Uncommon: 1.06,
+      Rare: 1.16,
+      Epic: 1.34,
+      Legendary: 1.58,
+    };
 
-    return Array.from({ length: 18 }, (_, index) => {
-      const tokenId = 1000 + index * 173;
-      const listed = index % 5 !== 0;
-      const inPool = index % 7 === 0;
-      const price = Number((anchor * (1 + ((index % 6) * 0.018 + (index % 3) * 0.008))).toFixed(4));
-      const lastSale = Number((price * (0.91 + ((index % 4) * 0.017))).toFixed(4));
+    return GENERATED_COLLECTION.map((item, index) => {
+      const listed = index % 11 !== 0;
+      const inPool = index % 19 === 0;
+      const motion = 1 + ((index % 7) - 3) * 0.015 + ((item.id % 5) - 2) * 0.006;
+      const price = Number((anchor * (tierMultiplier[item.tier] || 1) * motion).toFixed(4));
+      const lastSale = Number((price * (0.9 + (index % 4) * 0.025)).toFixed(4));
 
       return {
-        id: tokenId,
-        seed: tokenId,
+        ...item,
         listed,
         inPool,
         price,
         lastSale,
-        background: backgrounds[index % backgrounds.length],
-        headwear: headwear[index % headwear.length],
-        face: faces[index % faces.length],
+        image: `/collection/images/${item.id}.svg`,
       };
     });
   }, [pool.floor]);
@@ -71,7 +73,7 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
       if (statusFilter === "listed" && !item.listed) return false;
       if (statusFilter === "pool" && !item.inPool) return false;
       if (!query) return true;
-      const haystack = `#${item.id} ${item.background} ${item.headwear} ${item.face}`.toLowerCase();
+      const haystack = `#${item.id} ${item.base} ${item.background} ${item.hair} ${item.eyes} ${item.mouth} ${item.shirt} ${item.accessory} ${item.tier}`.toLowerCase();
       return haystack.includes(query);
     });
 
@@ -89,9 +91,9 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
         return acc;
       }, {});
     return {
+      base: countBy("base"),
       background: countBy("background"),
-      headwear: countBy("headwear"),
-      face: countBy("face"),
+      hair: countBy("hair"),
     };
   }, [marketItems]);
 
@@ -170,7 +172,11 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 20, flexWrap: "wrap" }}>
           <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
             <div style={{ width: 72, height: 72, borderRadius: 22, overflow: "hidden", border: `1px solid ${COLORS.borderStrong}`, background: COLORS.surfaceStrong }}>
-              <PixelAvatar size={72} seed={8888} />
+              <img
+                src={`/collection/images/${FEATURED_COLLECTION_IDS[0]}.svg`}
+                alt="OnChainPixel featured token"
+                style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated", display: "block" }}
+              />
             </div>
             <div>
               <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 34, fontWeight: 600, letterSpacing: -1.2 }}>
@@ -178,11 +184,11 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
               </div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
                 <Eyebrow tone="accent">Ethereum</Eyebrow>
-                <Eyebrow tone="purple">{collectionSupply.toLocaleString()} supply</Eyebrow>
+                <Eyebrow tone="purple">{collectionSupply.toLocaleString()} generated</Eyebrow>
                 <Eyebrow tone="green">Fully on-chain</Eyebrow>
               </div>
               <div style={{ marginTop: 10, color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, lineHeight: 1.7, maxWidth: 520 }}>
-                Discovery layer for the collection, with OpenSea-like browsing and a native liquidity lane living beside the item grid instead of outside it.
+                Discovery layer for the collection, now fed by the real generated batch instead of placeholder avatars. The native market grid shows the actual pixel pieces that power the protocol.
               </div>
             </div>
           </div>
@@ -273,9 +279,9 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
               Traits
             </div>
             {[
+              ["Base", traitCounts.base],
               ["Background", traitCounts.background],
-              ["Headwear", traitCounts.headwear],
-              ["Face", traitCounts.face],
+              ["Hair", traitCounts.hair],
             ].map(([label, counts]) => (
               <div key={label} style={{ marginTop: 12 }}>
                 <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
@@ -543,12 +549,23 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
                   onClick={() => setSellTokenId(String(item.id))}
                 >
                   <div style={{ padding: 14, background: item.inPool ? COLORS.accentSoft : COLORS.surfaceStrong, display: "grid", placeItems: "center", aspectRatio: "1 / 1" }}>
-                    <PixelAvatar size={152} seed={item.seed} />
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      loading="lazy"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        imageRendering: "pixelated",
+                        display: "block",
+                      }}
+                    />
                   </div>
                   <div style={{ padding: 14, display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-between", gap: 12 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center" }}>
                       <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 19, fontWeight: 600, lineHeight: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        OCP #{item.id}
+                        {item.name}
                       </div>
                       <div
                         style={{
@@ -562,12 +579,13 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
                           textTransform: "uppercase",
                         }}
                       >
-                        {item.inPool ? "Pool" : item.listed ? "Listed" : "Held"}
+                        {item.inPool ? "Pool" : item.listed ? item.tier : "Held"}
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                      <Eyebrow tone="purple">{item.background}</Eyebrow>
-                      <Eyebrow tone="accent">{item.headwear}</Eyebrow>
+                      <Eyebrow tone="purple">{item.base}</Eyebrow>
+                      <Eyebrow tone="accent">{item.hair}</Eyebrow>
+                      <Eyebrow tone="green">{item.background}</Eyebrow>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                       <div>
@@ -579,8 +597,9 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
                         </div>
                       </div>
                       <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, textAlign: "right", lineHeight: 1.7 }}>
-                        <div>Face: {item.face}</div>
-                        <div>Collection supply: {collectionSupply.toLocaleString()}</div>
+                        <div>{item.eyes} eyes · {item.mouth}</div>
+                        <div>{item.shirt}</div>
+                        <div>{item.accessory !== "none" ? item.accessory : "no accessory"}</div>
                       </div>
                     </div>
                   </div>

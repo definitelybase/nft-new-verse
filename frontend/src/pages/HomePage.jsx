@@ -1,15 +1,16 @@
 import React from "react";
 import { MetalButton } from "../MetalButton";
 import { COLORS, fonts, fontDisplay } from "../utils/constants";
+import { FEATURED_COLLECTION_IDS } from "../utils/generatedCollection";
 import { driftStyle, fmtEth, revealStyle } from "../utils/helpers";
 import { DataBadge, Eyebrow, FrostCard } from "../components/ui";
 
 function HeroGallery({ pool }) {
   const tiles = [
-    { title: "Permanent art", desc: "SSTORE2-backed data", image: "/featured-nfts/0.svg" },
-    { title: "Live market", desc: "Pool-aware pricing", image: "/featured-nfts/1.svg" },
-    { title: "Instant exits", desc: "Floor-liquidity thesis", image: "/featured-nfts/2.svg" },
-    { title: "On-chain render", desc: "SVG output", image: "/featured-nfts/3.svg" },
+    { title: "Permanent art", desc: "SSTORE2-backed data", image: `/collection/images/${FEATURED_COLLECTION_IDS[0]}.svg` },
+    { title: "Live market", desc: "Pool-aware pricing", image: `/collection/images/${FEATURED_COLLECTION_IDS[1]}.svg` },
+    { title: "Instant exits", desc: "Floor-liquidity thesis", image: `/collection/images/${FEATURED_COLLECTION_IDS[2]}.svg` },
+    { title: "On-chain render", desc: "SVG output", image: `/collection/images/${FEATURED_COLLECTION_IDS[3]}.svg` },
   ];
 
   return (

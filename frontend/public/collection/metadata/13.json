@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #13",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/13.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "zombie"
+    },
+    {
+      "trait_type": "Background",
+      "value": "midnight"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "bald brown"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "closed"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "neutral"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "red collar"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "nose ring"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Epic"
+    }
+  ]
+}
