@@ -111,20 +111,6 @@ function HeroGallery({ pool }) {
           </div>
         </div>
 
-        <div
-          style={{
-            position: "relative",
-            zIndex: 1,
-            display: "flex",
-            gap: 10,
-            flexWrap: "wrap",
-            marginTop: 18,
-          }}
-        >
-          <Eyebrow tone="green">Floor {fmtEth(pool?.floor)}</Eyebrow>
-          <Eyebrow tone="yellow">{pool?.poolNfts ?? "—"} in pool</Eyebrow>
-          {pool?.marketState ? <Eyebrow tone="purple">{pool.marketState}</Eyebrow> : <Eyebrow tone="purple">—</Eyebrow>}
-        </div>
       </FrostCard>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
