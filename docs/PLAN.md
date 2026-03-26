@@ -1,322 +1,151 @@
 # OnChainPixel Plan
 
+This is the current roadmap for the real V1 direction, not the historical brainstorming path.
+
 ## Current Direction
 
-OnChainPixel is no longer just an experiment around a fully on-chain pixel NFT standard.
+V1 is now centered around five pieces:
 
-The active product direction is:
+1. fully on-chain pixel NFTs
+2. router-driven mint and sell-to-pool flow
+3. reserve-aware floor pool
+4. native on-chain marketplace
+5. Safe-based governance and operational control
 
-- fully on-chain pixel NFTs stored with `SSTORE2`
-- a native `floor liquidity` engine for the collection
-- a two-pool reserve model:
-  - `Liquidity Pool` for instant floor exits
-  - `Treasury Pool` for selective inventory retirement and supply contraction
+The core product thesis is:
 
-The protocol should be understood as:
+- mint seeds reserve
+- pool handles the floor lane
+- marketplace handles trading and premium discovery
+- treasury handles weak-market cleanup
+- stakers earn from real fee flow
 
-- an on-chain art collection primitive
-- a market-state-aware NFT AMM
-- a collection design where community determines premium pricing and the protocol supplies floor liquidity
+## What V1 Includes
 
-It should **not** be treated as:
+### Protocol
 
-- guaranteed profit after mint
-- permanent unconditional floor defense
-- an on-chain rarity oracle
+- on-chain mint
+- on-chain art storage
+- sell-to-pool floor exit
+- protocol inventory handling
+- treasury buyback
+- vault and burn path
+- staking
+- native marketplace
+- factory deploy path
 
-## Official V1 Math
+### Operations
 
-### Reserve Split
+- Safe-ready ownership handoff
+- palette lock in deployment flow
+- delayed router replacement after setup
+- deployment verification scripts
 
-Mint proceeds are split into:
+### Frontend
 
-- `60%` -> Liquidity Pool reserve
-- `10%` -> Treasury reserve
-- `30%` -> Creator / development / operations
+- protocol shell
+- mint page
+- marketplace page
+- staking page
+- pixel editor
 
-This creates two separate balance sheets:
+## What V1 Does Not Include
 
-- `ethBalance` backs liquidity operations
-- `treasuryBalance` backs selective treasury actions
+- mainnet-ready external audit
+- final professional frontend polish
+- advanced analytics backend
+- immutable governance
+- external marketplace dependence as a core design assumption
 
-Treasury must not be treated as implicit exit liquidity.
+## Current Priorities
 
-### Liquidity Floor
+### 1. Redeploy testnet under the new marketplace stack
 
-The protocol floor is:
+The contract architecture changed.  
+That means the live testnet deployment needs to match the current repository again:
 
-`F = max(F_curve(s), alpha * F_ema)`
+- NFT
+- Pool
+- Router
+- Marketplace
 
-Where:
+### 2. Wire frontend to the native marketplace
 
-- `F_curve(s)` is the linear bid curve based on net user sells into the pool
-- `F_ema` is the smoothed floor baseline
-- `alpha = 0.50`
+The contracts now support native listings and protocol settlement.  
+The UI should surface that clearly and stop carrying old marketplace assumptions.
 
-Current v1 parameters:
+### 3. Clarify docs and public positioning
 
-- `INITIAL_BID_BPS = 6000`
-- `MIN_BID_BPS = 1500`
-- `BID_DECAY_SELLS = 3000`
-- `EMA_FLOOR_BPS = 5000`
+The public explanation should now be precise:
 
-Meaning:
+- native marketplace
+- floor lane
+- treasury cleanup
+- staking from fees
+- Safe governance
 
-- initial floor bid = `60%` of mint price
-- minimum curve bid = `15%` of mint price
-- the linear decay reaches the minimum after `3000` net sells into the pool
-- the floor can also be lifted by `50%` of the smoothed floor baseline
+No vague "permanent floor support" language.
 
-This keeps the floor responsive to market appreciation without letting the pool blindly chase the market.
+### 4. Run end-to-end market drills
 
-Important interpretation:
+We should test the whole loop on Sepolia:
 
-- user sells into pool increase sell pressure
-- user buys from pool reduce sell pressure
-- treasury buyback reduces sell pressure
-- internal vault relists do not create new sell pressure
+1. mint
+2. user listing
+3. user purchase
+4. sell into pool
+5. release protocol inventory
+6. buy protocol listing
+7. staking reward accrual
 
-### Ask Price
+### 5. Prepare an external review package
 
-The pool only sells inventory in `Stabilization`.
+Before any serious public launch, the repo should have:
 
-Current v1 formula:
+- stable docs
+- stable deploy flow
+- stable test coverage
+- clear trust assumptions
 
-`ask = floor * 1.20`
+That makes external review much easier and more useful.
 
-Current v1 parameter:
+## Before Public Testnet Push
 
-- `STABILIZATION_SPREAD_BPS = 2000`
+Required:
 
-The `20%` spread compensates for:
+1. Safe ownership on the active deployment
+2. correct marketplace deployment and wiring
+3. frontend pointed to the current live stack
+4. docs consistent with contracts
+5. manual end-to-end walkthrough completed
 
-- inventory risk
-- rarity uncertainty
-- market-making service
+## Before Mainnet
 
-### Market States
+Required:
 
-The pool operates in three states:
+1. independent audit
+2. clear governance policy
+3. real parameter review
+4. final product polish
+5. final decision on which admin powers remain and which eventually freeze
 
-#### Expansion
+## Success Criteria For This Stage
 
-Meaning:
+This stage is successful if:
 
-- launch or growth phase
-- market still discovering itself
+- a reader can understand the full system from the docs
+- the live testnet matches the code in the repo
+- the native marketplace flow works end-to-end
+- the protocol is controlled by a Safe, not a personal wallet
+- the team can explain risks without hand-waving
 
-Behaviour:
+## Non-Negotiable Communication Rules
 
-- selling into the pool is restricted
-- pool inventory selling is disabled
+When describing the protocol publicly, we should stay honest:
 
-#### Stabilization
+- call the pool a floor lane, not a magic price oracle
+- call governance what it is
+- do not market unaudited code as finished
+- do not imply guaranteed exit or guaranteed upside
 
-Meaning:
-
-- volume is healthy enough
-- floor is near baseline
-- buy and sell pressure are reasonably balanced
-
-Behaviour:
-
-- selling into the pool is enabled
-- buying from pool inventory is enabled
-- ask uses `20%` spread
-
-#### WeakDemand
-
-Meaning:
-
-- short-term activity weakens
-- sell pressure dominates
-- floor trades below baseline
-
-Behaviour:
-
-- inventory selling is disabled
-- reserve protection is prioritized
-- treasury buyback may be enabled
-
-### Inventory Bands
-
-The liquidity pool uses inventory targets:
-
-- `INVENTORY_LOW = 50`
-- `INVENTORY_TARGET = 150`
-- `INVENTORY_HIGH = 300`
-
-Interpretation:
-
-- below `50`: inventory is scarce, treasury should not remove more
-- around `150`: healthy working inventory
-- above `300`: excess inventory, treasury retirement becomes valid
-
-### Treasury Buyback
-
-Treasury is not an always-on support machine.
-
-Its job is to retire excess or stale liquidity inventory and, over time, reduce supply.
-
-Buyback can activate when at least one structural condition is true:
-
-- liquidity pool inventory is above `INVENTORY_HIGH`
-- oldest pool inventory is older than `7 days`
-- market is in `WeakDemand` and floor is below `90%` of smoothed baseline
-
-And when reserve health is still acceptable.
-
-Current v1 parameters:
-
-- `WEAK_DEMAND_BETA_BPS = 9000`
-- `INVENTORY_STALE_AGE = 7 days`
-- `BUYBACK_STEP_TREASURY_BPS = 500`
-- `BUYBACK_STEP_POOL_BPS = 500`
-
-Important accounting rule:
-
-When treasury buys inventory from the liquidity pool:
-
-- `treasuryBalance` decreases
-- `ethBalance` increases
-- NFT moves from pool inventory into vault / burn path
-
-This means treasury recapitalizes the liquidity pool instead of silently destroying internal value.
-
-### Burn Path
-
-Treasury inventory is not meant to sit forever.
-
-Current v1 policy:
-
-- treasury-acquired NFTs can be held in vault temporarily
-- aged treasury inventory is eligible for burn after `14 days`
-
-Current v1 parameter:
-
-- `VAULT_BURN_AGE = 14 days`
-
-This turns treasury buybacks into a real supply sink.
-The current contract now uses a real protocol burn path at the NFT layer, so burn is reflected as actual ERC-721 supply reduction rather than transfer to a dead address.
-
-### Relist Policy
-
-Relist remains a secondary feature, not a core promise.
-
-Relist is only valid when:
-
-- market state is `Stabilization`
-- pool inventory is below `INVENTORY_LOW`
-- current ask is at least `20%` above treasury cost basis
-
-This keeps relist from constantly re-inflating supply during weak conditions.
-It also means relist should affect available inventory, but not the sell-pressure variable used by the floor curve.
-
-## MVP Scope
-
-### In Scope
-
-- `OnChainPixelNFT`
-- `PixelPool`
-- `PixelRouter`
-- `SSTORE2`, `PixelDecoder`, `SVGRenderer`
-- router-based mint flow
-- pool + treasury split
-- linear floor curve
-- EMA-supported floor minimum
-- market-state engine
-- `20%` ask spread in `Stabilization`
-- staking fee participation
-- selective treasury buyback
-- vault storage and aged burn path
-- `buySpecific`
-- basic frontend prototypes
-- core docs
-
-### Out Of Scope For MVP
-
-- advanced launchpad positioning as the main product narrative
-- polished analytics stack / subgraph / SDK
-- deeply optimized relist strategy
-- rarity-aware pricing layer
-- production-grade frontend dashboard
-- full multi-collection factory workflow as a launch requirement
-
-`PixelFactory` may remain in the repository, but the protocol thesis does not depend on it for MVP validation.
-
-## Active Contract Set
-
-The current active codebase is:
-
-- `contracts/OnChainPixelNFT.sol`
-- `contracts/PixelPool.sol`
-- `contracts/PixelRouter.sol`
-- `contracts/PixelFactory.sol`
-- `contracts/interfaces/IOnChainPixel.sol`
-- `contracts/libraries/SSTORE2.sol`
-- `contracts/libraries/PixelDecoder.sol`
-- `contracts/libraries/SVGRenderer.sol`
-
-The repository also contains:
-
-- `scripts/deploy.js`
-- `frontend/`
-- `test/`
-- `archive/generated/` for old generated or duplicate code
-
-`archive/generated/` is not part of the active source of truth.
-
-## Immediate Priorities
-
-### 1. Finalize Product Rules
-
-- confirm market-state thresholds as official policy
-- confirm launch protection assumptions
-- confirm whether relist remains active in v1 or stays optional
-- confirm UI behaviour when pool buy/sell is unavailable
-
-### 2. Finalize Contract Surface
-
-- review `PixelPool` for leftover edge-case complexity
-- review router sell flow and approval path
-- confirm whether `PixelFactory` is first-class v1 or secondary tooling
-
-### 3. Build And Test Infrastructure
-
-- create a real compile pipeline
-- choose Hardhat or Foundry as the canonical toolchain
-- add deployment-ready project config
-- replace legacy tests with new pool/router-focused tests
-
-### 4. Write The Real Test Matrix
-
-Minimum required test areas:
-
-- NFT minting and pixel storage
-- router mint split
-- floor bid calculations
-- market-state transitions
-- buy/sell gating by regime
-- treasury recapitalization accounting
-- aged vault burn flow
-- staking fee accounting
-
-### 5. Tighten Public Documentation
-
-- keep `GITBOOK.md`, `AMM_ARCHITECTURE.md`, and `AUDIT.md` aligned with code
-- make sure public docs describe floor liquidity, not guaranteed appreciation
-- make sure all docs use the two-pool model consistently
-
-## Success Criteria For V1
-
-V1 is successful when the project can demonstrate all of the following:
-
-- pixel NFTs mint and render fully on-chain
-- router splits mint proceeds correctly
-- liquidity pool provides conditional instant floor liquidity
-- floor math remains bounded and reserve-aware
-- treasury actions are explicit and auditable
-- aged treasury inventory can reduce supply through burn
-- docs, code, and tests describe the same protocol
-
-At that point the project becomes a coherent protocol, not just a promising idea.
+That honesty is part of the product quality.

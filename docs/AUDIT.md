@@ -1,223 +1,242 @@
-# OnChainPixel — Current Audit Notes
+# OnChainPixel Audit Notes
 
-This file is the current `open issues` register for the repo after the NFT / Pool / Router / Factory alignment work, the contract hardening round, and the deploy-safety pass.
+This document is not an external audit.  
+It is the current transparent status of what is hardened, what still depends on trust, and what remains before a serious public launch.
 
-## Closed Since The Original Draft
+## Scope
 
-These issues were present in earlier versions and are now addressed:
+Current stack covered by internal tests and review:
 
-- Router ↔ NFT mint flow now uses `mintTo` / `mintToCustom`
-- `seedLiquidity`, `seedTreasury`, and `setTotalMinted` are router-gated
-- `buySpecific()` exists in the pool and router flow
-- Factory exists and now passes corrected constructor arguments
-- Pool uses `Pausable`
-- Contracts and docs have been reorganized into a clearer project layout
-- direct public mint bypass of router economics is now closed by default
-- router mint now requires exact payment instead of silently absorbing overpayment
-- treasury burn path now uses real NFT-layer protocol burn instead of transfer to `0xdead`
-- relist no longer mutates the sell-pressure variable used by the floor curve
-- minimal Hardhat build pipeline now exists and exports `build/*.abi` and `build/*.bin`
-- first Hardhat smoke suite now covers wiring, router mint split, exact payment, and basic sell/buySpecific flow
-- `PixelFactory` now has local end-to-end coverage for collection creation and stack wiring
-- Router rescue functions (rescueNFT, rescueETH) added and tested
+- [contracts/OnChainPixelNFT.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/OnChainPixelNFT.sol)
+- [contracts/PixelPool.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelPool.sol)
+- [contracts/PixelRouter.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelRouter.sol)
+- [contracts/PixelMarketplace.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelMarketplace.sol)
+- [contracts/PixelFactory.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelFactory.sol)
 
-## Closed During Contract Hardening Round
+## What Has Been Hardened
 
-### Staking double-claim bug — FIXED
+### Ownership handoff
 
-`_settle()` did not update `rewardDebt` after accumulating pending rewards. This allowed stakers to claim the same fees repeatedly: `claimFees()` zeroed `pendingRewards`, but `rewardDebt` stayed stale, so the next call to `viewPendingFees()` recalculated the same amount.
+The repo now supports:
 
-Fix: `_settle()` now sets `rewardDebt[u] = stakedCount[u] * accFeePerStake` after accumulation.
+- deploy to an EOA
+- automatic palette lock
+- ownership transfer to a Safe
+- post-deploy ownership verification
 
-Covered by 9 staking tests including fee distribution, double-claim prevention, and edge cases.
+Relevant scripts:
 
-### Router sell flow — VALIDATED
+- [scripts/deploy-local.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/deploy-local.js)
+- [scripts/deploy.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/deploy.js)
+- [scripts/transfer-ownership.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/transfer-ownership.js)
+- [scripts/verify-deployment.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/verify-deployment.js)
 
-Previously listed as "operationally fragile" and untested. Now covered by 7 sell edge case tests:
+### Palette mutability
 
-- sell during launch protection → `PoolSellDisabled`
-- sell with insufficient pool ETH → reverts
-- slippage protection (minPrice > floor) → `SlippageExceeded`
-- payout accuracy verified to the wei
-- no ETH or NFT left stuck in router after sell
-- non-owner sell rejection
-- sequential sells decrease pool ethBalance correctly
+The NFT palette can now be locked before ownership handoff.  
+This removes the worst version of the "art can change after sale" risk.
 
-### Market-state math — VALIDATED
+### Router replacement hardening
 
-Previously listed as the highest smart-contract logic risk. Now covered by 8 stress tests:
+Router replacement is no longer an instant forever-power after setup.
 
-- Expansion enforced during launch protection
-- Expansion → WeakDemand transition after first sell
-- Recovery from WeakDemand → Stabilization with balanced volume
-- ethBalance never goes negative through sell cycles
-- Floor price stays above MIN_BID after many sells
-- Supply accounting (circulating + locked + pool = minted - burned) is consistent
-- State transitions are idempotent across repeated window rolls
-- Large mint+sell wave keeps pool solvent
+Current behavior:
 
-### Supply accounting — VALIDATED
+- during launch protection / setup it can still be changed immediately
+- after that it must be queued
+- a `48 hour` delay applies before activation
 
-Previously concern about burn path integration. Now verified:
+This does not remove governance risk, but it reduces instant malicious replacement risk.
 
-- `totalMinted` reads from pool directly (not derived from circulating+locked+pool)
-- circulating + locked + pool = minted - burned verified under mixed operations
-- lockedSupply matches totalStaked
-- Protocol burn reduces NFT total supply across immediate and aged vault burns
+### Native marketplace settlement
 
-### Buyback / vault / relist loop — VALIDATED
+Protocol listings now settle through the native marketplace.
 
-Previously listed as "logically plausible but not verified". Now covered:
+That means:
 
-- buyback vaults stale inventory and recapitalizes pool reserve
-- burnAgedVaultInventory works correctly even with mixed-age vault items
-- relist releases vault inventory to the external listing vault without increasing sell pressure
-- buyback disabled at exact weak-market boundary values
-- buyback enabled once weak-market signals move past thresholds
-- buyback disabled below coverage threshold even for stale inventory
-- treasury budget exhaustion stops buyback correctly
+- protocol inventory can be sold in the marketplace
+- settlement back to the pool or treasury is automatic
+- sell pressure only improves after a real sale
 
-### Frontend — FUNCTIONAL
+This is cleaner and safer than manual "pretend the listing sold" logic.
 
-Previously listed as "readable but not transactional". Now:
+### Market state inputs
 
-- Live pool state reads via usePoolData hook (15s polling)
-- Real buy/sell marketplace flows with wallet integration
-- Proper error/loading/preview states (DataBadge: Live/Preview/Offline)
-- Simplified Mint page (single functional card, no decorative modes)
-- Slippage protection in buy/sell UI
+The pool can now read live market signals from the native marketplace:
 
-### Protocol-fee and admin-path invariants — VALIDATED
+- recent sales
+- active listings
+- market floor
 
-Previously listed as untested. Now covered:
+Manual snapshot updates still exist as fallback, but they are no longer the primary path in the intended V1 architecture.
 
-- `claimProtocolFees()` is owner-only, drains the exact accrued amount, and reverts when empty
-- `pause()/unpause()` blocks and restores trade-paths as expected
-- `factoryFee` enforcement and `withdraw()` are covered end-to-end
-- factory admin setters are owner-only
-- NFT admin setters (`setMinter`, `setBurner`, `setPalette`, `lockPalette`, `setMintPrice`, `setPublicMintEnabled`) are owner-only
-- NFT owner-withdraw path for mint proceeds is covered
-- palette updates work before `lockPalette()` and revert after lock
+### Staking and fee accounting
 
-### Admin / emergency event stream — IMPROVED
+Staking, fee accumulation, claim, and unstake paths are covered by tests and currently behave as intended under the present suite.
 
-Router and pool admin/emergency paths now emit explicit events for:
+### Admin and deploy guards
 
-- creator updates
-- mint-price / BPS changes
-- router updates
-- rescueNFT / rescueETH
-- factory code updates and fee updates
+The repository now includes guards and tests around:
 
-This is enough for basic indexing and ops visibility, though analytics-oriented events are still limited.
+- zero-address dependencies
+- invalid constructor configuration
+- access control
+- ownership handoff
+- factory deployment prerequisites
 
-### Deploy/config guards — IMPROVED
+## Current Test Status
 
-Constructor and config validation is tighter now:
+At the time of this document refresh:
 
-- `OnChainPixelNFT` rejects `mintPrice == 0`
-- `PixelPool` rejects zero-address NFT, non-contract NFT dependency, and `mintPrice == 0`
-- `PixelRouter` rejects zero-address dependencies, non-contract NFT/pool dependencies, and `mintPrice == 0`
-- `PixelFactory.createCollection()` rejects `mintPrice == 0`
-- `setTotalMinted()` is monotonic and cannot move backwards
+- Hardhat suite passes with `72` tests
+- frontend production build passes
 
-This reduces the chance of bad local/testnet deployments silently producing broken state.
+The test suite covers:
 
-### Ownership handoff and palette finalization — IMPROVED
+- mint flow
+- sell-to-pool flow
+- marketplace flow
+- protocol listing settlement
+- staking
+- market state transitions
+- buyback / vault / burn flows
+- ownership handoff
+- deploy and factory guards
 
-The deployment scripts now support a safer live rollout path:
+## Transparent Trust Assumptions
 
-- `OWNER_ADDRESS` / `SAFE_ADDRESS` can receive final ownership of NFT, Pool, Router, and Factory
-- `CREATOR_ADDRESS` can be separated from deployer
-- palette lock is applied by default before ownership handoff
-- deployment JSON now records final owner and palette-lock status
+These are the current trust assumptions that still exist.
 
-This does not replace a timelock or audit, but it removes the "single hot wallet owns everything forever" default from the deploy path.
+### 1. Owner / Safe still matters
 
-### Router replacement hardening — IMPROVED
+The protocol is not ownerless.
 
-`PixelPool.setRouter()` is no longer a fully instant owner power once the protocol is live:
+Owner powers still include important actions such as:
 
-- initial router setup still works immediately
-- router changes remain immediate during the launch-protection/bootstrap window
-- after launch protection, owner must first queue a new router and only later apply it
-- pending router updates can be cancelled before execution
+- pausing the pool
+- setting listing venue
+- queueing or applying router changes
+- releasing protocol inventory
+- updating fallback market snapshots
+- claiming protocol fees
 
-This preserves practical setup flexibility while making post-launch router swaps visible and non-instant.
+This means governance hardening matters just as much as contract correctness.
 
-### External market state and listing confirmation — IMPROVED
+### 2. No external audit yet
 
-The pool no longer relies on stale internal buy/sell window math after the protocol moved resale outward:
+This is still an internally tested codebase.
 
-- `getMarketSignals()` now derives state from `externalSales24h`, `externalListings`, and `externalFloor`
-- release to the external listing vault no longer reduces `totalSoldIntoPool` on its own
-- `confirmExternalSale()` is now the explicit point where external resale can reduce stored sell pressure
-- vault relist now uses the stored `buybackPrice * 1.2` target directly
+That means:
 
-This aligns the contract with the newer architecture where the pool is a floor-exit venue and resale happens externally.
+- internal confidence has improved
+- external mainnet confidence is still incomplete
 
-## Current Test Coverage
+No serious public launch should be described as fully de-risked without an independent review.
 
-**70 passing tests** across 13 test files:
+### 3. No emergency reserve drain
 
-| Suite | Tests | Coverage |
-|-------|-------|----------|
-| Admin / emergency events | 3 | Router/pool admin events, factory setup/admin events, mint-side accounting events |
-| Protocol/admin invariants | 3 | claimProtocolFees, pause/unpause, factory fee/withdraw |
-| Deploy/config guards | 4 | zero-price rejects, dependency validation, factory create guards |
-| PixelFactory creation guards | 4 | empty bytecode rejects, missing bytecode, invalid BPS, DeployFailed path |
-| Factory / NFT admin paths | 4 | onlyOwner setters, withdraw paths, palette lock, multisig handoff |
-| Smoke (router/pool wiring) | 11 | Deployment, mint splits, exact payment, rescue, constructor/config guards, sell/list/release flow, refunds |
-| Economics | 4 | Buyback, protocol burn, vault burn, relist |
-| Scenarios | 4 | Sell pressure tracking, external-sale confirmation, budget exhaustion, WeakDemand gates |
-| Market-state thresholds | 6 | Launch protection, coverage gates, listing activation, buyback gating |
-| Staking | 9 | Stake/unstake, access control, fee distribution, claim, edge cases |
-| Router sell edges | 7 | All sell revert conditions, payout accuracy, no stuck assets |
-| Market stress | 9 | State transitions, solvency, floor stability, supply consistency, heavy sell-lane closure |
-| Factory e2e | 2 | Stack creation, sell/buySpecific flow |
+There is no general owner drain of the main pool reserve.
 
-## Remaining Risks
+This is intentional, but it creates a tradeoff:
 
-### 1. Factory deployment gas cost
+- less rug-style reserve extraction risk
+- less flexibility if a critical bug is found after deployment
 
-`PixelFactory.createCollection()` is still gas-heavy. Local Hardhat tests now pass with an explicit fixed gas configuration, but this does not prove the path is comfortable on L1 mainnet. Options:
+### 4. Native marketplace is new protocol surface
 
-- Optimize factory contract size
-- Deploy on L2 where gas limits are higher
-- Validate real deployment gas on testnet before any mainnet assumptions
+The move to a native marketplace improves coherence, but it also adds a new contract and a new attack surface:
 
-### 2. No event stream for price / state indexing beyond current basics
+- listing creation
+- cancellation
+- purchase flow
+- fee routing
+- protocol listing settlement
 
-The pool emits trade events and state changes, but the indexing story is incomplete for analytics UX. Potential additions: floor-price update event, buyback-availability event, reserve health snapshots.
+The new marketplace is tested, but it is still new code that deserves external review before mainnet.
 
-### 3. No explicit emergency reserve escape hatch design
+## Main Remaining Risks
 
-This remains intentionally unimplemented. Possible options: no rescue at all, timelocked emergency withdrawal, multisig/DAO-controlled emergency path. The key is to decide deliberately.
+### 1. Governance centralization
 
-### 4. Factory deployment on real networks unvalidated
+If ownership sits on a weak wallet or a badly managed Safe, the protocol can still be misconfigured or harmed.
 
-Local tests prove constructor encoding and wiring, but there is no proof that the same flow works on a real network with gas constraints and external tooling.
+Current recommended answer:
 
-## Recommended Priorities
+- Safe ownership
+- documented signers
+- disciplined ops
 
-### Do Now
+### 2. Factory gas on L1
 
-1. Transfer live ownership to a multisig through `OWNER_ADDRESS` / `SAFE_ADDRESS`
-2. Lock palette before any public mint
-3. Validate direct deploy path on Sepolia and capture real gas + addresses
-4. Run the Safe / keeper path for `setExternalMarketSnapshot()` and `confirmExternalSale()`
-5. Validate factory deployment flow end-to-end on testnet
-6. Keep deployment JSON and frontend appConfig in sync after each live deploy
+The factory path remains a convenience / test path, not yet a proven Ethereum mainnet deployment path.
 
-### Do Before Any Public Testnet Push
+Direct deploy is the more practical route for testnet and early rollout.
 
-6. Add staking UI to frontend
-7. Decide emergency governance posture
-8. Measure real deployment gas / calldata constraints on target network
+### 3. Economic tuning is not final
 
-### Do Before Mainnet
+The math is coherent enough for testing, but some values are still product decisions, not eternal truths.
 
-9. Move delayed router updates under multisig control in production
-10. Professional audit of the `_settle()` fix and fee distribution math
-11. Gas optimization pass on factory and pool
-12. Event stream for analytics/indexing
+Examples:
+
+- exit buffer size
+- buyback step sizes
+- inventory band thresholds
+- market-state thresholds
+
+These values still need live validation.
+
+### 4. Operational dependence for some fallback paths
+
+Normal protocol listings settle automatically now, which is good.
+
+But the system still keeps fallback controls for:
+
+- manual market snapshot updates
+- manual sale confirmations in non-standard cases
+
+Those fallbacks are operationally useful, but they still imply owner power.
+
+## What Is Good Enough Right Now
+
+Reasonable for:
+
+- local development
+- private demos
+- Sepolia testing
+- UX iteration
+- protocol simulations
+
+Not enough for:
+
+- serious public mainnet launch
+- "trustless" marketing language
+- aggressive economic claims
+
+## What Should Happen Before Public Testnet
+
+1. Deploy with Safe ownership, not a personal wallet.
+2. Document the signer set and approval policy.
+3. Re-run the new marketplace flow end-to-end on Sepolia.
+4. Make sure the frontend is wired to the native marketplace, not old assumptions.
+
+## What Should Happen Before Mainnet
+
+1. Independent audit.
+2. Final governance policy:
+   - what can be paused
+   - what can be changed
+   - what should eventually be frozen
+3. Economic review of current thresholds with real market simulations.
+4. Clear public docs that match the contracts exactly.
+
+## Bottom Line
+
+OnChainPixel is now much cleaner than the earlier versions:
+
+- ownership handoff is safer
+- palette mutability is controlled
+- router changes are delayed
+- native marketplace settlement is automatic
+- market state inputs are more aligned with the actual venue
+
+But this is still a protocol under active hardening, not a finished mainnet product.

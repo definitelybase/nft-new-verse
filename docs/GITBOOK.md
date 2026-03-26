@@ -1,306 +1,240 @@
 # OnChainPixel
 
-## Introduction
+## What This Project Is
 
-OnChainPixel combines two ideas in one protocol:
+OnChainPixel is a fully on-chain pixel NFT protocol with two native market layers:
 
-- fully on-chain pixel NFTs stored with `SSTORE2`
-- a native NFT floor-liquidity pool
+- an on-chain floor exit lane through `PixelPool`
+- an on-chain peer-to-peer and protocol marketplace through `PixelMarketplace`
 
-The goal is not to promise that every NFT can always be sold at a "fair" price.  
-The goal is to provide a transparent on-chain `floor bid layer` so holders are not forced into pure peer-to-peer illiquidity.
+The protocol is designed around a simple idea:
 
-In other words:
+- art lives fully on-chain
+- the protocol can quote a reserve-aware floor
+- the marketplace can handle premium discovery above that floor
 
-- the NFT remains a unique asset
-- the community decides which pieces deserve a premium
-- the protocol provides instant floor liquidity when market conditions allow it
+This is not meant to be "an NFT that the protocol always buys back at a fair price".  
+It is meant to be a more honest NFT system:
 
-## Core Positioning
+- the protocol handles floor liquidity when reserve conditions allow it
+- the market handles rarity, premium, taste, and speculation
 
-OnChainPixel should be understood as:
+## Core Promise
 
-- an on-chain art standard
-- an NFT collection launcher
-- a market-state-aware floor pool
+OnChainPixel tries to solve a specific problem:
 
-It should **not** be positioned as:
+**most NFTs have no native exit lane at all.**
+
+What we offer instead:
+
+- a mint that seeds liquidity from day one
+- a floor bid curve that is reserve-aware
+- a native market where both users and protocol inventory can trade
+- treasury buyback and burn logic for weak markets
+- staking that earns from trade activity
+
+## What The Protocol Does Not Promise
+
+The protocol does **not** promise:
 
 - guaranteed profit after mint
-- permanent bid support at any price
-- a protocol that can fairly price rarity on its own
+- permanent buy support at any price
+- fair rarity pricing for every NFT
+- infinite liquidity
+- zero governance risk
 
-The pool is a `floor market`, not a rarity oracle.
+The pool is a floor market.  
+It is not a rarity oracle.
 
-## Mint Economics
+## How Mint Works
 
-Example baseline configuration:
+The mint path is intentionally simple:
 
-- Supply: `10,000`
-- Mint price: `0.01 ETH`
-- Pool seed: `60%`
-- Treasury: `10%`
-- Creator: `30%`
+1. A minter prepares a packed pixel payload.
+2. The user calls `PixelRouter.mint(...)`.
+3. The router mints the NFT directly to the user.
+4. The mint payment is split into:
+   - pool reserve
+   - treasury reserve
+   - creator / protocol operations
+5. The pool updates total minted supply.
 
-For a fully sold mint:
+Baseline economic intent:
 
-- `60 ETH` goes to pool reserve
-- `10 ETH` goes to treasury reserve
-- `30 ETH` goes to creator / team / development
+- `60%` to pool reserve
+- `10%` to treasury reserve
+- `30%` to protocol operations
 
-This split is designed to fund:
+Why this matters:
 
-- immediate reserve-backed floor liquidity
-- a separate treasury for selective buyback actions
-- sustainable creator funding
+- the collection is not born empty
+- reserve depth exists from the first successful mint
+- treasury exists as a separate balance, not hidden inside the main pool reserve
 
-## What The Pool Actually Does
+## What Happens After Mint
 
-The pool does three jobs:
+After mint, the system has three possible trading paths.
 
-1. It offers a protocol floor bid when selling into the pool is enabled.
-2. It sells pool inventory back to the market when selling from inventory is enabled.
-3. It tracks market conditions and changes behaviour depending on regime.
+### 1. Peer-to-peer listing
 
-This means the pool is not always in the same mode.
+A user can list an NFT on the native marketplace and sell it directly to another user.
+
+This is where premium pricing should happen.
+
+### 2. Sell into pool
+
+A holder can sell into the pool when pool buying is enabled.
+
+This is the floor exit lane.
+
+The pool:
+
+- checks market state
+- checks reserve coverage
+- calculates the current floor bid
+- pays out floor minus fee
+- takes the NFT into protocol inventory
+
+### 3. Protocol inventory resale
+
+The protocol can later release inventory into the native marketplace.
+
+That inventory is not "magically healthy" just because it moved into a listing.  
+The system only reduces sell pressure after the NFT is actually sold in the marketplace.
+
+This is important because it prevents fake recovery signals.
+
+## Native Marketplace
+
+The marketplace is part of the protocol, not an afterthought.
+
+It supports:
+
+- normal user listings
+- protocol listings from the pool
+- a rolling 24-hour sales count
+- an active listing count
+- a current market floor
+
+Those values are fed back into the pool as market signals.
+
+That means the protocol does not need OpenSea or another external venue to understand its own market.  
+V1 is designed around the idea that trading happens in the native marketplace.
+
+## Floor Model
+
+The floor is not constant.
+
+It starts from mint economics and becomes more conservative as more NFTs are sold into the pool.
+
+Current baseline:
+
+- initial floor bid = `60%` of mint price
+- minimum floor bid = `15%` of mint price
+- bid decay reaches the minimum after roughly `3000` net pool sells
+
+There is also an EMA floor guard so the floor does not snap to zero or collapse too abruptly.
+
+This model exists to keep reserve obligations bounded and understandable.
 
 ## Market States
 
-The pool operates in three states:
+The pool runs in three states:
 
 ### Expansion
 
-This is the launch / growth state.
+This is early growth or strong demand.
 
-Typical properties:
+Typical meaning:
 
-- early after mint
-- activity is growing
-- the collection is still discovering demand
+- purchase rate is healthy
+- listing pressure is not too heavy
+- marketplace floor is above protocol floor
 
-Pool behaviour:
-
-- pool buying is restricted
-- pool inventory selling is disabled
-- the protocol avoids letting early sellers lean on the reserve too aggressively
-
-This prevents the reserve from being used as an unconditional exit during the exact phase when the collection is trying to form its market.
+In this state the protocol is conservative about becoming a floor dump venue.
 
 ### Stabilization
 
-This is the normal two-sided market state.
+This is the normal operating state.
 
-Typical properties:
+Typical meaning:
 
-- volume is stable
-- floor is not moving violently
-- buy and sell pressure are reasonably balanced
+- the market is active but not euphoric
+- inventory can be released to the marketplace
+- protocol inventory can re-enter the market in a controlled way
 
-Pool behaviour:
+This is the state where the protocol behaves most like a healthy two-sided system.
 
-- selling into the pool is enabled
-- buying from the pool is enabled
-- inventory is sold with a `20% spread` over floor
-
-This is the state where the protocol behaves most like an NFT AMM.
-
-### Weak Demand
+### WeakDemand
 
 This is the defensive state.
 
-Typical properties:
+Typical meaning:
 
-- short-term volume weakens
-- sell pressure dominates buy pressure
-- floor trades below its smoothed baseline
+- purchase rate weakens
+- listing pressure rises
+- market floor no longer clearly outperforms protocol floor
 
-Pool behaviour:
+In this state the protocol becomes more cautious and treasury actions may become relevant.
 
-- pool inventory selling is disabled
-- floor support becomes more conservative
-- treasury buyback can become available if reserve coverage is healthy
+## Buyback, Vault, And Burn
 
-## Pricing Model
+Buyback is not a permanent promise of support.
 
-The pool does not use the old exponential launch math anymore.
+It is a targeted treasury action used when:
 
-Instead it uses a simpler and more auditable structure:
+- inventory is stale
+- inventory is too large
+- or market conditions are weak enough to justify intervention
 
-### Floor Bid
+Buyback can:
 
-The protocol floor starts as a fraction of mint price and decays linearly as more NFTs are sold into the pool.
+- move NFTs out of active pool inventory
+- send some inventory into a vault
+- burn part of inventory over time
 
-Conceptually:
-
-`floor bid = initial bid - decay per net sell`
-
-In this model, `net sell` means user-driven sell pressure into the liquidity pool.
-Internal protocol operations like vault relists do not count as fresh sell pressure.
-
-With the current baseline model in code:
-
-- initial bid = `60%` of mint price
-- minimum bid = `15%` of mint price
-- decay reaches the floor after roughly `3000` net sells into the pool
-
-This creates a predictable and bounded reserve obligation.
-
-### Ask Price
-
-The pool does not always sell inventory.
-
-When the market is in `Stabilization`, ask is:
-
-`ask = floor bid + 20% spread`
-
-That spread exists to:
-
-- protect reserve quality
-- avoid trivial round-trip arbitrage
-- compensate the pool for inventory risk
-
-## Why The Protocol Does Not Promise Fair Rarity Pricing
-
-NFTs are not fungible. The protocol should not pretend otherwise.
-
-The pool prices NFTs as floor assets.  
-Community and secondary market behaviour determine whether some NFTs deserve a premium.
-
-That means:
-
-- rare NFTs can still be repriced by the market after leaving the pool
-- common NFTs can still use the pool as instant floor liquidity
-- the protocol stays simple and honest
-
-This is a feature, not a failure.  
-The protocol provides `floor liquidity`, while the market provides `premium discovery`.
-
-## Buyback Logic
-
-Buyback is no longer framed as automatic permanent floor defense.
-
-It is a conditional treasury action.
-
-Treasury buyback is only allowed when all of these conditions are true:
-
-- market state is `WeakDemand`
-- short-term volume is below its longer baseline
-- sell pressure is stronger than buy pressure
-- current floor is below its smoothed baseline
-- reserve coverage remains healthy
-
-This design avoids turning treasury into a blind subsidy for exit liquidity.
-
-When treasury inventory is no longer needed, the protocol can burn it through the NFT contract itself.
-That makes supply contraction real at the ERC-721 layer instead of merely sending NFTs to a dead address.
-
-## Trading Fees
-
-Each trade uses a `2.5%` fee.
-
-Current split in the pool:
-
-- `10%` of fee to stakers
-- `25%` of fee to pool reserve
-- `25%` of fee to treasury
-- `40%` of fee to protocol fees
-
-This means trading activity improves:
-
-- reserve depth
-- treasury capacity
-- staking rewards
-
-without pretending that fees alone solve all liquidity constraints.
+The goal is not to fake strength.  
+The goal is to stop the system from becoming a warehouse of stuck inventory.
 
 ## Staking
 
-NFT holders can stake into the pool and earn part of the fee flow.
+Staking is tied to actual protocol usage.
 
-Functions:
+Holders can stake NFTs into the pool and earn a share of trade fees.
 
-- `stake(tokenId)`
-- `unstake(tokenId)`
-- `claimFees()`
+That means staking rewards come from market activity, not from inflation or a separate emissions token.
 
-Staking is designed as fee participation, not as artificial yield disconnected from market activity.
+This keeps the system cleaner:
 
-## EMC And Liquidity Metrics
+- no extra reward token
+- no fake APY detached from usage
+- staking aligned with protocol volume
 
-The protocol exposes on-chain market metrics through `getMarketMetrics()`.
+## Why This Project Is Different
 
-The main idea is to track something more honest than naïve `floor × total supply`.
+Most NFT systems split these concerns apart:
 
-Metrics include:
+- art is one system
+- marketplace is another
+- liquidity is somewhere else
+- treasury logic barely exists
 
-- effective floor
-- circulating supply
-- locked supply
-- pool inventory
-- pool ETH
-- effective market cap
-- liquidity ratio
+OnChainPixel tries to keep those layers in one coherent design:
 
-This helps users distinguish between headline valuation and actual protocol-backed liquidity.
+- on-chain art
+- reserve-backed floor logic
+- native marketplace
+- treasury cleanup path
+- staking based on real volume
 
-## Contract Set
+That does not make it risk-free.  
+It does make the design easier to reason about than vague "floor support" promises.
 
-### OnChainPixelNFT
+## Where To Read Next
 
-Core ERC-721 with:
+If you want more detail:
 
-- `SSTORE2` pixel storage
-- per-token canvas dimensions
-- global palette
-- on-chain SVG rendering
-- `mintTo` minter role for router flow
-
-### PixelPool
-
-Floor-liquidity engine with:
-
-- market states
-- reserve-aware floor pricing
-- external listing releases
-- treasury buyback gates
-- staking
-- pool metrics
-
-### PixelRouter
-
-Main user entry point for:
-
-- minting
-- liquidity seeding
-- floor-exit sell routing
-- surfacing pool state to UI
-
-### PixelFactory
-
-Launchpad contract for deploying:
-
-- NFT
-- pool
-- router
-
-in one collection flow.
-
-## Product Narrative
-
-The strongest honest narrative for OnChainPixel is:
-
-`Permanent art. Native floor liquidity. Community-priced rarity.`
-
-That framing matches the protocol much better than:
-
-- guaranteed floor growth
-- instant profit after mint
-- permanent unconditional exit
-
-## Current Priorities
-
-1. Finish aligning all contracts with one build system.
-2. Replace legacy tests with Pool/Router-first tests.
-3. Rewrite remaining docs to match the new market-state-aware model.
-4. Connect the pixel editor and site UI to real contract flows.
-5. Validate the reserve math with scenario simulations before any public deployment.
+- [README.md](/Users/daniltkacev/Downloads/nft%20ponzo/README.md) for repo layout and commands
+- [AMM_ARCHITECTURE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AMM_ARCHITECTURE.md) for exact mechanics and formulas
+- [AUDIT.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AUDIT.md) for transparent trust and risk
+- [EMERGENCY-GOVERNANCE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/EMERGENCY-GOVERNANCE.md) for owner powers and Safe operations

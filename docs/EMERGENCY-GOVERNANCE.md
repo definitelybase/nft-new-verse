@@ -1,137 +1,206 @@
-# Emergency Governance Design
+# Emergency Governance
 
-## Current Admin Surface
+This document explains who can currently do what, what should sit in a Safe, and how the team should react if something goes wrong.
 
-### PixelPool (holds user funds)
-| Function | Risk | Current access |
-|----------|------|---------------|
-| `pause()` / `unpause()` | Freezes all trades, staking, claims | onlyOwner (EOA) |
-| `setRouter(address)` | Controls who can seed liquidity, route trades | onlyOwner |
-| `claimProtocolFees()` | Drains protocol fee accrual only | onlyOwner |
+## Governance Model
 
-**No function exists to drain `ethBalance` or `treasuryBalance` directly.** The pool has `receive() external payable` but no admin withdrawal. ETH leaves only through:
-- sell payouts to users
-- staker fee claims
-- protocol fee claims (capped to `protocolFees`)
-- treasury buyback cycle (buys NFTs at floor, doesn't extract ETH)
+Current recommended governance model:
 
-### PixelRouter (transient custody only)
-| Function | Risk | Current access |
-|----------|------|---------------|
-| `rescueNFT()` / `rescueETH()` | Recovers stuck assets | onlyOwner |
-| `setMintPrice()`, `setCreator()` | Changes economics | onlyOwner |
-| `setPoolSeedBps()`, `setTreasuryBps()` | Changes mint split | onlyOwner |
+- owner = Safe
+- deployer = temporary EOA only for deployment execution
+- protocol should not stay owned by a personal wallet after live deployment
 
-Router holds no persistent funds by design. Rescue functions exist for stuck assets only.
+Recommended Safe policy:
 
-### OnChainPixelNFT
-| Function | Risk | Current access |
-|----------|------|---------------|
-| `setMinter()`, `setBurner()` | Grants mint/burn authority | onlyOwner |
-| `withdraw()` | Drains NFT contract's mint proceeds | onlyOwner |
-| `setPalette()`, `lockPalette()` | Modifies art | onlyOwner (lockable) |
+- `2 of 3` for a small team
+- or `3 of 5` for a broader team
 
-### PixelFactory
-| Function | Risk | Current access |
-|----------|------|---------------|
-| `setNFTCode/setPoolCode/setRouterCode` | Changes deployment bytecode | onlyOwner |
-| `setFactoryFee()` | Changes creation fee | onlyOwner |
-| `withdraw()` | Drains factory fee balance | onlyOwner |
+Recommended signer mix:
 
-## Risk Assessment
+- founder / product owner
+- technical signer
+- separate trusted signer who is not the same operational laptop
 
-**What can a compromised owner key do?**
+## What The Owner Can Do
 
-1. **Pause the pool** — blocks all trades, staking, claims. Reversible by calling `unpause()`.
-2. **Change router** — point pool to a malicious router that calls `seedLiquidity` to inflate `ethBalance` accounting, then routes sells to drain. This is the **highest-impact attack vector**.
-3. **Change mint economics** — set mint price to 0, change splits. Visible on-chain.
-4. **Grant minter/burner** — mint unlimited NFTs or burn others' NFTs.
-5. **Cannot directly drain pool ETH** — no `withdraw()` on pool for ethBalance/treasuryBalance.
+### PixelPool owner powers
 
-**What can a compromised owner NOT do?**
+In [contracts/PixelPool.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelPool.sol), the owner can:
 
-- Cannot drain pool reserves in a single transaction
-- Cannot steal staked NFTs (unstake checks stakeOwner)
-- Cannot claim other users' staking rewards
-- Cannot bypass the pool's sell/buy market-state gates
+- queue and apply router changes
+- cancel a pending router change
+- set the listing venue
+- update fallback market snapshots
+- confirm fallback external sales
+- release protocol inventory for listing
+- relist vault inventory
+- pause
+- unpause
+- claim protocol fees
 
-## Options
+The owner does **not** have a general "drain the whole pool reserve" function.
 
-### Option A: No change (current — single EOA owner)
+### PixelRouter owner powers
 
-**Pros:** Simple, fast response, no deployment complexity
-**Cons:** Single point of failure. Key compromise = full admin control.
+In [contracts/PixelRouter.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelRouter.sol), the owner can:
 
-**Best for:** Early testnet phase, small user base, rapid iteration
+- change mint price
+- change creator address
+- change pool seed bps
+- change treasury bps
+- rescue stuck ETH or NFTs from the router
 
-### Option B: Multisig (Gnosis Safe)
+### OnChainPixelNFT owner powers
 
-Transfer ownership of Pool, Router, NFT to a 2-of-3 or 3-of-5 Safe.
+In [contracts/OnChainPixelNFT.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/OnChainPixelNFT.sol), the owner can:
 
-**Pros:** No single key can act unilaterally. Standard pattern.
-**Cons:** Slower emergency response (need multiple signers). Gas overhead per admin tx.
+- set minter
+- set burner
+- set palette until locked
+- lock palette
+- set mint price
+- enable or disable public mint
+- withdraw ETH held by the NFT contract
 
-**Implementation:** Just `transferOwnership(safeAddress)` on each contract. No code changes.
+### PixelMarketplace owner powers
 
-**Best for:** Pre-mainnet through early mainnet. Can start 2-of-3 and upgrade to 3-of-5.
+In [contracts/PixelMarketplace.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelMarketplace.sol), the owner can:
 
-### Option C: Timelock + Multisig
+- cancel protocol-owned listings
+- update protocol listing prices
 
-Admin actions go through a TimelockController (e.g., 24h delay). Emergency pause bypasses the timelock.
+It does not manage user custody outside those protocol-owned paths.
 
-**Pros:** Users can observe and exit before harmful admin actions execute. Pause stays instant.
-**Cons:** More complex. Requires splitting pause from other admin functions. 24h delay means slower response for legitimate changes.
+## What Is Instant And What Is Delayed
 
-**Implementation:**
-- Deploy OpenZeppelin TimelockController
-- Transfer ownership of Pool/Router/NFT to timelock
-- Keep a separate `pauser` role on Pool that bypasses timelock (requires contract change)
-- Multisig controls the timelock's proposer/executor roles
+### Instant actions
 
-**Contract change needed:**
-```solidity
-address public pauser;
-function setPauser(address p) external onlyOwner { pauser = p; }
-modifier onlyPauser() { require(msg.sender == pauser || msg.sender == owner(), "NotPauser"); _; }
-function pause() external onlyPauser { _pause(); }
-// unpause stays onlyOwner (through timelock)
-```
+These should remain fast:
 
-**Best for:** Mainnet with meaningful TVL.
+- `pause`
+- `unpause`
+- emergency public communication
+- frontend kill-switches or warning banners
 
-### Option D: Progressive decentralization
+These are the actions that matter first during a real incident.
 
-Phase 1 (testnet): EOA owner — current state
-Phase 2 (early mainnet): 2-of-3 multisig — no code changes
-Phase 3 (maturity): Timelock + multisig — requires pauser role change
-Phase 4 (optional): DAO governance — much later, if ever
+### Delayed actions
 
-## Recommendation
+Router replacement should not remain an instant power forever.
 
-**Start with Option B (multisig) at mainnet launch. Plan for Option C later.**
+Current pool behavior:
 
-Reasoning:
-- The biggest risk (setRouter) is mitigated by requiring multiple signers
-- No code changes needed for Option B — just `transferOwnership` post-deploy
-- pause/unpause stays fast because the multisig can execute directly
-- The pool already has no admin drain function — the security surface is smaller than most DeFi
-- Timelock adds value only when TVL justifies the complexity
+- during launch setup, router replacement can still be immediate
+- after that, router replacement is queued
+- a `48 hour` delay applies before activation
 
-**Immediate action:** None. Keep EOA for testnet. Before mainnet, deploy a Gnosis Safe and transfer ownership.
+This is meant to protect users from a surprise router swap.
 
-**Code change to prepare for Option C:** Add a `pauser` role to PixelPool that can call `pause()` without going through the timelock. This is a small, low-risk change that can be done now or later.
+## What We Should Not Do Yet
 
-## setRouter: The Key Risk
+### No renounce right now
 
-`setRouter` is still the most dangerous admin function because it controls who can call `seedLiquidity` and `seedTreasury`, which mutate pool accounting. A malicious router could:
+The contracts should not be renounced at this stage.
 
-1. Inject real ETH in misleading ways that distort reserve/accounting expectations
-2. Route trades through a malicious surface
-3. Change how mint-seeded capital reaches the pool/treasury
+Why:
 
-**Mitigation options:**
-- Make `setRouter` go through timelock even if other functions don't
-- Add an event-monitoring alert on `RouterUpdated`
-- Transfer ownership to a multisig before any meaningful TVL
+- the system still needs operational flexibility
+- a live bug may require pause or configuration action
+- palette lock must happen deliberately
+- governance hardening is not finished just because ownership changed to a Safe
 
-Note: the old `seedLiquidity(0)` inflation concern is already closed in the current codebase. The remaining risk is governance/control over which router is trusted at all.
+### No fake "locked liquidity" story
+
+The protocol is not a Uniswap LP token system.
+
+That means "lock LP for one year" is not the right mental model here.
+
+The more honest story is:
+
+- main reserve is not directly owner-withdrawable
+- ownership should sit in a Safe
+- dangerous admin changes should be delayed or limited
+
+## Incident Playbook
+
+### First 15 minutes
+
+1. Pause the pool if user funds may be at risk.
+2. Stop frontend actions that could route more users into danger.
+3. Announce that the protocol is paused and being investigated.
+
+### First hour
+
+1. Confirm which contract and function are affected.
+2. Confirm whether:
+   - reserve is at risk
+   - inventory accounting is wrong
+   - marketplace settlement is affected
+   - mint should be disabled at the UI layer
+3. Publish a short technical incident note.
+
+### After containment
+
+1. Decide whether recovery is possible inside current contracts.
+2. If not, document migration or redeploy plan honestly.
+3. Do not reopen until:
+   - root cause is identified
+   - Safe signers agree
+   - public note is ready
+
+## Normal Operating Playbook
+
+### Before live deployment
+
+1. Set palette.
+2. Lock palette.
+3. Wire router / marketplace / listing venue.
+4. Transfer ownership to Safe.
+5. Verify ownership and deployment file.
+
+### During normal operations
+
+Use the Safe for:
+
+- config changes
+- market fallback updates
+- protocol listing decisions
+- fee claims
+- incident actions
+
+Keep a written internal checklist for:
+
+- signer roles
+- transaction review
+- deployment verification
+- frontend address updates
+
+## Recommended Long-Term Direction
+
+Short term:
+
+- Safe ownership
+- delayed router changes
+- clear operator playbook
+
+Mid term:
+
+- reduce fallback paths that require manual owner actions
+- automate more market plumbing through the native marketplace
+
+Long term:
+
+- decide what powers should be frozen permanently
+- decide whether some owner powers should move behind stronger governance
+
+## Bottom Line
+
+The strongest realistic governance position today is:
+
+- Safe ownership
+- palette locked
+- router changes delayed
+- instant pause retained
+- no renounce yet
+
+That is safer and more honest than pretending the protocol is already immutable when it is not.

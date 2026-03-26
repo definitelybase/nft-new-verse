@@ -1,18 +1,129 @@
 # OnChainPixel
 
-OnChainPixel is a fully on-chain pixel NFT project with a native NFT floor-liquidity pool.
+OnChainPixel is a fully on-chain pixel NFT protocol with a reserve-backed floor exit lane and a native on-chain marketplace.
 
-The current repository contains:
+This repository contains the full V1 stack:
 
-- an on-chain pixel NFT contract
-- a market-state-aware liquidity pool
-- a router for mint and trading flows
-- a factory for deploying a full collection stack
-- Hardhat build and test setup
+- a fully on-chain NFT contract that stores pixel payloads with `SSTORE2`
+- a router that handles mint and sell-to-pool flows
+- a floor-liquidity pool that tracks reserve health, sell pressure, staking, and buyback logic
+- a native marketplace for user listings and protocol inventory listings
+- a factory that can deploy the full stack for a collection
+- a frontend shell for mint, market, staking, and editor flows
 
-## Source Of Truth
+## Read This First
 
-Active project folders:
+If you want to understand the project quickly, read the docs in this order:
+
+1. [docs/GITBOOK.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/GITBOOK.md)  
+   Plain-language product overview.
+2. [docs/AMM_ARCHITECTURE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AMM_ARCHITECTURE.md)  
+   Exact protocol mechanics, money flows, and market rules.
+3. [docs/AUDIT.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AUDIT.md)  
+   Transparent risk, trust, and readiness status.
+4. [docs/EMERGENCY-GOVERNANCE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/EMERGENCY-GOVERNANCE.md)  
+   Owner powers, Safe flow, and incident response.
+5. [docs/PLAN.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/PLAN.md)  
+   Current roadmap and what remains before public launch.
+
+Technical NFT-standard references:
+
+- [docs/SPEC.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/SPEC.md)
+- [docs/EIP.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/EIP.md)
+
+## What The Protocol Does
+
+OnChainPixel combines three layers that are usually separate:
+
+1. **Art layer**  
+   The NFT art is stored fully on-chain. Each token stores packed pixel data and renders its own SVG in the contract.
+2. **Floor-liquidity layer**  
+   The pool gives holders an on-chain floor exit when reserve coverage and market conditions allow it.
+3. **Market layer**  
+   Trading is intended to happen in the native marketplace shipped in this repository, not on an external marketplace.
+
+The protocol does **not** try to calculate the fair rarity price of every NFT.  
+It only tries to provide a reserve-aware floor lane and let the market decide which pieces deserve a premium.
+
+## Main Contracts
+
+- [contracts/OnChainPixelNFT.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/OnChainPixelNFT.sol)  
+  ERC-721 collection contract, palette, on-chain storage, SVG rendering, protocol burn.
+- [contracts/PixelRouter.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelRouter.sol)  
+  Mint entry point, reserve seeding, sell-to-pool convenience layer.
+- [contracts/PixelPool.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelPool.sol)  
+  Floor pricing, sell lane, staking, buyback, market state, protocol inventory handling.
+- [contracts/PixelMarketplace.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelMarketplace.sol)  
+  Native marketplace for user listings and protocol listings. Also exposes market signals back to the pool.
+- [contracts/PixelFactory.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelFactory.sol)  
+  Deploys the full collection stack: NFT + Pool + Router + Marketplace.
+
+## High-Level Lifecycle
+
+### Mint
+
+The normal mint path is:
+
+1. A user prepares a packed pixel payload.
+2. The user calls `PixelRouter.mint(...)`.
+3. The router mints the NFT to the user.
+4. The mint payment is split between:
+   - pool reserve
+   - treasury reserve
+   - creator / protocol operations
+5. The pool updates `totalMinted`.
+
+Default economic intent:
+
+- `60%` to pool reserve
+- `10%` to treasury reserve
+- `30%` to creator / protocol operations
+
+The exact split is configurable in the router.
+
+### Sell To Pool
+
+When pool buying is enabled:
+
+1. Holder approves the router.
+2. Router transfers the NFT into the pool.
+3. Pool pays the current floor bid minus trade fee.
+4. The NFT enters protocol inventory.
+5. Sell pressure increases.
+
+### Native Marketplace
+
+The marketplace supports two kinds of listings:
+
+- **user listings**  
+  Normal peer-to-peer listings created by holders.
+- **protocol listings**  
+  Listings created automatically when the pool releases inventory into the marketplace.
+
+When protocol inventory sells:
+
+1. The marketplace takes payment.
+2. Marketplace fee is routed into the pool fee splitter.
+3. Sale proceeds are settled back into the pool or treasury.
+4. Sell pressure is only reduced after the real sale happens.
+
+That last point matters: protocol inventory is not considered "cleared" just because it moved into a listing contract.
+
+### Treasury Buyback
+
+The treasury can buy back stale or excess protocol inventory under guarded conditions.
+
+Buyback is not meant to promise permanent support.  
+It exists to keep the system from becoming a warehouse of stale inventory when market conditions weaken.
+
+### Staking
+
+Holders can stake NFTs into the pool and earn part of trade fees.  
+Staking rewards come from trading activity, not from inflationary token emissions.
+
+## Source Of Truth Folders
+
+Primary project folders:
 
 - [contracts](/Users/daniltkacev/Downloads/nft%20ponzo/contracts)
 - [docs](/Users/daniltkacev/Downloads/nft%20ponzo/docs)
@@ -21,22 +132,16 @@ Active project folders:
 - [frontend/src](/Users/daniltkacev/Downloads/nft%20ponzo/frontend/src)
 - [hardhat-test](/Users/daniltkacev/Downloads/nft%20ponzo/hardhat-test)
 
-Archived / non-source-of-truth content:
+Archived / non-source-of-truth folders:
 
 - [archive/generated](/Users/daniltkacev/Downloads/nft%20ponzo/archive/generated)
 - [archive/legacy-tests](/Users/daniltkacev/Downloads/nft%20ponzo/archive/legacy-tests)
 
-## Main Contracts
-
-- [contracts/OnChainPixelNFT.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/OnChainPixelNFT.sol)
-- [contracts/PixelPool.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelPool.sol)
-- [contracts/PixelRouter.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelRouter.sol)
-- [contracts/PixelFactory.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelFactory.sol)
-
 ## Tooling
 
 - Node: `22.x`
-- Hardhat: build, compile, and test runner
+- Hardhat: compile, local deploy, testing
+- Vite: frontend shell
 
 Project files:
 
@@ -59,79 +164,74 @@ Compile contracts and export deploy artifacts:
 npm run build
 ```
 
-Run the Hardhat test suite:
+Run the full Hardhat suite:
 
 ```bash
 npm test
 ```
 
-Run the frontend dev shell:
+Run the frontend in dev mode:
 
 ```bash
 npm run frontend:dev
 ```
 
-Build the frontend shell:
+Build the frontend:
 
 ```bash
 npm run frontend:build
 ```
 
-Run a quick in-process local deploy:
+Start a quick in-process deploy:
 
 ```bash
 npm run deploy:hardhat
 ```
 
-Run a deploy against a local node:
+Run against a local node:
 
 ```bash
 npm run node
 npm run deploy:local
 ```
 
-Run a direct deploy on Sepolia through Hardhat config:
+Run a direct Sepolia deploy:
 
 ```bash
-SEPOLIA_RPC_URL=https://... DEPLOYER_KEY=0x... OWNER_ADDRESS=0xYourSafe CREATOR_ADDRESS=0xCreator npx hardhat run scripts/deploy-local.js --network sepolia
+SEPOLIA_RPC_URL=https://... \
+DEPLOYER_KEY=0x... \
+OWNER_ADDRESS=0xYourSafe \
+CREATOR_ADDRESS=0xCreator \
+npx hardhat run scripts/deploy-local.js --network sepolia
 ```
 
-Run the full factory deploy script:
+Run the full factory deploy path:
 
 ```bash
-npm run build
-SEPOLIA_RPC_URL=https://... DEPLOYER_KEY=0x... OWNER_ADDRESS=0xYourSafe CREATOR_ADDRESS=0xCreator node scripts/deploy.js sepolia
+SEPOLIA_RPC_URL=https://... \
+DEPLOYER_KEY=0x... \
+OWNER_ADDRESS=0xYourSafe \
+CREATOR_ADDRESS=0xCreator \
+node scripts/deploy.js sepolia
 ```
 
-Verify a live deployment after ownership handoff:
+Verify a deployment:
 
 ```bash
 RPC_URL=https://... npm run verify:deploy -- deployment-11155111.json
 ```
 
-Transfer ownership of an existing deployment to a Safe:
+Transfer ownership to a Safe:
 
 ```bash
 NEW_OWNER_ADDRESS=0xYourSafe npx hardhat run scripts/transfer-ownership.js --network sepolia
 ```
 
-## Current Test Coverage
+Prepare a manual market payload:
 
-The live Hardhat tests cover:
-
-- wiring and mint flow through router
-- pool reserve and treasury split
-- exact mint payment checks
-- sell / native marketplace / protocol listing settlement flows
-- buyback, vault, relist, and burn behaviour
-- market-state thresholds and negative gates
-- market-state stress and solvency checks
-- staking fee accounting and edge cases
-- protocol-fee/admin-path invariants
-- deploy/config guards and constructor validation
-- factory and NFT admin access / withdraw paths
-- palette lock + ownership handoff to multisig owner
-- factory end-to-end collection deployment
+```bash
+RPC_URL=https://... npm run keeper:market -- snapshot deployment-11155111.json 35 800 0.012
+```
 
 ## Deployment Artifacts
 
@@ -148,89 +248,32 @@ The live Hardhat tests cover:
 - [build/PixelFactory.abi](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelFactory.abi)
 - [build/PixelFactory.bin](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelFactory.bin)
 
-These artifacts are consumed by [scripts/deploy.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/deploy.js).
+## Current Status
 
-## Deployment Paths
+Current repository status:
 
-There are now two supported deployment paths:
+- native marketplace flow implemented
+- protocol listings auto-settle back into the pool
+- router change delay implemented after launch protection
+- palette lock + Safe ownership handoff flow implemented
+- Hardhat suite currently passes
 
-- [scripts/deploy-local.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/deploy-local.js)
-  Direct deploy of `NFT + Pool + Router + Marketplace`. This is the cheap, practical path for local use and testnets.
-- [scripts/deploy.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/deploy.js)
-  Full factory-based deployment path. Useful when you want to validate the `Factory` flow itself.
+Important transparency points:
 
-Both scripts now print a ready-to-paste `APP_CONFIG` block for the frontend and write a deployment JSON file.
+- this is **not** an audited mainnet-ready system yet
+- the current frontend is still a product shell, not a finished production client
+- the protocol still depends on owner / Safe operations for some configuration and fallback flows
 
-Both scripts also support the safer launch flow:
+For a full transparent status read:
 
-- `OWNER_ADDRESS` or `SAFE_ADDRESS` for final ownership handoff
-- `CREATOR_ADDRESS` for the economic creator address when it differs from deployer
-- palette lock enabled by default before ownership handoff
-- optional `SKIP_PALETTE_LOCK=YES` only when you intentionally want to keep the palette mutable during setup
-- router replacement is immediate only during initial launch protection / setup; after that it must be queued and applied after the on-chain delay
-
-Recommended live rollout:
-
-1. Deploy with `OWNER_ADDRESS=0xYourSafe`
-2. Confirm NFT / Pool / Router ownership moved to the Safe
-3. Confirm palette is locked
-4. Run `npm run verify:deploy -- deployment-11155111.json`
-
-If you accidentally deployed to an EOA owner first, you can still hand off the existing deployment afterwards with `transfer-ownership.js`.
-
-## Safe / Keeper Flow
-
-The pool can still accept manual market updates from your operator / Safe layer:
-
-- `setExternalMarketSnapshot(sales24h, activeListings, externalFloor)`
-- `confirmExternalSale(tokenId, salePrice)` as a fallback-only manual settlement path
-
-Use [scripts/market-keeper.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/market-keeper.js) to prepare Safe-ready payloads.
-
-Normal protocol listings now settle automatically through `PixelMarketplace`, and the pool can read market signals directly from that marketplace when it is configured as the listing venue.
-
-Snapshot example:
-
-```bash
-RPC_URL="https://1rpc.io/sepolia" \
-npm run keeper:market -- snapshot deployment-11155111.json 35 800 0.012
-```
-
-Fallback manual sale confirmation:
-
-```bash
-RPC_URL="https://1rpc.io/sepolia" \
-npm run keeper:market -- confirm-sale deployment-11155111.json 42 0.0135
-```
-
-The script prints:
-
-- current pool owner and whether it is a Safe / contract
-- protocol floor and reference supply
-- derived market ratios for the snapshot
-- a Safe transaction payload with `to`, `value`, and `data`
-
-If the current owner is still an EOA and you intentionally want to send directly, set `SEND_TX=YES` plus `PRIVATE_KEY` or `DEPLOYER_KEY`.
-
-## Notes
-
-- The protocol docs are in [docs/PLAN.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/PLAN.md), [docs/AMM_ARCHITECTURE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AMM_ARCHITECTURE.md), and [docs/AUDIT.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AUDIT.md).
-- The frontend files are still prototypes and not yet a production UI.
+- [docs/AUDIT.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AUDIT.md)
+- [docs/EMERGENCY-GOVERNANCE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/EMERGENCY-GOVERNANCE.md)
+- [docs/PLAN.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/PLAN.md)
 
 ## Frontend App Config
 
-Frontend addresses and read settings live in [frontend/src/appConfig.js](/Users/daniltkacev/Downloads/nft%20ponzo/frontend/src/appConfig.js).
+Frontend network and contract addresses live in:
 
-Fill these once in code:
+- [frontend/src/appConfig.js](/Users/daniltkacev/Downloads/nft%20ponzo/frontend/src/appConfig.js)
 
-```js
-export const APP_CONFIG = Object.freeze({
-  poolAddress: "0xYourPoolAddress",
-  routerAddress: "0xYourRouterAddress",
-  nftAddress: "0xYourNftAddress",
-  rpcUrl: "https://your-mainnet-rpc.example",
-  ethUsd: "2000",
-});
-```
-
-If `poolAddress` is empty, the UI stays in preview mode. `rpcUrl` should point to Ethereum mainnet.
+The deploy scripts print a ready-to-paste `APP_CONFIG` block after a successful deployment.
