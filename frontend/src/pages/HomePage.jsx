@@ -364,9 +364,12 @@ function LiquiditySystemOverview({ className = "", style }) {
               <text x="764" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Strong market</text>
 
               <text x="78" y="142" fill="rgba(228,184,78,0.94)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Weak demand / buyback zone</text>
-              <text x="350" y="154" fill="rgba(174,139,255,0.94)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Stabilization / release zone</text>
-              <text x="654" y="126" fill="rgba(118,174,235,0.94)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Expansion / market leads</text>
-              <text x="654" y="228" fill="rgba(118,174,235,0.82)" fontSize="11" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.6">sell-to-pool closes here</text>
+              <rect x="336" y="134" width="244" height="28" rx="14" fill="rgba(255,255,255,0.52)" />
+              <text x="350" y="152" fill="rgba(123,89,214,0.98)" fontSize="12" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.8">Stabilization / release zone</text>
+              <rect x="640" y="106" width="216" height="28" rx="14" fill="rgba(255,255,255,0.52)" />
+              <text x="654" y="124" fill="rgba(79,137,212,0.98)" fontSize="12" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.8">Expansion / market leads</text>
+              <rect x="638" y="212" width="184" height="24" rx="12" fill="rgba(255,255,255,0.48)" />
+              <text x="652" y="228" fill="rgba(79,137,212,0.98)" fontSize="11" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.6">sell-to-pool closes here</text>
             </svg>
           </div>
         </FrostCard>
