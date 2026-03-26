@@ -99,16 +99,16 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
   }, [marketItems]);
 
   const marketGridColumns = useMemo(() => {
+    if (gridDensity === 16) return "1fr";
     if (isCompactMarketLayout) {
-      if (gridDensity === 16) return "repeat(4, minmax(0, 1fr))";
       if (gridDensity === 8) return "repeat(3, minmax(0, 1fr))";
       return "repeat(2, minmax(0, 1fr))";
     }
     return `repeat(${gridDensity}, minmax(0, 1fr))`;
   }, [gridDensity, isCompactMarketLayout]);
 
-  const isDenseGrid = gridDensity >= 8;
-  const isUltraDenseGrid = gridDensity >= 16;
+  const isDenseGrid = gridDensity === 8;
+  const isListView = gridDensity === 16;
 
   async function handleSell() {
     if (!wallet?.provider || !wallet?.account) {
@@ -565,198 +565,336 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
             style={{
               display: "grid",
               gridTemplateColumns: marketGridColumns,
-              gap: 12,
+              gap: isListView ? 8 : 12,
             }}
           >
-            {visibleItems.map((item, index) => {
-              const selected = String(item.id) === String(sellTokenId);
-              const compactTitle = `#${item.id}`;
-              return (
-                <FrostCard
-                  key={item.id}
-                  className="site-reveal-soft"
-                  style={{
-                    padding: 0,
-                    overflow: "hidden",
-                    cursor: "pointer",
-                    borderColor: selected ? COLORS.borderStrong : COLORS.border,
-                    display: "flex",
-                    flexDirection: "column",
-                    height: "100%",
-                    ...revealStyle(340 + index * 20),
-                  }}
-                  onClick={() => setSellTokenId(String(item.id))}
-                  title={`${item.name} · ${item.tier} · ${item.base} · ${item.hair} · ${item.background}`}
-                >
-                  {isDenseGrid ? (
-                    <div
-                      style={{
-                        position: "relative",
-                        aspectRatio: "1 / 1",
-                        background: item.inPool ? COLORS.accentSoft : COLORS.surfaceStrong,
-                        overflow: "hidden",
-                      }}
-                    >
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        loading="lazy"
+            {isListView ? (
+              <FrostCard
+                className="site-reveal-soft"
+                style={{
+                  padding: 0,
+                  overflow: "hidden",
+                  ...revealStyle(340),
+                }}
+              >
+                {!isCompactMarketLayout ? (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "minmax(0, 2.4fr) 0.9fr 1fr 1fr auto",
+                      gap: 16,
+                      padding: "12px 18px",
+                      borderBottom: `1px solid ${COLORS.border}`,
+                      color: COLORS.textDim,
+                      fontFamily: fonts,
+                      fontSize: 10,
+                      letterSpacing: 1.1,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    <div>Item</div>
+                    <div>Tier</div>
+                    <div>Price</div>
+                    <div>Last sale</div>
+                    <div>Status</div>
+                  </div>
+                ) : null}
+
+                <div style={{ display: "grid", gap: 0 }}>
+                  {visibleItems.map((item, index) => {
+                    const selected = String(item.id) === String(sellTokenId);
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setSellTokenId(String(item.id))}
                         style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          imageRendering: "pixelated",
-                          display: "block",
+                          display: "grid",
+                          gridTemplateColumns: isCompactMarketLayout ? "minmax(0, 1.8fr) auto auto" : "minmax(0, 2.4fr) 0.9fr 1fr 1fr auto",
+                          gap: 16,
+                          alignItems: "center",
+                          padding: isCompactMarketLayout ? "12px 14px" : "14px 18px",
+                          border: "none",
+                          borderTop: index === 0 && isCompactMarketLayout ? "none" : `1px solid ${COLORS.border}`,
+                          background: selected ? COLORS.surfaceStrong : "transparent",
+                          cursor: "pointer",
+                          textAlign: "left",
                         }}
-                      />
-                      <div
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          background: "linear-gradient(to top, rgba(6,8,14,0.88), rgba(6,8,14,0.18) 48%, transparent 74%)",
-                        }}
-                      />
-                      {!isUltraDenseGrid ? (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: 8,
-                            right: 8,
-                            padding: "4px 7px",
-                            borderRadius: 999,
-                            background: item.inPool ? COLORS.accentSoft : item.listed ? COLORS.greenSoft : COLORS.surfaceStrong,
-                            color: item.inPool ? COLORS.accent : item.listed ? COLORS.green : COLORS.textDim,
-                            fontFamily: fonts,
-                            fontSize: 9,
-                            letterSpacing: 0.8,
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          {item.inPool ? "Pool" : item.tier}
-                        </div>
-                      ) : null}
-                      <div
-                        style={{
-                          position: "absolute",
-                          left: 8,
-                          right: 8,
-                          bottom: 8,
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "flex-end",
-                          gap: 8,
-                        }}
+                        title={`${item.name} · ${item.tier} · ${item.base} · ${item.hair} · ${item.background}`}
                       >
-                        <div style={{ minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
                           <div
                             style={{
-                              color: COLORS.text,
-                              fontFamily: fontDisplay,
-                              fontSize: isUltraDenseGrid ? 12 : 14,
-                              fontWeight: 600,
-                              lineHeight: 1,
-                              whiteSpace: "nowrap",
+                              width: 42,
+                              height: 42,
+                              borderRadius: 12,
                               overflow: "hidden",
-                              textOverflow: "ellipsis",
+                              flexShrink: 0,
+                              background: item.inPool ? COLORS.accentSoft : COLORS.surfaceStrong,
+                              border: `1px solid ${selected ? COLORS.borderStrong : COLORS.border}`,
                             }}
                           >
-                            {compactTitle}
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              loading="lazy"
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                imageRendering: "pixelated",
+                                display: "block",
+                              }}
+                            />
                           </div>
-                          {!isUltraDenseGrid ? (
+                          <div style={{ minWidth: 0 }}>
                             <div
                               style={{
-                                marginTop: 4,
-                                color: COLORS.textMuted,
-                                fontFamily: fonts,
-                                fontSize: 9,
-                                lineHeight: 1.2,
+                                color: COLORS.text,
+                                fontFamily: fontDisplay,
+                                fontSize: 18,
+                                fontWeight: 600,
+                                lineHeight: 1,
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
                               }}
                             >
-                              {item.base} · {item.hair}
+                              {item.name}
                             </div>
-                          ) : null}
+                            <div
+                              style={{
+                                marginTop: 4,
+                                color: COLORS.textMuted,
+                                fontFamily: fonts,
+                                fontSize: 10,
+                                lineHeight: 1.4,
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
+                              {item.base} · {item.hair} · {item.background}
+                            </div>
+                          </div>
                         </div>
-                        {!isUltraDenseGrid ? (
+
+                        {!isCompactMarketLayout ? (
                           <div
                             style={{
-                              color: COLORS.text,
+                              color: item.tier === "Legendary" ? COLORS.yellow : item.tier === "Epic" ? COLORS.purple : COLORS.text,
                               fontFamily: fontDisplay,
-                              fontSize: 12,
+                              fontSize: 17,
                               fontWeight: 600,
-                              lineHeight: 1,
+                            }}
+                          >
+                            {item.tier}
+                          </div>
+                        ) : null}
+
+                        <div
+                          style={{
+                            color: COLORS.text,
+                            fontFamily: fontDisplay,
+                            fontSize: isCompactMarketLayout ? 16 : 18,
+                            fontWeight: 600,
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {item.price.toFixed(4)} ETH
+                        </div>
+
+                        {!isCompactMarketLayout ? (
+                          <div
+                            style={{
+                              color: COLORS.textMuted,
+                              fontFamily: fonts,
+                              fontSize: 12,
                               whiteSpace: "nowrap",
                             }}
                           >
-                            {item.price.toFixed(3)}
+                            {item.lastSale.toFixed(4)} ETH
                           </div>
                         ) : null}
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div style={{ padding: 14, background: item.inPool ? COLORS.accentSoft : COLORS.surfaceStrong, display: "grid", placeItems: "center", aspectRatio: "1 / 1" }}>
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          loading="lazy"
+
+                        <div
                           style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            imageRendering: "pixelated",
-                            display: "block",
+                            justifySelf: isCompactMarketLayout ? "end" : "start",
+                            padding: "5px 10px",
+                            borderRadius: 999,
+                            background: item.inPool ? COLORS.accentSoft : item.listed ? COLORS.greenSoft : COLORS.surfaceStrong,
+                            color: item.inPool ? COLORS.accent : item.listed ? COLORS.green : COLORS.textDim,
+                            fontFamily: fonts,
+                            fontSize: 10,
+                            letterSpacing: 1,
+                            textTransform: "uppercase",
+                            whiteSpace: "nowrap",
                           }}
-                        />
-                      </div>
-                      <div style={{ padding: 14, display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-between", gap: 12 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center" }}>
-                          <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 19, fontWeight: 600, lineHeight: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                            {item.name}
-                          </div>
-                          <div
+                        >
+                          {item.inPool ? "Pool" : item.listed ? "Listed" : "Held"}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </FrostCard>
+            ) : (
+              visibleItems.map((item, index) => {
+                const selected = String(item.id) === String(sellTokenId);
+                return (
+                  <FrostCard
+                    key={item.id}
+                    className="site-reveal-soft"
+                    style={{
+                      padding: 0,
+                      overflow: "hidden",
+                      cursor: "pointer",
+                      borderColor: selected ? COLORS.borderStrong : COLORS.border,
+                      display: "flex",
+                      flexDirection: "column",
+                      height: "100%",
+                      ...revealStyle(340 + index * 20),
+                    }}
+                    onClick={() => setSellTokenId(String(item.id))}
+                    title={`${item.name} · ${item.tier} · ${item.base} · ${item.hair} · ${item.background}`}
+                  >
+                    {isDenseGrid ? (
+                      <>
+                        <div style={{ padding: 12, background: item.inPool ? COLORS.accentSoft : COLORS.surfaceStrong, display: "grid", placeItems: "center", aspectRatio: "1 / 1" }}>
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            loading="lazy"
                             style={{
-                              padding: "5px 10px",
-                              borderRadius: 999,
-                              background: item.inPool ? COLORS.accentSoft : item.listed ? COLORS.greenSoft : COLORS.surfaceStrong,
-                              color: item.inPool ? COLORS.accent : item.listed ? COLORS.green : COLORS.textDim,
-                              fontFamily: fonts,
-                              fontSize: 10,
-                              letterSpacing: 1,
-                              textTransform: "uppercase",
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              imageRendering: "pixelated",
+                              display: "block",
                             }}
-                          >
-                            {item.inPool ? "Pool" : item.listed ? item.tier : "Held"}
+                          />
+                        </div>
+                        <div style={{ padding: 12, display: "grid", gap: 8 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "flex-start" }}>
+                            <div style={{ minWidth: 0 }}>
+                              <div
+                                style={{
+                                  color: COLORS.text,
+                                  fontFamily: fontDisplay,
+                                  fontSize: 15,
+                                  fontWeight: 600,
+                                  lineHeight: 1,
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {item.name}
+                              </div>
+                              <div
+                                style={{
+                                  marginTop: 4,
+                                  color: COLORS.textMuted,
+                                  fontFamily: fonts,
+                                  fontSize: 10,
+                                  lineHeight: 1.25,
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {item.base} · {item.hair}
+                              </div>
+                            </div>
+                            <div
+                              style={{
+                                padding: "4px 7px",
+                                borderRadius: 999,
+                                background: item.inPool ? COLORS.accentSoft : item.listed ? COLORS.greenSoft : COLORS.surfaceStrong,
+                                color: item.inPool ? COLORS.accent : item.listed ? COLORS.green : COLORS.textDim,
+                                fontFamily: fonts,
+                                fontSize: 9,
+                                letterSpacing: 0.8,
+                                textTransform: "uppercase",
+                                flexShrink: 0,
+                              }}
+                            >
+                              {item.inPool ? "Pool" : item.tier}
+                            </div>
                           </div>
-                        </div>
-                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                          <Eyebrow tone="purple">{item.base}</Eyebrow>
-                          <Eyebrow tone="accent">{item.hair}</Eyebrow>
-                          <Eyebrow tone="green">{item.background}</Eyebrow>
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                           <div>
-                            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600, lineHeight: 0.98 }}>
+                            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600, lineHeight: 1 }}>
                               {item.price.toFixed(4)} ETH
                             </div>
-                            <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11 }}>
+                            <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.25 }}>
                               Last sale {item.lastSale.toFixed(4)} ETH
                             </div>
                           </div>
-                          <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, textAlign: "right", lineHeight: 1.7 }}>
-                            <div>{item.eyes} eyes · {item.mouth}</div>
-                            <div>{item.shirt}</div>
-                            <div>{item.accessory !== "none" ? item.accessory : "no accessory"}</div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ padding: 14, background: item.inPool ? COLORS.accentSoft : COLORS.surfaceStrong, display: "grid", placeItems: "center", aspectRatio: "1 / 1" }}>
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            loading="lazy"
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              imageRendering: "pixelated",
+                              display: "block",
+                            }}
+                          />
+                        </div>
+                        <div style={{ padding: 14, display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-between", gap: 12 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center" }}>
+                            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 19, fontWeight: 600, lineHeight: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              {item.name}
+                            </div>
+                            <div
+                              style={{
+                                padding: "5px 10px",
+                                borderRadius: 999,
+                                background: item.inPool ? COLORS.accentSoft : item.listed ? COLORS.greenSoft : COLORS.surfaceStrong,
+                                color: item.inPool ? COLORS.accent : item.listed ? COLORS.green : COLORS.textDim,
+                                fontFamily: fonts,
+                                fontSize: 10,
+                                letterSpacing: 1,
+                                textTransform: "uppercase",
+                              }}
+                            >
+                              {item.inPool ? "Pool" : item.listed ? item.tier : "Held"}
+                            </div>
+                          </div>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                            <Eyebrow tone="purple">{item.base}</Eyebrow>
+                            <Eyebrow tone="accent">{item.hair}</Eyebrow>
+                            <Eyebrow tone="green">{item.background}</Eyebrow>
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                            <div>
+                              <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600, lineHeight: 0.98 }}>
+                                {item.price.toFixed(4)} ETH
+                              </div>
+                              <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11 }}>
+                                Last sale {item.lastSale.toFixed(4)} ETH
+                              </div>
+                            </div>
+                            <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, textAlign: "right", lineHeight: 1.7 }}>
+                              <div>{item.eyes} eyes · {item.mouth}</div>
+                              <div>{item.shirt}</div>
+                              <div>{item.accessory !== "none" ? item.accessory : "no accessory"}</div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </>
-                  )}
-                </FrostCard>
-              );
-            })}
+                      </>
+                    )}
+                  </FrostCard>
+                );
+              })
+            )}
           </div>
         </div>
       </div>
