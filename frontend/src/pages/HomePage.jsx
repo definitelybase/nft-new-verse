@@ -143,30 +143,38 @@ function HeroGallery({ pool }) {
               </div>
               <div
                 style={{
-                  color: COLORS.text,
-                  fontFamily: fontDisplay,
-                  fontSize: 18,
-                  fontWeight: 600,
-                  lineHeight: 1.1,
-                  textAlign: "left",
+                  minWidth: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
                 }}
               >
-                {tile.title}
-              </div>
-              <div
-                style={{
-                  color: COLORS.textMuted,
-                  fontFamily: fonts,
-                  fontSize: 13,
-                  lineHeight: 1.35,
-                  textAlign: "left",
-                  marginTop: 8,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {tile.desc}
+                <div
+                  style={{
+                    color: COLORS.text,
+                    fontFamily: fontDisplay,
+                    fontSize: 18,
+                    fontWeight: 600,
+                    lineHeight: 1.1,
+                    textAlign: "left",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {tile.title}
+                </div>
+                <div
+                  style={{
+                    color: COLORS.textMuted,
+                    fontFamily: fonts,
+                    fontSize: 13,
+                    lineHeight: 1.35,
+                    textAlign: "left",
+                    marginTop: 8,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {tile.desc}
+                </div>
               </div>
             </div>
           </FrostCard>
