@@ -70,6 +70,9 @@ async function main() {
   const nftAddress = normalizeAddress(json.collection ? json.collection.nft : json.nft);
   const poolAddress = normalizeAddress(json.collection ? json.collection.pool : json.pool);
   const routerAddress = normalizeAddress(json.collection ? json.collection.router : json.router);
+  const marketAddress = json.collection?.market || json.market
+    ? normalizeAddress(json.collection ? json.collection.market : json.market)
+    : "";
   const expectedOwner = normalizeAddress(json.owner);
   const expectedCreator = normalizeAddress(json.creator);
   const expectedListingVault = json.listingVault ? normalizeAddress(json.listingVault) : ethers.constants.AddressZero;
@@ -80,6 +83,9 @@ async function main() {
   const nft = new ethers.Contract(nftAddress, loadArtifact("OnChainPixelNFT"), provider);
   const pool = new ethers.Contract(poolAddress, loadArtifact("PixelPool"), provider);
   const router = new ethers.Contract(routerAddress, loadArtifact("PixelRouter"), provider);
+  const market = marketAddress
+    ? new ethers.Contract(marketAddress, loadArtifact("PixelMarketplace"), provider)
+    : null;
   const factory = hasFactory
     ? new ethers.Contract(factoryAddress, loadArtifact("PixelFactory"), provider)
     : null;
@@ -90,6 +96,7 @@ async function main() {
   console.log(`NFT:    ${nftAddress}`);
   console.log(`Pool:   ${poolAddress}`);
   console.log(`Router: ${routerAddress}`);
+  if (marketAddress) console.log(`Market: ${marketAddress}`);
   if (factoryAddress) console.log(`Factory:${factoryAddress}`);
   console.log(`Owner:  ${expectedOwner}`);
   console.log(`Creator:${expectedCreator}`);
@@ -99,6 +106,7 @@ async function main() {
   const nftOwner = normalizeAddress(await nft.owner());
   const poolOwner = normalizeAddress(await pool.owner());
   const routerOwner = normalizeAddress(await router.owner());
+  const marketOwner = market ? normalizeAddress(await market.owner()) : "";
   const poolRouter = normalizeAddress(await pool.router());
   const routerCreator = normalizeAddress(await router.creator());
   const routerIsMinter = await nft.isMinter(routerAddress);
@@ -111,6 +119,9 @@ async function main() {
   check("NFT owner", nftOwner === expectedOwner, `${nftOwner}`, failures);
   check("Pool owner", poolOwner === expectedOwner, `${poolOwner}`, failures);
   check("Router owner", routerOwner === expectedOwner, `${routerOwner}`, failures);
+  if (market) {
+    check("Market owner", marketOwner === expectedOwner, `${marketOwner}`, failures);
+  }
   if (factory) {
     const factoryOwner = normalizeAddress(await factory.owner());
     check("Factory owner", factoryOwner === expectedOwner, `${factoryOwner}`, failures);

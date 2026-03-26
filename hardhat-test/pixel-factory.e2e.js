@@ -5,6 +5,7 @@ const BPS = 10000;
 const POOL_SEED_BPS = 6000;
 const TREASURY_BPS = 1000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
+const STABILIZATION_SPREAD_BPS = 2000;
 
 function palette16() {
   return ethers.utils.hexlify([
@@ -17,6 +18,10 @@ function palette16() {
 
 function onePixel(colorIndex = 1) {
   return ethers.utils.hexlify([(colorIndex & 0x0f) << 4]);
+}
+
+function addBps(value, bps) {
+  return value.add(value.mul(bps).div(BPS));
 }
 
 async function increaseTime(seconds) {
@@ -36,6 +41,7 @@ async function deployFactoryStack() {
   const NFT = await ethers.getContractFactory("OnChainPixelNFT");
   const Pool = await ethers.getContractFactory("PixelPool");
   const Router = await ethers.getContractFactory("PixelRouter");
+  const Market = await ethers.getContractFactory("PixelMarketplace");
 
   const factory = await Factory.connect(deployer).deploy();
   await factory.deployed();
@@ -43,12 +49,13 @@ async function deployFactoryStack() {
   await (await factory.connect(deployer).setNFTCode(NFT.bytecode)).wait();
   await (await factory.connect(deployer).setPoolCode(Pool.bytecode)).wait();
   await (await factory.connect(deployer).setRouterCode(Router.bytecode)).wait();
+  await (await factory.connect(deployer).setMarketplaceCode(Market.bytecode)).wait();
 
-  return { deployer, creator, buyer, nextBuyer, factory, NFT, Pool, Router, mintPrice };
+  return { deployer, creator, buyer, nextBuyer, factory, NFT, Pool, Router, Market, mintPrice };
 }
 
 async function createCollection(env) {
-  const { creator, factory, NFT, Pool, Router, mintPrice } = env;
+  const { creator, factory, NFT, Pool, Router, Market, mintPrice } = env;
 
   const tx = await factory.connect(creator).createCollection(
     "FactoryPixels",
@@ -68,8 +75,9 @@ async function createCollection(env) {
   const nft = NFT.attach(event.args.nft);
   const pool = Pool.attach(event.args.pool);
   const router = Router.attach(event.args.router);
+  const market = Market.attach(event.args.market);
 
-  return { nft, pool, router, event };
+  return { nft, pool, router, market, event };
 }
 
 async function seedPoolReserve(pool, creator, routerAddress, amount) {
@@ -78,16 +86,11 @@ async function seedPoolReserve(pool, creator, routerAddress, amount) {
   await (await pool.connect(creator).setRouter(routerAddress)).wait();
 }
 
-async function setStabilizationSnapshot(pool, creator) {
-  const floor = await pool.getFloorPrice();
-  await (await pool.connect(creator).setExternalMarketSnapshot(2, 120, floor)).wait();
-}
-
 describe("PixelFactory end-to-end", function () {
   it("creates a fully wired collection stack and routes mint through router", async function () {
     const env = await deployFactoryStack();
     const { creator, buyer, factory, mintPrice } = env;
-    const { nft, pool, router, event } = await createCollection(env);
+    const { nft, pool, router, market, event } = await createCollection(env);
 
     assert.strictEqual((await factory.totalCollections()).toString(), "1");
 
@@ -95,15 +98,17 @@ describe("PixelFactory end-to-end", function () {
     assert.strictEqual(collection.nft, event.args.nft);
     assert.strictEqual(collection.pool, event.args.pool);
     assert.strictEqual(collection.router, event.args.router);
+    assert.strictEqual(collection.market, event.args.market);
     assert.strictEqual(collection.creator, creator.address);
 
     assert.strictEqual(await nft.owner(), creator.address);
     assert.strictEqual(await pool.owner(), creator.address);
     assert.strictEqual(await router.owner(), creator.address);
+    assert.strictEqual(await market.owner(), creator.address);
     assert.strictEqual(await nft.isMinter(router.address), true);
     assert.strictEqual(await nft.isBurner(pool.address), true);
     assert.strictEqual(await pool.router(), router.address);
-    assert.strictEqual(await pool.listingVault(), creator.address);
+    assert.strictEqual(await pool.listingVault(), market.address);
 
     await expectCustomError(
       nft.connect(buyer)["mint(bytes)"](onePixel(), { value: mintPrice }),
@@ -120,10 +125,11 @@ describe("PixelFactory end-to-end", function () {
 
   it("supports sell and later releases inventory to the creator listing vault", async function () {
     const env = await deployFactoryStack();
-    const { creator, buyer, mintPrice } = env;
-    const { nft, pool, router } = await createCollection(env);
+    const { creator, buyer, nextBuyer, mintPrice } = env;
+    const { nft, pool, router, market } = await createCollection(env);
 
     await (await router.connect(buyer)["mint(bytes)"](onePixel(3), { value: mintPrice })).wait();
+    await (await router.connect(nextBuyer)["mint(bytes)"](onePixel(4), { value: mintPrice })).wait();
     await seedPoolReserve(pool, creator, router.address, ethers.utils.parseEther("6"));
 
     await increaseTime(LAUNCH_PROTECTION + 1);
@@ -134,10 +140,16 @@ describe("PixelFactory end-to-end", function () {
     assert.strictEqual(await nft.ownerOf(0), pool.address);
     assert.strictEqual((await pool.availableNFTs()).toString(), "1");
 
-    await setStabilizationSnapshot(pool, creator);
+    const listingPrice = addBps(await pool.getFloorPrice(), STABILIZATION_SPREAD_BPS);
+    await (await nft.connect(nextBuyer).approve(market.address, 1)).wait();
+    await (await market.connect(nextBuyer).createListing(1, listingPrice)).wait();
+    await (await market.connect(creator).buyListing(1, { value: listingPrice })).wait();
+
     await (await pool.connect(creator).releasePoolInventoryForListing(1)).wait();
 
-    assert.strictEqual(await nft.ownerOf(0), creator.address);
+    assert.strictEqual(await nft.ownerOf(0), market.address);
     assert.strictEqual((await pool.availableNFTs()).toString(), "0");
+    const snapshot = await market.getMarketSnapshot();
+    assert.strictEqual(snapshot.listedCount.toString(), "1");
   });
 });

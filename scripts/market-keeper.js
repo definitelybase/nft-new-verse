@@ -252,7 +252,7 @@ async function main() {
   const fromPoolInventory = pending ? await pool.pendingExternalSaleFromPool(tokenId) : false;
 
   console.log("");
-  console.log("External sale preview");
+  console.log("Manual sale confirmation preview");
   console.log(`- Token ID:         ${tokenId.toString()}`);
   console.log(`- Sale price:       ${fmtEth(salePrice)}`);
   console.log(`- Pending tracked:  ${pending}`);
@@ -269,7 +269,7 @@ async function main() {
     toSafeTx(
       poolAddress,
       data,
-      `Confirm external sale for token ${tokenId.toString()} at ${salePrice.toString()}`
+      `Confirm manual sale settlement for token ${tokenId.toString()} at ${salePrice.toString()}`
     ),
     null,
     2

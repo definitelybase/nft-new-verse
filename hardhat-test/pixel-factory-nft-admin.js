@@ -43,6 +43,7 @@ describe("Factory and NFT admin paths", function () {
     const dummyNFTCode = "0x60016000";
     const dummyPoolCode = "0x60026000";
     const dummyRouterCode = "0x60036000";
+    const dummyMarketCode = "0x60046000";
     const fee = ethers.utils.parseEther("0.25");
 
     await assert.rejects(
@@ -58,6 +59,10 @@ describe("Factory and NFT admin paths", function () {
       /Ownable: caller is not the owner/
     );
     await assert.rejects(
+      factory.connect(user).setMarketplaceCode(dummyMarketCode),
+      /Ownable: caller is not the owner/
+    );
+    await assert.rejects(
       factory.connect(user).setFactoryFee(fee),
       /Ownable: caller is not the owner/
     );
@@ -69,9 +74,11 @@ describe("Factory and NFT admin paths", function () {
     await (await factory.connect(owner).setNFTCode(dummyNFTCode)).wait();
     await (await factory.connect(owner).setPoolCode(dummyPoolCode)).wait();
     await (await factory.connect(owner).setRouterCode(dummyRouterCode)).wait();
+    await (await factory.connect(owner).setMarketplaceCode(dummyMarketCode)).wait();
     assert.strictEqual(await factory.nftCode(), dummyNFTCode);
     assert.strictEqual(await factory.poolCode(), dummyPoolCode);
     assert.strictEqual(await factory.routerCode(), dummyRouterCode);
+    assert.strictEqual(await factory.marketCode(), dummyMarketCode);
 
     const feeReceipt = await (await factory.connect(owner).setFactoryFee(fee)).wait();
     const feeEvent = getEvent(feeReceipt, "FactoryFeeUpdated");

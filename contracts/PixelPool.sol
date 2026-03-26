@@ -12,6 +12,10 @@ interface IERC721Burnable is IERC721 {
     function maxSupply() external view returns (uint256);
 }
 
+interface IMarketSignalFeed {
+    function getMarketSnapshot() external view returns (uint256 sales24h, uint256 activeListings, uint256 floorPrice);
+}
+
 /// @title PixelPool
 /// @notice Market-state-aware NFT floor-liquidity pool with staking and treasury buyback
 /// @dev Uses a reserve-aware linear floor bid, external listing releases, and gated buyback logic.
@@ -45,6 +49,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     error RouterChangeNotReady();
     error RouterChangeNotPending();
     error ExternalListingNotTracked();
+    error NotListingVenue();
 
     event NFTSold(address indexed seller, uint256 indexed tokenId, uint256 price, uint256 fee);
     event LiquidityAdded(uint256 ethAmount);
@@ -73,6 +78,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         uint256 salePrice,
         bool fromPoolInventory
     );
+    event ProtocolListingReturned(uint256 indexed tokenId, bool fromPoolInventory);
     event MarketStateUpdated(
         MarketState indexed previousState,
         MarketState indexed newState,
@@ -179,6 +185,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         totalMinted = c;
     }
     function _onlyRouter() private view { if (msg.sender != router) revert NotRouter(); }
+    function _onlyListingVenue() private view { if (msg.sender != listingVault) revert NotListingVenue(); }
 
     // ---- Floor Pricing ----
     function getFloorPrice() public view returns (uint256) {
@@ -207,13 +214,34 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     ) {
         uint256 liveSupply = _referenceSupply();
         uint256 protocolFloor = getFloorPrice();
+        uint256 observedSales24h = externalSales24h;
+        uint256 observedListings = externalListings;
+        uint256 observedFloor = externalFloor;
 
-        if (liveSupply > 0) {
-            purchaseRateBps = (externalSales24h * BPS) / liveSupply;
-            listingPressureBps = (externalListings * BPS) / liveSupply;
+        if (listingVault != address(0) && listingVault.code.length > 0) {
+            try IMarketSignalFeed(listingVault).getMarketSnapshot() returns (
+                uint256 sales24h,
+                uint256 activeListings,
+                uint256 floorPrice
+            ) {
+                observedSales24h = sales24h;
+                observedListings = activeListings;
+                observedFloor = floorPrice;
+            } catch {
+                // Keep the last manual snapshot as fallback
+            }
         }
 
-        floorRatioBps = protocolFloor == 0 ? BPS : (externalFloor * BPS) / protocolFloor;
+        if (liveSupply > 0) {
+            purchaseRateBps = (observedSales24h * BPS) / liveSupply;
+            listingPressureBps = (observedListings * BPS) / liveSupply;
+        }
+
+        if (protocolFloor == 0 || observedListings == 0 || observedFloor == 0) {
+            floorRatioBps = BPS;
+        } else {
+            floorRatioBps = (observedFloor * BPS) / protocolFloor;
+        }
         coverageRatioBps = _coverageRatio(protocolFloor);
     }
 
@@ -362,15 +390,27 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     function relistFromVault(uint256 count) external onlyOwner nonReentrant whenNotPaused {
         if (listingVault == address(0)) revert ListingVaultNotSet();
         if (!canReleaseInventoryForListing()) revert RelistConditionsNotMet();
+        uint256 observedFloor = externalFloor;
+        if (listingVault.code.length > 0) {
+            try IMarketSignalFeed(listingVault).getMarketSnapshot() returns (
+                uint256,
+                uint256,
+                uint256 floorPrice
+            ) {
+                observedFloor = floorPrice;
+            } catch {
+                // keep fallback snapshot
+            }
+        }
         uint256 done;
         for (uint256 i = 0; i < count; i++) {
             if (_vaultNfts.length == 0) break;
             uint256 tid = _vaultNfts[_vaultNfts.length - 1];
             uint256 targetPrice = getVaultListingTarget(tid);
-            if (externalFloor < targetPrice) break;
+            if (observedFloor < targetPrice) break;
             _rmVault(tid);
             _trackExternalListing(tid, false);
-            nftContract.transferFrom(address(this), listingVault, tid);
+            nftContract.safeTransferFrom(address(this), listingVault, tid, abi.encode(targetPrice, false));
             emit InventoryReleasedForListing(tid, listingVault, targetPrice, true);
             done++;
         }
@@ -389,7 +429,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
             uint256 tid = _poolNfts[_poolNfts.length - 1];
             _rmPool(tid);
             _trackExternalListing(tid, true);
-            nftContract.transferFrom(address(this), listingVault, tid);
+            nftContract.safeTransferFrom(address(this), listingVault, tid, abi.encode(ask, true));
             emit InventoryReleasedForListing(tid, listingVault, ask, false);
             done++;
         }
@@ -424,6 +464,59 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         _updateFloorEma();
         _refreshMarketState();
         emit ExternalSaleConfirmed(tokenId, salePrice, fromPoolInventory);
+    }
+
+    function recordMarketplaceFee() external payable nonReentrant {
+        _onlyListingVenue();
+        if (msg.value == 0) revert InvalidAmount();
+        _distFee(msg.value);
+        _refreshMarketState();
+    }
+
+    function settleMarketplaceSale(
+        uint256 tokenId,
+        uint256 salePrice,
+        bool fromPoolInventory
+    ) external payable nonReentrant {
+        _onlyListingVenue();
+        if (!pendingExternalSale[tokenId] || pendingExternalSaleFromPool[tokenId] != fromPoolInventory) {
+            revert ExternalListingNotTracked();
+        }
+        if (msg.value == 0) revert InvalidAmount();
+
+        delete pendingExternalSale[tokenId];
+        delete pendingExternalSaleFromPool[tokenId];
+
+        if (fromPoolInventory) {
+            if (totalSoldIntoPool > 0) totalSoldIntoPool -= 1;
+            ethBalance += msg.value;
+        } else {
+            treasuryBalance += msg.value;
+        }
+
+        _updateFloorEma();
+        _refreshMarketState();
+        emit ExternalSaleConfirmed(tokenId, salePrice, fromPoolInventory);
+    }
+
+    function returnProtocolListing(uint256 tokenId, bool fromPoolInventory) external nonReentrant {
+        _onlyListingVenue();
+        if (!pendingExternalSale[tokenId] || pendingExternalSaleFromPool[tokenId] != fromPoolInventory) {
+            revert ExternalListingNotTracked();
+        }
+
+        delete pendingExternalSale[tokenId];
+        delete pendingExternalSaleFromPool[tokenId];
+
+        if (fromPoolInventory) {
+            _addPool(tokenId);
+        } else {
+            _addVault(tokenId);
+        }
+
+        _updateFloorEma();
+        _refreshMarketState();
+        emit ProtocolListingReturned(tokenId, fromPoolInventory);
     }
 
     // ---- Metrics ----

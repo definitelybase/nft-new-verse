@@ -37,9 +37,9 @@ async function main() {
   const isLocal = network.chainId === 31337;
   const creatorAddress = process.env.CREATOR_ADDRESS || fallbackCreator.address;
   const ownerAddress = process.env.OWNER_ADDRESS || process.env.SAFE_ADDRESS || deployer.address;
-  const listingVaultAddress = process.env.LISTING_VAULT_ADDRESS || ownerAddress;
   const localSeedEth = process.env.LOCAL_POOL_SEED_ETH || "1";
   const shouldLockPalette = process.env.SKIP_PALETTE_LOCK !== "YES";
+  const marketFeeBps = Number(process.env.MARKETPLACE_FEE_BPS || "250");
 
   if (!ethers.utils.isAddress(creatorAddress) || creatorAddress === ethers.constants.AddressZero) {
     throw new Error("CREATOR_ADDRESS must be a non-zero address");
@@ -47,15 +47,14 @@ async function main() {
   if (!ethers.utils.isAddress(ownerAddress) || ownerAddress === ethers.constants.AddressZero) {
     throw new Error("OWNER_ADDRESS/SAFE_ADDRESS must be a non-zero address");
   }
-  if (!ethers.utils.isAddress(listingVaultAddress) || listingVaultAddress === ethers.constants.AddressZero) {
-    throw new Error("LISTING_VAULT_ADDRESS must be a non-zero address");
+  if (!Number.isFinite(marketFeeBps) || marketFeeBps < 0 || marketFeeBps > 10000) {
+    throw new Error("MARKETPLACE_FEE_BPS must be between 0 and 10000");
   }
 
   console.log(`\nNetwork: ${networkLabel} (chainId ${network.chainId})`);
   console.log(`Deployer: ${deployer.address}`);
   console.log(`Creator:  ${creatorAddress}`);
   console.log(`Owner:    ${ownerAddress}`);
-  console.log(`Listing:  ${listingVaultAddress}`);
   console.log(`Balance:  ${ethers.utils.formatEther(await deployer.getBalance())} ETH\n`);
 
   let totalGas = ethers.BigNumber.from(0);
@@ -88,23 +87,30 @@ async function main() {
   totalGas = totalGas.add(r.gasUsed);
   console.log(`Router: ${router.address} (${r.gasUsed.toLocaleString()} gas)`);
 
-  // 4. Wire permissions
+  // 4. Deploy Marketplace
+  const Marketplace = await ethers.getContractFactory("PixelMarketplace");
+  const market = await Marketplace.deploy(nft.address, pool.address, marketFeeBps);
+  r = await market.deployTransaction.wait();
+  totalGas = totalGas.add(r.gasUsed);
+  console.log(`Market: ${market.address} (${r.gasUsed.toLocaleString()} gas)`);
+
+  // 5. Wire permissions
   let tx;
   tx = await nft.setMinter(router.address, true); await tx.wait();
   tx = await nft.setBurner(pool.address, true); await tx.wait();
   tx = await pool.setRouter(router.address); await tx.wait();
-  tx = await pool.setListingVault(listingVaultAddress); await tx.wait();
-  console.log("\nPermissions wired: router=minter, pool=burner, pool.router=router, pool.listingVault=listing vault");
+  tx = await pool.setListingVault(market.address); await tx.wait();
+  console.log("\nPermissions wired: router=minter, pool=burner, pool.router=router, pool.listingVault=market");
 
   const routerIsMinter = await nft.isMinter(router.address);
   const poolIsBurner = await nft.isBurner(pool.address);
   const poolRouter = await pool.router();
   const poolListingVault = await pool.listingVault();
-  if (!routerIsMinter || !poolIsBurner || poolRouter !== router.address || poolListingVault !== listingVaultAddress) {
+  if (!routerIsMinter || !poolIsBurner || poolRouter !== router.address || poolListingVault !== market.address) {
     throw new Error("Post-deploy wiring verification failed");
   }
 
-  // 5. Lock palette before handing ownership off
+  // 6. Lock palette before handing ownership off
   if (shouldLockPalette) {
     tx = await nft.lockPalette();
     await tx.wait();
@@ -113,7 +119,7 @@ async function main() {
     console.log("Palette left unlocked (SKIP_PALETTE_LOCK=YES)");
   }
 
-  // 6. Seed initial liquidity (local only — on testnet, seed manually)
+  // 7. Seed initial liquidity (local only — on testnet, seed manually)
   if (isLocal) {
     const localSeedAmount = ethers.utils.parseEther(localSeedEth);
     tx = await pool.setRouter(deployer.address); await tx.wait();
@@ -122,11 +128,12 @@ async function main() {
     console.log(`Seeded ${localSeedEth} ETH into pool reserve (local only)`);
   }
 
-  // 7. Transfer ownership to final owner / multisig
+  // 8. Transfer ownership to final owner / multisig
   if (ownerAddress.toLowerCase() !== deployer.address.toLowerCase()) {
     tx = await nft.transferOwnership(ownerAddress); await tx.wait();
     tx = await pool.transferOwnership(ownerAddress); await tx.wait();
     tx = await router.transferOwnership(ownerAddress); await tx.wait();
+    tx = await market.transferOwnership(ownerAddress); await tx.wait();
     console.log(`Ownership transferred to ${ownerAddress}`);
   } else {
     console.log("Ownership retained by deployer");
@@ -135,10 +142,12 @@ async function main() {
   const nftOwner = await nft.owner();
   const poolOwner = await pool.owner();
   const routerOwner = await router.owner();
+  const marketOwner = await market.owner();
   if (
     nftOwner.toLowerCase() !== ownerAddress.toLowerCase() ||
     poolOwner.toLowerCase() !== ownerAddress.toLowerCase() ||
-    routerOwner.toLowerCase() !== ownerAddress.toLowerCase()
+    routerOwner.toLowerCase() !== ownerAddress.toLowerCase() ||
+    marketOwner.toLowerCase() !== ownerAddress.toLowerCase()
   ) {
     throw new Error("Ownership handoff verification failed");
   }
@@ -151,10 +160,11 @@ async function main() {
     nft: nft.address,
     pool: pool.address,
     router: router.address,
+    market: market.address,
     deployer: deployer.address,
     creator: creatorAddress,
     owner: ownerAddress,
-    listingVault: listingVaultAddress,
+    listingVault: market.address,
     paletteLocked: shouldLockPalette,
     totalGas: totalGas.toString(),
     appConfig: {
@@ -162,6 +172,7 @@ async function main() {
       poolAddress: pool.address,
       routerAddress: router.address,
       nftAddress: nft.address,
+      marketplaceAddress: market.address,
       rpcUrl: isLocal ? "http://127.0.0.1:8545" : "",
       ethUsd: "2000",
     },
@@ -183,6 +194,7 @@ export const APP_CONFIG = Object.freeze({
   poolAddress: "${pool.address}",
   routerAddress: "${router.address}",
   nftAddress: "${nft.address}",
+  marketplaceAddress: "${market.address}",
   rpcUrl: "${rpcUrl}",
   ethUsd: "2000",
 });

@@ -164,6 +164,7 @@ describe("Admin and emergency events", function () {
     const dummyNFTCode = "0x60016000";
     const dummyPoolCode = "0x60026000";
     const dummyRouterCode = "0x60036000";
+    const dummyMarketCode = "0x60046000";
 
     let receipt = await (await factory.connect(owner).setNFTCode(dummyNFTCode)).wait();
     getEvent(receipt, "NFTCodeUpdated");
@@ -173,6 +174,9 @@ describe("Admin and emergency events", function () {
 
     receipt = await (await factory.connect(owner).setRouterCode(dummyRouterCode)).wait();
     getEvent(receipt, "RouterCodeUpdated");
+
+    receipt = await (await factory.connect(owner).setMarketplaceCode(dummyMarketCode)).wait();
+    getEvent(receipt, "MarketplaceCodeUpdated");
 
     receipt = await (await factory.connect(owner).setFactoryFee(ethers.utils.parseEther("0.1"))).wait();
     let event = getEvent(receipt, "FactoryFeeUpdated");

@@ -122,7 +122,7 @@ The live Hardhat tests cover:
 - wiring and mint flow through router
 - pool reserve and treasury split
 - exact mint payment checks
-- sell / external listing / external sale-confirmation flows
+- sell / native marketplace / protocol listing settlement flows
 - buyback, vault, relist, and burn behaviour
 - market-state thresholds and negative gates
 - market-state stress and solvency checks
@@ -143,6 +143,8 @@ The live Hardhat tests cover:
 - [build/PixelPool.bin](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelPool.bin)
 - [build/PixelRouter.abi](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelRouter.abi)
 - [build/PixelRouter.bin](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelRouter.bin)
+- [build/PixelMarketplace.abi](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelMarketplace.abi)
+- [build/PixelMarketplace.bin](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelMarketplace.bin)
 - [build/PixelFactory.abi](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelFactory.abi)
 - [build/PixelFactory.bin](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelFactory.bin)
 
@@ -153,7 +155,7 @@ These artifacts are consumed by [scripts/deploy.js](/Users/daniltkacev/Downloads
 There are now two supported deployment paths:
 
 - [scripts/deploy-local.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/deploy-local.js)
-  Direct deploy of `NFT + Pool + Router`. This is the cheap, practical path for local use and testnets.
+  Direct deploy of `NFT + Pool + Router + Marketplace`. This is the cheap, practical path for local use and testnets.
 - [scripts/deploy.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/deploy.js)
   Full factory-based deployment path. Useful when you want to validate the `Factory` flow itself.
 
@@ -178,12 +180,14 @@ If you accidentally deployed to an EOA owner first, you can still hand off the e
 
 ## Safe / Keeper Flow
 
-The pool now expects external market updates from your operator / Safe layer:
+The pool can still accept manual market updates from your operator / Safe layer:
 
 - `setExternalMarketSnapshot(sales24h, activeListings, externalFloor)`
-- `confirmExternalSale(tokenId, salePrice)`
+- `confirmExternalSale(tokenId, salePrice)` as a fallback-only manual settlement path
 
 Use [scripts/market-keeper.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/market-keeper.js) to prepare Safe-ready payloads.
+
+Normal protocol listings now settle automatically through `PixelMarketplace`, and the pool can read market signals directly from that marketplace when it is configured as the listing venue.
 
 Snapshot example:
 
@@ -192,7 +196,7 @@ RPC_URL="https://1rpc.io/sepolia" \
 npm run keeper:market -- snapshot deployment-11155111.json 35 800 0.012
 ```
 
-External sale confirmation:
+Fallback manual sale confirmation:
 
 ```bash
 RPC_URL="https://1rpc.io/sepolia" \

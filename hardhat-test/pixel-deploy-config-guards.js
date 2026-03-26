@@ -113,6 +113,7 @@ describe("Deploy and config guards", function () {
     const NFT = await ethers.getContractFactory("OnChainPixelNFT");
     const Pool = await ethers.getContractFactory("PixelPool");
     const Router = await ethers.getContractFactory("PixelRouter");
+    const Market = await ethers.getContractFactory("PixelMarketplace");
 
     const factory = await Factory.connect(owner).deploy();
     await factory.deployed();
@@ -120,6 +121,7 @@ describe("Deploy and config guards", function () {
     await (await factory.connect(owner).setNFTCode(NFT.bytecode)).wait();
     await (await factory.connect(owner).setPoolCode(Pool.bytecode)).wait();
     await (await factory.connect(owner).setRouterCode(Router.bytecode)).wait();
+    await (await factory.connect(owner).setMarketplaceCode(Market.bytecode)).wait();
 
     await expectCustomError(
       factory.connect(creator).createCollection(

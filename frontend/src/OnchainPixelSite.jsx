@@ -1907,13 +1907,13 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
               Pool lane
             </div>
             <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-              The pool is the instant-exit layer. Discovery and premium pricing stay in the open market, while protocol inventory is routed outward for external listings once the spread is attractive enough.
+              The pool is the instant-exit layer. Discovery and premium pricing stay in the native market, while protocol inventory is routed into the protocol marketplace once the spread is attractive enough.
             </div>
             <div style={{ marginTop: 14, display: "grid", gap: 10 }}>
               <div style={{ padding: 12, borderRadius: 16, background: COLORS.surfaceStrong }}>
                 <div style={{ color: COLORS.green, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Listing lane</div>
                 <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                  Protocol inventory can be released toward an external listing vault once stabilization conditions are met.
+                  Protocol inventory can be released into the native marketplace once stabilization conditions are met.
                 </div>
               </div>
               <div style={{ padding: 12, borderRadius: 16, background: COLORS.surfaceStrong }}>
@@ -2013,7 +2013,7 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
                   Protocol listing lane
                 </div>
                 <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
-                  The protocol no longer sells inventory directly out of the pool. Instead, inventory that came in through floor bids is released toward an external listing vault once the market stabilizes and the listing spread is healthy enough.
+                  The protocol no longer sells inventory directly out of the pool. Instead, inventory that came in through floor bids is released into the native marketplace once the market stabilizes and the listing spread is healthy enough.
                   {!pool.listingEnabled ? <span style={{ color: COLORS.yellow }}> Listing release opens only in stabilization with inventory ready.</span> : null}
                 </div>
 
@@ -2038,7 +2038,7 @@ function MarketplacePage({ pool, isLive, wallet, onConnectWallet, appConfig, poo
                       How it works now
                     </div>
                     <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.8 }}>
-                      Holders still exit through the protocol floor bid. But once inventory accumulates, the protocol routes that inventory toward an external listing vault instead of selling it directly out of the pool. Rare pieces keep their premium in open price discovery.
+                      Holders still exit through the protocol floor bid. But once inventory accumulates, the protocol routes that inventory into the native marketplace instead of selling it directly out of the pool. Rare pieces keep their premium in open price discovery.
                     </div>
                   </FrostCard>
                   <FrostCard style={{ padding: 16, background: COLORS.surfaceStrong, borderRadius: 18 }}>

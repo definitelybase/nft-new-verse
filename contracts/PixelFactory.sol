@@ -29,17 +29,20 @@ contract PixelFactory is Ownable {
         address indexed creator,
         address nft,
         address pool,
-        address router
+        address router,
+        address market
     );
     event NFTCodeUpdated(uint256 length);
     event PoolCodeUpdated(uint256 length);
     event RouterCodeUpdated(uint256 length);
+    event MarketplaceCodeUpdated(uint256 length);
     event FactoryFeeUpdated(uint256 previousFee, uint256 newFee);
     event FactoryWithdrawn(address indexed to, uint256 amount);
 
     struct Collection {
         address pool;
         address router;
+        address market;
         address creator;
         uint64 createdAt;
     }
@@ -51,8 +54,10 @@ contract PixelFactory is Ownable {
     bytes public nftCode;
     bytes public poolCode;
     bytes public routerCode;
+    bytes public marketCode;
     
     uint256 public factoryFee;
+    uint256 private constant MARKET_FEE_BPS = 250;
 
     constructor() Ownable() {}
 
@@ -75,6 +80,11 @@ contract PixelFactory is Ownable {
         routerCode = code;
         emit RouterCodeUpdated(code.length);
     }
+    function setMarketplaceCode(bytes calldata code) external onlyOwner {
+        if (code.length == 0) revert MissingBytecode();
+        marketCode = code;
+        emit MarketplaceCodeUpdated(code.length);
+    }
 
     // ============================================================
     //                  CREATE COLLECTION
@@ -91,8 +101,10 @@ contract PixelFactory is Ownable {
         uint256 poolSeedBps_,
         uint256 treasuryBps_,
         bytes calldata paletteRGB
-    ) external payable returns (address nftAddr, address poolAddr, address routerAddr) {
-        if (nftCode.length == 0 || poolCode.length == 0 || routerCode.length == 0) revert MissingBytecode();
+    ) external payable returns (address nftAddr, address poolAddr, address routerAddr, address marketAddr) {
+        if (nftCode.length == 0 || poolCode.length == 0 || routerCode.length == 0 || marketCode.length == 0) {
+            revert MissingBytecode();
+        }
         if (mintPrice_ == 0) revert InvalidAmount();
         if (msg.value < factoryFee) revert InsufficientFee();
         if (poolSeedBps_ + treasuryBps_ > 10000) revert InvalidBps();
@@ -118,22 +130,29 @@ contract PixelFactory is Ownable {
             abi.encode(nftAddr, poolAddr, msg.sender, mintPrice_, poolSeedBps_, treasuryBps_)
         ), salt + 2);
 
-        // 4. Wire permissions
+        // 4. Deploy Marketplace
+        marketAddr = _deploy(abi.encodePacked(
+            marketCode,
+            abi.encode(nftAddr, poolAddr, MARKET_FEE_BPS)
+        ), salt + 3);
+
+        // 5. Wire permissions
         ISetup(nftAddr).setMinter(routerAddr, true);
         ISetup(nftAddr).setBurner(poolAddr, true);
         ISetup(poolAddr).setRouter(routerAddr);
-        ISetup(poolAddr).setListingVault(msg.sender);
+        ISetup(poolAddr).setListingVault(marketAddr);
 
-        // 5. Transfer ownership to creator
+        // 6. Transfer ownership to creator
         ISetup(nftAddr).transferOwnership(msg.sender);
         ISetup(poolAddr).transferOwnership(msg.sender);
         ISetup(routerAddr).transferOwnership(msg.sender);
+        ISetup(marketAddr).transferOwnership(msg.sender);
 
-        // 6. Store
-        collectionInfo[nftAddr] = Collection(poolAddr, routerAddr, msg.sender, uint64(block.timestamp));
+        // 7. Store
+        collectionInfo[nftAddr] = Collection(poolAddr, routerAddr, marketAddr, msg.sender, uint64(block.timestamp));
         collections.push(nftAddr);
 
-        emit CollectionCreated(msg.sender, nftAddr, poolAddr, routerAddr);
+        emit CollectionCreated(msg.sender, nftAddr, poolAddr, routerAddr, marketAddr);
     }
 
     function _deploy(bytes memory bytecode, uint256 salt) private returns (address addr) {
@@ -149,11 +168,11 @@ contract PixelFactory is Ownable {
     function totalCollections() external view returns (uint256) { return collections.length; }
 
     function getCollection(uint256 i) external view returns (
-        address nft, address pool, address router, address creator, uint256 createdAt
+        address nft, address pool, address router, address market, address creator, uint256 createdAt
     ) {
         nft = collections[i];
         Collection memory c = collectionInfo[nft];
-        return (nft, c.pool, c.router, c.creator, uint256(c.createdAt));
+        return (nft, c.pool, c.router, c.market, c.creator, uint256(c.createdAt));
     }
 
     // ============================================================

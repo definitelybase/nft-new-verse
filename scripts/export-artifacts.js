@@ -9,6 +9,7 @@ const CONTRACTS = [
   ["OnChainPixelNFT", path.join(ARTIFACTS_ROOT, "OnChainPixelNFT.sol", "OnChainPixelNFT.json")],
   ["PixelPool", path.join(ARTIFACTS_ROOT, "PixelPool.sol", "PixelPool.json")],
   ["PixelRouter", path.join(ARTIFACTS_ROOT, "PixelRouter.sol", "PixelRouter.json")],
+  ["PixelMarketplace", path.join(ARTIFACTS_ROOT, "PixelMarketplace.sol", "PixelMarketplace.json")],
   ["PixelFactory", path.join(ARTIFACTS_ROOT, "PixelFactory.sol", "PixelFactory.json")]
 ];
 

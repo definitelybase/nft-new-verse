@@ -60,6 +60,9 @@ async function main() {
   const nftAddress = normalizeAddress(deployment.collection ? deployment.collection.nft : deployment.nft);
   const poolAddress = normalizeAddress(deployment.collection ? deployment.collection.pool : deployment.pool);
   const routerAddress = normalizeAddress(deployment.collection ? deployment.collection.router : deployment.router);
+  const marketAddress = deployment.collection?.market || deployment.market
+    ? normalizeAddress(deployment.collection ? deployment.collection.market : deployment.market)
+    : "";
   const factoryAddress = deployment.factory ? normalizeAddress(deployment.factory) : "";
 
   console.log(`Network: ${network.name} (chainId ${network.chainId})`);
@@ -70,11 +73,17 @@ async function main() {
   const nft = await ethers.getContractAt("OnChainPixelNFT", nftAddress, signer);
   const pool = await ethers.getContractAt("PixelPool", poolAddress, signer);
   const router = await ethers.getContractAt("PixelRouter", routerAddress, signer);
+  const market = marketAddress
+    ? await ethers.getContractAt("PixelMarketplace", marketAddress, signer)
+    : null;
 
   let changed = false;
   changed = (await transferOne(nft, "NFT", signerAddress, targetOwner)) || changed;
   changed = (await transferOne(pool, "Pool", signerAddress, targetOwner)) || changed;
   changed = (await transferOne(router, "Router", signerAddress, targetOwner)) || changed;
+  if (market) {
+    changed = (await transferOne(market, "Market", signerAddress, targetOwner)) || changed;
+  }
 
   if (factoryAddress) {
     const factory = await ethers.getContractAt("PixelFactory", factoryAddress, signer);

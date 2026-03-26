@@ -148,6 +148,7 @@ async function deployFactoryStack() {
   const NFT = await ethers.getContractFactory("OnChainPixelNFT");
   const Pool = await ethers.getContractFactory("PixelPool");
   const Router = await ethers.getContractFactory("PixelRouter");
+  const Market = await ethers.getContractFactory("PixelMarketplace");
 
   const factory = await Factory.connect(deployer).deploy();
   await factory.deployed();
@@ -155,6 +156,7 @@ async function deployFactoryStack() {
   await (await factory.connect(deployer).setNFTCode(NFT.bytecode)).wait();
   await (await factory.connect(deployer).setPoolCode(Pool.bytecode)).wait();
   await (await factory.connect(deployer).setRouterCode(Router.bytecode)).wait();
+  await (await factory.connect(deployer).setMarketplaceCode(Market.bytecode)).wait();
 
   return { deployer, creator, factory, mintPrice };
 }
