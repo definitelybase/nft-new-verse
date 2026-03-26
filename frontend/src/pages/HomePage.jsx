@@ -98,49 +98,21 @@ function HeroGallery({ pool }) {
             className="site-reveal site-hover-lift"
             style={{
               padding: 18,
-              minHeight: 180,
+              minHeight: 206,
               display: "flex",
-              alignItems: "center",
+              flexDirection: "column",
+              justifyContent: "space-between",
               ...revealStyle(140 + index * 70),
             }}
           >
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "92px minmax(0, 1fr)",
-                alignItems: "center",
-                gap: 18,
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
                 width: "100%",
               }}
             >
-              <div className="site-drift" style={driftStyle(index * 360, 7 + index)}>
-                <div
-                  style={{
-                    width: 92,
-                    height: 92,
-                    borderRadius: 22,
-                    border: `1px solid ${COLORS.border}`,
-                    background: "rgba(255,255,255,0.04)",
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 28px rgba(0,0,0,0.12)",
-                    overflow: "hidden",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <img
-                    src={tile.image}
-                    alt={tile.desc}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      imageRendering: "pixelated",
-                      display: "block",
-                    }}
-                  />
-                </div>
-              </div>
               <div
                 style={{
                   minWidth: 0,
@@ -157,7 +129,6 @@ function HeroGallery({ pool }) {
                     fontWeight: 600,
                     lineHeight: 1.1,
                     textAlign: "left",
-                    whiteSpace: "nowrap",
                   }}
                 >
                   {tile.title}
@@ -169,11 +140,39 @@ function HeroGallery({ pool }) {
                     fontSize: 13,
                     lineHeight: 1.35,
                     textAlign: "left",
-                    marginTop: 8,
-                    whiteSpace: "nowrap",
                   }}
                 >
                   {tile.desc}
+                </div>
+              </div>
+              <div style={{ display: "flex", justifyContent: "center", marginTop: 10 }}>
+                <div className="site-drift" style={driftStyle(index * 360, 7 + index)}>
+                  <div
+                    style={{
+                      width: 92,
+                      height: 92,
+                      borderRadius: 22,
+                      border: `1px solid ${COLORS.border}`,
+                      background: "rgba(255,255,255,0.04)",
+                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 28px rgba(0,0,0,0.12)",
+                      overflow: "hidden",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <img
+                      src={tile.image}
+                      alt={tile.desc}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        imageRendering: "pixelated",
+                        display: "block",
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
