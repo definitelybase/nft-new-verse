@@ -267,7 +267,7 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
   const hasPending = pendingFees != null && pendingFees > 0n;
 
   return (
-    <div style={{ maxWidth: 1120, margin: "0 auto", padding: "118px 18px 64px" }}>
+    <div style={{ width: "calc(100vw - 24px)", margin: "0 auto", padding: "118px 12px 64px" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, alignItems: "stretch" }}>
         <MetricPanel className="site-reveal-soft" style={revealStyle(80)} label="Total staked" value={pool.totalStaked ?? "—"} sub="NFTs earning fees" tone="purple" />
         <MetricPanel className="site-reveal-soft" style={revealStyle(120)} label="Your staked" value={loadingUser ? "..." : userStaked.length} sub={summarizeTokenIds(userStaked)} tone="accent" />

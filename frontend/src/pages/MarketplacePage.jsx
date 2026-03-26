@@ -180,7 +180,7 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
   }
 
   return (
-    <div style={{ maxWidth: 1120, margin: "0 auto", padding: "118px 18px 64px" }}>
+    <div style={{ width: "calc(100vw - 24px)", margin: "0 auto", padding: "118px 12px 64px" }}>
       <FrostCard className="site-reveal" style={{ padding: 22, ...revealStyle(80) }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 20, flexWrap: "wrap" }}>
           <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
@@ -793,7 +793,7 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
                                   textOverflow: "ellipsis",
                                 }}
                               >
-                                {item.name}
+                                OCP #{item.id}
                               </div>
                               <div
                                 style={{
@@ -807,7 +807,7 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
                                   textOverflow: "ellipsis",
                                 }}
                               >
-                                {item.base} · {item.hair}
+                                {item.base} · {item.hair} · {item.background}
                               </div>
                             </div>
                             <div
@@ -827,7 +827,7 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
                             </div>
                           </div>
                           <div>
-                            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600, lineHeight: 1 }}>
+                            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 17, fontWeight: 600, lineHeight: 1 }}>
                               {item.price.toFixed(4)} ETH
                             </div>
                             <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.25 }}>

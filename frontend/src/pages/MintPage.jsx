@@ -270,7 +270,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
   }
 
   return (
-    <div style={{ maxWidth: 1120, margin: "0 auto", padding: "118px 18px 64px" }}>
+    <div style={{ width: "calc(100vw - 24px)", margin: "0 auto", padding: "118px 12px 64px" }}>
       <div
         style={{
           display: "grid",

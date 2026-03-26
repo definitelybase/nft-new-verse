@@ -393,7 +393,7 @@ export function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode,
         top: 24,
         left: "50%",
         transform: "translateX(-50%)",
-        width: "min(1120px, calc(100vw - 28px))",
+        width: "calc(100vw - 24px)",
         zIndex: 100,
       }}
     >

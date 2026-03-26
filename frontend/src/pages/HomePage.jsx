@@ -385,7 +385,7 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
   ];
 
   return (
-    <div style={{ maxWidth: 1120, margin: "0 auto", padding: "118px 18px 64px" }}>
+    <div style={{ width: "calc(100vw - 24px)", margin: "0 auto", padding: "118px 12px 64px" }}>
       <HeroGallery pool={pool} />
 
       <div className="site-reveal-soft" style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 16, alignItems: "center", ...revealStyle(320) }}>
