@@ -284,6 +284,13 @@ export const PIXEL_POOL_ABI = [
 export const ONCHAIN_PIXEL_NFT_ABI = [
   {
     inputs: [],
+    name: "maxSupply",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "defaultCanvasSize",
     outputs: [
       { internalType: "uint8", name: "width", type: "uint8" },

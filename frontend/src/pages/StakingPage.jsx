@@ -77,7 +77,7 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
         const nft = new Contract(nftAddress, ERC721_ABI, wallet.provider);
         const owner = wallet.account.toLowerCase();
         const balance = Number(await nft.balanceOf(wallet.account));
-        const upperBound = Math.min(Number(pool?.totalMinted || 0), 10000);
+        const upperBound = Number(pool?.totalMinted || 0);
 
         if (!balance || !upperBound) {
           if (!cancelled) {

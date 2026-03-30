@@ -2,14 +2,20 @@ import React from "react";
 import { MetalButton } from "../MetalButton";
 import { useThemeMode } from "../ThemeModeContext";
 import { COLORS, fonts, fontDisplay } from "../utils/constants";
-import { FEATURED_COLLECTION_IDS } from "../utils/generatedCollection";
+import { COLLECTION_SUPPLY, FEATURED_COLLECTION_IDS } from "../utils/generatedCollection";
 import { driftStyle, fmtEth, revealStyle } from "../utils/helpers";
 import { DataBadge, Eyebrow, FrostCard } from "../components/ui";
 
-const ROW1_IDS = Array.from({ length: 25 }, (_, i) => 80 + i * 4);
-const ROW2_IDS = Array.from({ length: 25 }, (_, i) => 81 + i * 4);
-const ROW3_IDS = Array.from({ length: 25 }, (_, i) => 82 + i * 4);
-const ROW4_IDS = Array.from({ length: 25 }, (_, i) => 83 + i * 4);
+const MARQUEE_ROW_SIZE = 25;
+
+function buildMarqueeRow(startIndex) {
+  return Array.from({ length: MARQUEE_ROW_SIZE }, (_, index) => (startIndex + index) % COLLECTION_SUPPLY);
+}
+
+const ROW1_IDS = buildMarqueeRow(0);
+const ROW2_IDS = buildMarqueeRow(25);
+const ROW3_IDS = buildMarqueeRow(50);
+const ROW4_IDS = buildMarqueeRow(75);
 
 function NftMarquee({ ids, speed = 28, reverse = false }) {
   const items = [...ids, ...ids]; // дублируем для бесконечности
@@ -148,7 +154,7 @@ function HeroGallery({ pool }) {
         {/* Правая часть: инфо */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, alignItems: "stretch" }}>
           {[
-            { label: "Collection", value: "10,000 genesis", tone: "#7C56D8", desc: "Every piece is stored and rendered on-chain, without external image hosting." },
+            { label: "Collection", value: `${COLLECTION_SUPPLY.toLocaleString()} genesis`, tone: "#7C56D8", desc: "Every piece is stored and rendered on-chain, without external image hosting." },
             { label: "Floor lane", value: "Reserve-gated", tone: "#1DB37A", desc: "The pool opens only after launch protection and only while reserve coverage and market-state rules stay inside range." },
             { label: "Buyback policy", value: "Selective", tone: "#E8853A", desc: "Treasury removes stale inventory only in weak demand and only with strong coverage. It is cleanup logic, not a support switch." },
             { label: "Staking", value: "Fee flow", tone: "#D4497A", desc: "Stakers receive 10% of protocol trade fees from real trading activity. No emissions and no fixed yield." },

@@ -43,6 +43,7 @@ async function main() {
   const marketFeeBps = Number(process.env.MARKETPLACE_FEE_BPS || "250");
   const defaultWidth = Number(process.env.DEFAULT_CANVAS_WIDTH || "16");
   const defaultHeight = Number(process.env.DEFAULT_CANVAS_HEIGHT || "16");
+  const maxSupply = Number(process.env.MAX_SUPPLY || "100");
 
   if (!isAddress(creatorAddress) || creatorAddress === ZeroAddress) {
     throw new Error("CREATOR_ADDRESS must be a non-zero address");
@@ -52,6 +53,9 @@ async function main() {
   }
   if (!Number.isFinite(marketFeeBps) || marketFeeBps < 0 || marketFeeBps > 10000) {
     throw new Error("MARKETPLACE_FEE_BPS must be between 0 and 10000");
+  }
+  if (!Number.isFinite(maxSupply) || maxSupply <= 0) {
+    throw new Error("MAX_SUPPLY must be a positive integer");
   }
 
   console.log(`\nNetwork: ${networkLabel} (chainId ${network.chainId})`);
@@ -66,7 +70,7 @@ async function main() {
   const NFT = await ethers.getContractFactory("OnChainPixelNFT");
   const nft = await NFT.deploy(
     "OnChainPixels", "OCPX",
-    4, defaultWidth, defaultHeight, 10000,
+    4, defaultWidth, defaultHeight, maxSupply,
     mintPrice, PALETTE_16
   );
   let r = await nft.deployTransaction.wait();

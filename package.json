@@ -10,6 +10,7 @@
     "clean": "hardhat clean",
     "compile": "hardhat compile",
     "build": "npm run compile && node scripts/export-artifacts.js",
+    "generate:collection": "node scripts/generate-collection.cjs",
     "frontend:dev": "vite frontend --host 0.0.0.0",
     "frontend:build": "vite build frontend",
     "frontend:preview": "vite preview frontend --host 0.0.0.0",

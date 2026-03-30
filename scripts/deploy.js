@@ -77,7 +77,7 @@ const COLLECTION = {
   bitDepth: 4,
   defaultWidth: Number(process.env.DEFAULT_CANVAS_WIDTH || "16"),
   defaultHeight: Number(process.env.DEFAULT_CANVAS_HEIGHT || "16"),
-  maxSupply: 10000,
+  maxSupply: Number(process.env.MAX_SUPPLY || "100"),
   mintPrice: parseEther("0.001"),
   poolSeedBps: 6000,  // 60%
   treasuryBps: 1000,  // 10%

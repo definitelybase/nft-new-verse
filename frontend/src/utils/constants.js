@@ -22,7 +22,6 @@ export const COLORS = {
 export const fonts = `'IBM Plex Mono', 'JetBrains Mono', monospace`;
 export const fontDisplay = `'Space Grotesk', 'Satoshi', 'Syne', sans-serif`;
 export const MINT_PAYLOAD_STORAGE_KEY = "onchainpixel.mintPayload";
-export const MINT_TARGET_SUPPLY = 10000;
 export const DEFAULT_PREVIEW_PALETTE = [
   "#000000", "#ffffff", "#ff0000", "#00ff00",
   "#0066ff", "#ffcc00", "#ff6600", "#9933ff",

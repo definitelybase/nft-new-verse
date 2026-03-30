@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Contract, JsonRpcProvider, dataLength, getBytes, isHexString } from "ethers-v6";
 import { ONCHAIN_PIXEL_NFT_ABI, PIXEL_ROUTER_ABI } from "../pixelRouterAbi";
 import { MetalButton } from "../MetalButton";
-import { COLORS, DEFAULT_PREVIEW_PALETTE, MINT_TARGET_SUPPLY, fonts, fontDisplay } from "../utils/constants";
+import { COLORS, DEFAULT_PREVIEW_PALETTE, fonts, fontDisplay } from "../utils/constants";
+import { COLLECTION_SUPPLY } from "../utils/generatedCollection";
 import { checkChain, getTargetChainLabel, isValidMintPayload, readStoredMintPayload, revealStyle } from "../utils/helpers";
 import { DataBadge, Eyebrow, FrostCard, MetricPanel, TxStatusBar, WrongChainBanner } from "../components/ui";
 
@@ -188,7 +189,12 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
   const [txStatus, setTxStatus] = useState("");
   const [txHash, setTxHash] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [collectionCanvas, setCollectionCanvas] = useState({ width: 16, height: 16, loaded: false });
+  const [collectionPreset, setCollectionPreset] = useState({
+    width: 16,
+    height: 16,
+    maxSupply: COLLECTION_SUPPLY,
+    loaded: false,
+  });
   const [isCompactMintLayout, setIsCompactMintLayout] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 1020 : false
   );
@@ -201,12 +207,13 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
     ? `${pool.mintPriceEth} ETH`
     : "— ETH";
   const mintedCount = Number(pool.totalMinted || 0);
-  const mintedProgress = Math.min((mintedCount / MINT_TARGET_SUPPLY) * 100, 100);
+  const targetSupply = Math.max(collectionPreset.maxSupply || COLLECTION_SUPPLY, 1);
+  const mintedProgress = Math.min((mintedCount / targetSupply) * 100, 100);
   const stageLabel = isLive ? "Mint route" : "Preview route";
   const networkLabel = wallet?.chainId ? `Chain ${wallet.chainId}` : getTargetChainLabel(appConfig);
   const mintMainColumns = isCompactMintLayout ? "1fr" : "minmax(0, 0.94fr) minmax(360px, 0.92fr)";
   const mintMiniColumns = isCompactMintLayout ? "1fr" : "repeat(3, minmax(0, 1fr))";
-  const shouldUseCustomMint = collectionCanvas.width !== 16 || collectionCanvas.height !== 16;
+  const shouldUseCustomMint = collectionPreset.width !== 16 || collectionPreset.height !== 16;
 
   useEffect(() => {
     const syncPayload = () => {
@@ -252,17 +259,21 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
 
       try {
         const nft = new Contract(nftAddress, ONCHAIN_PIXEL_NFT_ABI, provider);
-        const [width, height] = await nft.defaultCanvasSize();
+        const [[width, height], maxSupply] = await Promise.all([
+          nft.defaultCanvasSize(),
+          nft.maxSupply(),
+        ]);
         if (!cancelled) {
-          setCollectionCanvas({
+          setCollectionPreset({
             width: Number(width),
             height: Number(height),
+            maxSupply: Number(maxSupply),
             loaded: true,
           });
         }
       } catch {
         if (!cancelled) {
-          setCollectionCanvas((current) => ({ ...current, loaded: true }));
+          setCollectionPreset((current) => ({ ...current, loaded: true }));
         }
       }
     }
@@ -359,7 +370,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
                   </div>
                     <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
                       {shouldUseCustomMint
-                        ? `Legacy collection preset detected (${collectionCanvas.width}×${collectionCanvas.height}). The app uses the 16×16 custom mint route on this deployment.`
+                        ? `Legacy collection preset detected (${collectionPreset.width}×${collectionPreset.height}). The app uses the 16×16 custom mint route on this deployment.`
                         : "Router path: store the artwork, route funds, and update protocol accounting in one transaction."}
                   </div>
                 </div>
@@ -390,7 +401,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
                     Collection target
                   </div>
                   <div style={{ marginTop: 7, color: COLORS.green, fontFamily: fontDisplay, fontSize: 24, fontWeight: 600, lineHeight: 0.98 }}>
-                    {MINT_TARGET_SUPPLY.toLocaleString()}
+                    {targetSupply.toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -399,7 +410,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
                   <span style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11 }}>Minted progress</span>
                   <span style={{ color: COLORS.text, fontFamily: fonts, fontSize: 11, fontWeight: 700 }}>
-                    {mintedCount.toLocaleString()} / {MINT_TARGET_SUPPLY.toLocaleString()}
+                    {mintedCount.toLocaleString()} / {targetSupply.toLocaleString()}
                   </span>
                 </div>
                 <div style={{ height: 10, borderRadius: 999, overflow: "hidden", background: "rgba(255,255,255,0.06)", marginTop: 8 }}>
