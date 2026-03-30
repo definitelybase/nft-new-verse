@@ -271,7 +271,7 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, alignItems: "stretch" }}>
         <MetricPanel className="site-reveal-soft" style={revealStyle(80)} label="Total staked" value={pool.totalStaked ?? "—"} sub="NFTs accruing fee share" tone="purple" />
         <MetricPanel className="site-reveal-soft" style={revealStyle(120)} label="Your staked" value={loadingUser ? "..." : userStaked.length} sub={summarizeTokenIds(userStaked)} tone="accent" />
-        <MetricPanel className="site-reveal-soft" style={revealStyle(160)} label="Pending fees" value={hasPending ? formatEth(pendingFees) : "0 ETH"} sub={hasPending ? `~$${(Number(formatEther(pendingFees)) * (pool.ethUsd || 2000)).toFixed(2)}` : "No fees to claim"} tone="green" />
+        <MetricPanel className="site-reveal-soft" style={revealStyle(160)} label="Pending fees" value={hasPending ? formatEth(pendingFees) : "0 ETH"} sub={hasPending ? `~$${(Number(formatEther(pendingFees)) * (pool.ethUsd || 2000)).toFixed(2)}` : "Nothing accrued yet"} tone="green" />
       </div>
 
       <div
@@ -399,7 +399,7 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
                 opacity: isSubmitting ? 0.7 : 1,
               }}
             >
-              {isSubmitting ? "Claiming..." : wallet?.account ? (hasPending ? `Claim ${formatEth(pendingFees)}` : "No fees to claim") : "Claim fees"}
+              {isSubmitting ? "Claiming..." : wallet?.account ? (hasPending ? `Claim ${formatEth(pendingFees)}` : "Nothing accrued yet") : "Claim fee share"}
             </MetalButton>
           </div>
         </FrostCard>

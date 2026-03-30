@@ -200,7 +200,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
     : "— ETH";
   const mintedCount = Number(pool.totalMinted || 0);
   const mintedProgress = Math.min((mintedCount / MINT_TARGET_SUPPLY) * 100, 100);
-  const stageLabel = isLive ? "Public mint live" : "Preview mode";
+  const stageLabel = isLive ? "Public mint route" : "Preview route";
   const networkLabel = wallet?.chainId ? `Chain ${wallet.chainId}` : getTargetChainLabel(appConfig);
   const mintMainColumns = isCompactMintLayout ? "1fr" : "minmax(0, 0.94fr) minmax(360px, 0.92fr)";
   const mintMiniColumns = isCompactMintLayout ? "1fr" : "repeat(3, minmax(0, 1fr))";
@@ -318,7 +318,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
                   </div>
                 </div>
                 <Eyebrow tone={payloadValid ? "green" : "accent"}>
-                  {payloadValid ? "Payload ready" : "Editor needed"}
+                  {payloadValid ? "Payload loaded" : "Payload needed"}
                 </Eyebrow>
               </div>
 
@@ -469,7 +469,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
                 Validation
               </div>
               <div style={{ marginTop: 8, color: payloadValid ? COLORS.green : COLORS.red, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>
-                {payloadValid ? "Ready" : "Waiting"}
+                {payloadValid ? "Valid" : "Invalid"}
               </div>
             </FrostCard>
             <FrostCard style={{ padding: 14, background: COLORS.surfaceStrong, borderRadius: 18, minHeight: 104, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
@@ -501,14 +501,14 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
                   <div>
                     <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600 }}>
-                      Public router mint
+                      Public mint route
                     </div>
                     <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                      Open when the router address is configured and the connected network is supported.
+                      Available when the router is configured and the connected network matches the target chain.
                     </div>
                   </div>
                   <Eyebrow tone={payloadValid ? "green" : "yellow"}>
-                    {payloadValid ? "Eligible" : "Needs art"}
+                    {payloadValid ? "Can submit" : "Needs payload"}
                   </Eyebrow>
                 </div>
                 <div style={{ marginTop: 10, color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>

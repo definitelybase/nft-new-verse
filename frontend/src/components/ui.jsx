@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { COLORS, fonts, fontDisplay } from "../utils/constants";
 import { explorerTxUrl, getTargetChainId, getTargetChainLabel, shortAddress } from "../utils/helpers";
 import { GlowCard } from "../GlowCard";
@@ -274,7 +274,7 @@ export function DataBadge({ isLive, error }) {
   const bg = isLive ? COLORS.greenSoft : hasError ? COLORS.redSoft : COLORS.yellowSoft;
   const fg = isLive ? COLORS.green : hasError ? COLORS.red : COLORS.yellow;
   const border = isLive ? "rgba(110,231,183,0.25)" : hasError ? "rgba(251,113,133,0.25)" : "rgba(244,207,102,0.25)";
-  const label = isLive ? "Live" : hasError ? "Offline" : "Preview";
+  const label = isLive ? "Live data" : hasError ? "Data fallback" : "Preview data";
 
   return (
     <span
@@ -379,11 +379,17 @@ export function WrongChainBanner({ wallet, appConfig }) {
 }
 
 export function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode, onToggleTheme, targetChainId }) {
+  const [toast, setToast] = useState(false);
+  const showSoon = useCallback(() => {
+    setToast(true);
+    setTimeout(() => setToast(false), 2000);
+  }, []);
+
   const items = [
-    { id: "home", label: "Home" },
-    { id: "mint", label: "Mint" },
-    { id: "market", label: "Marketplace" },
-    { id: "staking", label: "Staking" },
+    { id: "home", label: "Home", disabled: false },
+    { id: "mint", label: "Mint", disabled: true },
+    { id: "market", label: "Marketplace", disabled: true },
+    { id: "staking", label: "Staking", disabled: true },
   ];
 
   return (
@@ -426,13 +432,18 @@ export function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode,
               width: 38,
               height: 38,
               borderRadius: 14,
-              background: COLORS.surfaceStrong,
+              background: "linear-gradient(135deg, #9B7FD4 0%, #C4A8F0 50%, #D8C4F8 100%)",
               display: "grid",
               placeItems: "center",
-              border: `1px solid ${COLORS.borderStrong}`,
+              border: "1px solid rgba(186,156,255,0.3)",
             }}
           >
-            <div style={{ width: 16, height: 16, borderRadius: 5, background: COLORS.text }} />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <circle cx="8.5" cy="8.5" r="4.8" fill="white" />
+              <circle cx="15.5" cy="8.5" r="4.8" fill="white" />
+              <circle cx="8.5" cy="15.5" r="4.8" fill="white" />
+              <circle cx="15.5" cy="15.5" r="4.8" fill="white" />
+            </svg>
           </div>
           <div style={{ textAlign: "left" }}>
             <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600, letterSpacing: -0.6 }}>
@@ -457,13 +468,15 @@ export function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode,
             const button = (
               <MetalButton
                 key={item.id}
-                onClick={() => setPage(item.id)}
+                onClick={item.disabled ? showSoon : () => setPage(item.id)}
                 tone={page === item.id ? "accent" : "ghost"}
                 active={page === item.id}
                 size="sm"
                 style={{
                   minHeight: 38,
                   padding: "9px 15px",
+                  opacity: item.disabled ? 0.5 : 1,
+                  cursor: item.disabled ? "default" : "pointer",
                 }}
               >
                 {item.label}
@@ -503,6 +516,27 @@ export function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode,
           ) : "Connect Wallet"}
         </MetalButton>
       </FrostCard>
+      {toast && (
+        <div style={{
+          position: "fixed",
+          top: 80,
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "#18181f",
+          border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 12,
+          padding: "10px 22px",
+          fontFamily: fonts,
+          fontSize: 13,
+          color: "rgba(255,255,255,0.6)",
+          zIndex: 9999,
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.4)",
+        }}>
+          Soon...
+        </div>
+      )}
     </header>
   );
 }
@@ -555,10 +589,10 @@ export function PoolViz({ pool, className = "", style, fmtEth }) {
             Liquidity pool
           </div>
           <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, marginTop: 6 }}>
-            Floating reserve view inspired by gallery tiles rather than exchange widgets.
+            Reserve snapshot shown as gallery tiles rather than exchange widgets.
           </div>
         </div>
-        <Eyebrow tone="green">Live reserve shape</Eyebrow>
+        <Eyebrow tone="green">Reserve snapshot</Eyebrow>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, alignItems: "stretch" }}>

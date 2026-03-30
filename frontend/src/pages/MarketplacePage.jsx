@@ -471,7 +471,7 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
                   </FrostCard>
                   <FrostCard style={{ padding: 14, background: COLORS.surfaceStrong, borderRadius: 18, minHeight: 104, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                     <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Lane status</div>
-                    <div style={{ marginTop: 8, color: COLORS.purple, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>{pool.listingEnabled ? "Open" : "Closed"}</div>
+                    <div style={{ marginTop: 8, color: COLORS.purple, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>{pool.listingEnabled ? "Ready" : "Blocked"}</div>
                   </FrostCard>
                 </div>
 
@@ -556,7 +556,7 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
                       opacity: isSubmitting ? 0.7 : 1,
                     }}
                   >
-                    {isSubmitting ? "Selling..." : pool.canSell ? `Sell for ~${fmtEth(pool.sellPrice)}` : "Sell disabled"}
+                    {isSubmitting ? "Selling..." : pool.canSell ? `Sell for ~${fmtEth(pool.sellPrice)}` : "Lane closed"}
                   </MetalButton>
                   <WrongChainBanner wallet={wallet} appConfig={appConfig} />
                   <TxStatusBar txStatus={txStatus} txHash={txHash} chainId={wallet?.chainId} />
