@@ -15,21 +15,21 @@ This repository contains the full V1 stack:
 
 If you want to understand the project quickly, read the docs in this order:
 
-1. [docs/GITBOOK.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/GITBOOK.md)  
+1. [docs/GITBOOK.md](./docs/GITBOOK.md)  
    Plain-language product overview.
-2. [docs/AMM_ARCHITECTURE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AMM_ARCHITECTURE.md)  
+2. [docs/AMM_ARCHITECTURE.md](./docs/AMM_ARCHITECTURE.md)  
    Exact protocol mechanics, money flows, and market rules.
-3. [docs/AUDIT.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AUDIT.md)  
+3. [docs/AUDIT.md](./docs/AUDIT.md)  
    Transparent risk, trust, and readiness status.
-4. [docs/EMERGENCY-GOVERNANCE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/EMERGENCY-GOVERNANCE.md)  
+4. [docs/EMERGENCY-GOVERNANCE.md](./docs/EMERGENCY-GOVERNANCE.md)  
    Owner powers, Safe flow, and incident response.
-5. [docs/PLAN.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/PLAN.md)  
+5. [docs/PLAN.md](./docs/PLAN.md)  
    Current roadmap and what remains before public launch.
 
 Technical NFT-standard references:
 
-- [docs/SPEC.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/SPEC.md)
-- [docs/EIP.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/EIP.md)
+- [docs/SPEC.md](./docs/SPEC.md)
+- [docs/EIP.md](./docs/EIP.md)
 
 ## What The Protocol Does
 
@@ -47,15 +47,15 @@ It only tries to provide a reserve-aware floor lane and let the market decide wh
 
 ## Main Contracts
 
-- [contracts/OnChainPixelNFT.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/OnChainPixelNFT.sol)  
+- [contracts/OnChainPixelNFT.sol](./contracts/OnChainPixelNFT.sol)  
   ERC-721 collection contract, palette, on-chain storage, SVG rendering, protocol burn.
-- [contracts/PixelRouter.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelRouter.sol)  
+- [contracts/PixelRouter.sol](./contracts/PixelRouter.sol)  
   Mint entry point, reserve seeding, sell-to-pool convenience layer.
-- [contracts/PixelPool.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelPool.sol)  
+- [contracts/PixelPool.sol](./contracts/PixelPool.sol)  
   Floor pricing, sell lane, staking, buyback, market state, protocol inventory handling.
-- [contracts/PixelMarketplace.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelMarketplace.sol)  
+- [contracts/PixelMarketplace.sol](./contracts/PixelMarketplace.sol)  
   Native marketplace for user listings and protocol listings. Also exposes market signals back to the pool.
-- [contracts/PixelFactory.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelFactory.sol)  
+- [contracts/PixelFactory.sol](./contracts/PixelFactory.sol)  
   Deploys the full collection stack: NFT + Pool + Router + Marketplace.
 
 ## High-Level Lifecycle
@@ -125,17 +125,17 @@ Staking rewards come from trading activity, not from inflationary token emission
 
 Primary project folders:
 
-- [contracts](/Users/daniltkacev/Downloads/nft%20ponzo/contracts)
-- [docs](/Users/daniltkacev/Downloads/nft%20ponzo/docs)
-- [scripts](/Users/daniltkacev/Downloads/nft%20ponzo/scripts)
-- [frontend](/Users/daniltkacev/Downloads/nft%20ponzo/frontend)
-- [frontend/src](/Users/daniltkacev/Downloads/nft%20ponzo/frontend/src)
-- [hardhat-test](/Users/daniltkacev/Downloads/nft%20ponzo/hardhat-test)
+- [contracts](./contracts)
+- [docs](./docs)
+- [scripts](./scripts)
+- [frontend](./frontend)
+- [frontend/src](./frontend/src)
+- [hardhat-test](./hardhat-test)
 
 Archived / non-source-of-truth folders:
 
-- [archive/generated](/Users/daniltkacev/Downloads/nft%20ponzo/archive/generated)
-- [archive/legacy-tests](/Users/daniltkacev/Downloads/nft%20ponzo/archive/legacy-tests)
+- [archive/generated](./archive/generated)
+- [archive/legacy-tests](./archive/legacy-tests)
 
 ## Tooling
 
@@ -145,10 +145,10 @@ Archived / non-source-of-truth folders:
 
 Project files:
 
-- [package.json](/Users/daniltkacev/Downloads/nft%20ponzo/package.json)
-- [hardhat.config.js](/Users/daniltkacev/Downloads/nft%20ponzo/hardhat.config.js)
-- [vite.config.js](/Users/daniltkacev/Downloads/nft%20ponzo/vite.config.js)
-- [.nvmrc](/Users/daniltkacev/Downloads/nft%20ponzo/.nvmrc)
+- [package.json](./package.json)
+- [hardhat.config.js](./hardhat.config.js)
+- [vite.config.js](./vite.config.js)
+- [.nvmrc](./.nvmrc)
 
 ## Commands
 
@@ -237,16 +237,16 @@ RPC_URL=https://... npm run keeper:market -- snapshot deployment-11155111.json 3
 
 `npm run build` exports:
 
-- [build/OnChainPixelNFT.abi](/Users/daniltkacev/Downloads/nft%20ponzo/build/OnChainPixelNFT.abi)
-- [build/OnChainPixelNFT.bin](/Users/daniltkacev/Downloads/nft%20ponzo/build/OnChainPixelNFT.bin)
-- [build/PixelPool.abi](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelPool.abi)
-- [build/PixelPool.bin](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelPool.bin)
-- [build/PixelRouter.abi](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelRouter.abi)
-- [build/PixelRouter.bin](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelRouter.bin)
-- [build/PixelMarketplace.abi](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelMarketplace.abi)
-- [build/PixelMarketplace.bin](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelMarketplace.bin)
-- [build/PixelFactory.abi](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelFactory.abi)
-- [build/PixelFactory.bin](/Users/daniltkacev/Downloads/nft%20ponzo/build/PixelFactory.bin)
+- [build/OnChainPixelNFT.abi](./build/OnChainPixelNFT.abi)
+- [build/OnChainPixelNFT.bin](./build/OnChainPixelNFT.bin)
+- [build/PixelPool.abi](./build/PixelPool.abi)
+- [build/PixelPool.bin](./build/PixelPool.bin)
+- [build/PixelRouter.abi](./build/PixelRouter.abi)
+- [build/PixelRouter.bin](./build/PixelRouter.bin)
+- [build/PixelMarketplace.abi](./build/PixelMarketplace.abi)
+- [build/PixelMarketplace.bin](./build/PixelMarketplace.bin)
+- [build/PixelFactory.abi](./build/PixelFactory.abi)
+- [build/PixelFactory.bin](./build/PixelFactory.bin)
 
 ## Current Status
 
@@ -266,14 +266,14 @@ Important transparency points:
 
 For a full transparent status read:
 
-- [docs/AUDIT.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AUDIT.md)
-- [docs/EMERGENCY-GOVERNANCE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/EMERGENCY-GOVERNANCE.md)
-- [docs/PLAN.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/PLAN.md)
+- [docs/AUDIT.md](./docs/AUDIT.md)
+- [docs/EMERGENCY-GOVERNANCE.md](./docs/EMERGENCY-GOVERNANCE.md)
+- [docs/PLAN.md](./docs/PLAN.md)
 
 ## Frontend App Config
 
 Frontend network and contract addresses live in:
 
-- [frontend/src/appConfig.js](/Users/daniltkacev/Downloads/nft%20ponzo/frontend/src/appConfig.js)
+- [frontend/src/appConfig.js](./frontend/src/appConfig.js)
 
 The deploy scripts print a ready-to-paste `APP_CONFIG` block after a successful deployment.

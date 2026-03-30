@@ -7,11 +7,11 @@ It is the current transparent status of what is hardened, what still depends on 
 
 Current stack covered by internal tests and review:
 
-- [contracts/OnChainPixelNFT.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/OnChainPixelNFT.sol)
-- [contracts/PixelPool.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelPool.sol)
-- [contracts/PixelRouter.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelRouter.sol)
-- [contracts/PixelMarketplace.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelMarketplace.sol)
-- [contracts/PixelFactory.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelFactory.sol)
+- [contracts/OnChainPixelNFT.sol](../contracts/OnChainPixelNFT.sol)
+- [contracts/PixelPool.sol](../contracts/PixelPool.sol)
+- [contracts/PixelRouter.sol](../contracts/PixelRouter.sol)
+- [contracts/PixelMarketplace.sol](../contracts/PixelMarketplace.sol)
+- [contracts/PixelFactory.sol](../contracts/PixelFactory.sol)
 
 ## What Has Been Hardened
 
@@ -26,10 +26,10 @@ The repo now supports:
 
 Relevant scripts:
 
-- [scripts/deploy-local.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/deploy-local.js)
-- [scripts/deploy.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/deploy.js)
-- [scripts/transfer-ownership.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/transfer-ownership.js)
-- [scripts/verify-deployment.js](/Users/daniltkacev/Downloads/nft%20ponzo/scripts/verify-deployment.js)
+- [scripts/deploy-local.js](../scripts/deploy-local.js)
+- [scripts/deploy.js](../scripts/deploy.js)
+- [scripts/transfer-ownership.js](../scripts/transfer-ownership.js)
+- [scripts/verify-deployment.js](../scripts/verify-deployment.js)
 
 ### Palette mutability
 

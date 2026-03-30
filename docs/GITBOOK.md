@@ -234,7 +234,7 @@ It does make the design easier to reason about than vague "floor support" promis
 
 If you want more detail:
 
-- [README.md](/Users/daniltkacev/Downloads/nft%20ponzo/README.md) for repo layout and commands
-- [AMM_ARCHITECTURE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AMM_ARCHITECTURE.md) for exact mechanics and formulas
-- [AUDIT.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AUDIT.md) for transparent trust and risk
-- [EMERGENCY-GOVERNANCE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/EMERGENCY-GOVERNANCE.md) for owner powers and Safe operations
+- [README.md](../README.md) for repo layout and commands
+- [AMM_ARCHITECTURE.md](./AMM_ARCHITECTURE.md) for exact mechanics and formulas
+- [AUDIT.md](./AUDIT.md) for transparent trust and risk
+- [EMERGENCY-GOVERNANCE.md](./EMERGENCY-GOVERNANCE.md) for owner powers and Safe operations

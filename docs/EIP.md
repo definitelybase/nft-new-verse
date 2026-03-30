@@ -242,8 +242,8 @@ Existing NFT collections that do not implement `IOnChainPixel` are unaffected.
 
 The current repository includes a reference implementation in:
 
-- [contracts/interfaces/IOnChainPixel.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/interfaces/IOnChainPixel.sol)
-- [contracts/OnChainPixelNFT.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/OnChainPixelNFT.sol)
+- [contracts/interfaces/IOnChainPixel.sol](../contracts/interfaces/IOnChainPixel.sol)
+- [contracts/OnChainPixelNFT.sol](../contracts/OnChainPixelNFT.sol)
 
 Important implementation notes:
 

@@ -22,7 +22,7 @@ Instead:
 
 File:
 
-- [contracts/OnChainPixelNFT.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/OnChainPixelNFT.sol)
+- [contracts/OnChainPixelNFT.sol](../contracts/OnChainPixelNFT.sol)
 
 Responsibilities:
 
@@ -44,7 +44,7 @@ Important facts:
 
 File:
 
-- [contracts/PixelRouter.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelRouter.sol)
+- [contracts/PixelRouter.sol](../contracts/PixelRouter.sol)
 
 Responsibilities:
 
@@ -65,7 +65,7 @@ Baseline split intent:
 
 File:
 
-- [contracts/PixelPool.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelPool.sol)
+- [contracts/PixelPool.sol](../contracts/PixelPool.sol)
 
 Responsibilities:
 
@@ -82,7 +82,7 @@ Responsibilities:
 
 File:
 
-- [contracts/PixelMarketplace.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelMarketplace.sol)
+- [contracts/PixelMarketplace.sol](../contracts/PixelMarketplace.sol)
 
 Responsibilities:
 
@@ -99,7 +99,7 @@ This is the core of the current V1 trading model.
 
 File:
 
-- [contracts/PixelFactory.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelFactory.sol)
+- [contracts/PixelFactory.sol](../contracts/PixelFactory.sol)
 
 Responsibilities:
 
@@ -142,7 +142,7 @@ Why this matters:
 
 ## Floor Price Model
 
-Key constants from [contracts/PixelPool.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelPool.sol):
+Key constants from [contracts/PixelPool.sol](../contracts/PixelPool.sol):
 
 - `INITIAL_BID_BPS = 6000`
 - `MIN_BID_BPS = 1500`
@@ -426,8 +426,8 @@ The current architecture still depends on owner / Safe controls for:
 
 This is documented in:
 
-- [AUDIT.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/AUDIT.md)
-- [EMERGENCY-GOVERNANCE.md](/Users/daniltkacev/Downloads/nft%20ponzo/docs/EMERGENCY-GOVERNANCE.md)
+- [AUDIT.md](./AUDIT.md)
+- [EMERGENCY-GOVERNANCE.md](./EMERGENCY-GOVERNANCE.md)
 
 ## Summary
 

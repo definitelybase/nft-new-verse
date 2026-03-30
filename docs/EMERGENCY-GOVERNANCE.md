@@ -25,7 +25,7 @@ Recommended signer mix:
 
 ### PixelPool owner powers
 
-In [contracts/PixelPool.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelPool.sol), the owner can:
+In [contracts/PixelPool.sol](../contracts/PixelPool.sol), the owner can:
 
 - queue and apply router changes
 - cancel a pending router change
@@ -42,7 +42,7 @@ The owner does **not** have a general "drain the whole pool reserve" function.
 
 ### PixelRouter owner powers
 
-In [contracts/PixelRouter.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelRouter.sol), the owner can:
+In [contracts/PixelRouter.sol](../contracts/PixelRouter.sol), the owner can:
 
 - change mint price
 - change creator address
@@ -52,7 +52,7 @@ In [contracts/PixelRouter.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contract
 
 ### OnChainPixelNFT owner powers
 
-In [contracts/OnChainPixelNFT.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/OnChainPixelNFT.sol), the owner can:
+In [contracts/OnChainPixelNFT.sol](../contracts/OnChainPixelNFT.sol), the owner can:
 
 - set minter
 - set burner
@@ -64,7 +64,7 @@ In [contracts/OnChainPixelNFT.sol](/Users/daniltkacev/Downloads/nft%20ponzo/cont
 
 ### PixelMarketplace owner powers
 
-In [contracts/PixelMarketplace.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/PixelMarketplace.sol), the owner can:
+In [contracts/PixelMarketplace.sol](../contracts/PixelMarketplace.sol), the owner can:
 
 - cancel protocol-owned listings
 - update protocol listing prices

@@ -15,7 +15,7 @@ Those systems use the NFT contract, but they are not part of the pixel NFT stand
 
 ## Standard Surface
 
-The reusable standard surface is `IOnChainPixel` in [contracts/interfaces/IOnChainPixel.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/interfaces/IOnChainPixel.sol).
+The reusable standard surface is `IOnChainPixel` in [contracts/interfaces/IOnChainPixel.sol](../contracts/interfaces/IOnChainPixel.sol).
 
 It defines:
 
@@ -36,7 +36,7 @@ Any compliant collection should expose this interface via ERC-165.
 
 ## Reference Implementation In This Repository
 
-The reference implementation is [contracts/OnChainPixelNFT.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/OnChainPixelNFT.sol).
+The reference implementation is [contracts/OnChainPixelNFT.sol](../contracts/OnChainPixelNFT.sol).
 
 This contract includes two layers:
 
@@ -198,11 +198,11 @@ This is implementation-specific, but strongly aligned with the project goal of f
 
 The active NFT-layer files in this repository are:
 
-- [contracts/OnChainPixelNFT.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/OnChainPixelNFT.sol)
-- [contracts/interfaces/IOnChainPixel.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/interfaces/IOnChainPixel.sol)
-- [contracts/libraries/SSTORE2.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/libraries/SSTORE2.sol)
-- [contracts/libraries/PixelDecoder.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/libraries/PixelDecoder.sol)
-- [contracts/libraries/SVGRenderer.sol](/Users/daniltkacev/Downloads/nft%20ponzo/contracts/libraries/SVGRenderer.sol)
+- [contracts/OnChainPixelNFT.sol](../contracts/OnChainPixelNFT.sol)
+- [contracts/interfaces/IOnChainPixel.sol](../contracts/interfaces/IOnChainPixel.sol)
+- [contracts/libraries/SSTORE2.sol](../contracts/libraries/SSTORE2.sol)
+- [contracts/libraries/PixelDecoder.sol](../contracts/libraries/PixelDecoder.sol)
+- [contracts/libraries/SVGRenderer.sol](../contracts/libraries/SVGRenderer.sol)
 
 ## What Is Not Part Of The NFT Standard
 
