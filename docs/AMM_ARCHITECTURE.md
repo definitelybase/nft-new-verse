@@ -35,6 +35,7 @@ Responsibilities:
 Important facts:
 
 - default canvas can be configured
+- current project default is `16 x 16`
 - max canvas size is `64 x 64`
 - protocol uses packed pixel data and indexed palette colors
 - palette can be locked permanently

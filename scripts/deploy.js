@@ -75,8 +75,8 @@ const COLLECTION = {
   name: "OnChainPixels",
   symbol: "OCPX",
   bitDepth: 4,
-  defaultWidth: 32,
-  defaultHeight: 32,
+  defaultWidth: Number(process.env.DEFAULT_CANVAS_WIDTH || "16"),
+  defaultHeight: Number(process.env.DEFAULT_CANVAS_HEIGHT || "16"),
   maxSupply: 10000,
   mintPrice: parseEther("0.001"),
   poolSeedBps: 6000,  // 60%

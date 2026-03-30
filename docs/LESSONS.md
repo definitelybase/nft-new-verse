@@ -22,8 +22,8 @@
 **Rule**: SVG rendering is a view function (free on mainnet with 30M gas limit), but test environments may have lower limits. Consider adding a "render by rows" function for very large canvases.
 
 ## Design Decision: No Compression in v1
-**Reasoning**: RLE compression saves storage but adds gas cost to reads and rendering. With SSTORE2, raw data is already cheap enough. 32x32 4-bit = 512 bytes = $0.06 mint. Not worth the complexity.
-**Rule**: Don't optimize what isn't expensive. KISS for v1, add complexity in v2 only if needed.
+**Reasoning**: RLE compression saves storage but adds gas cost to reads and rendering. With SSTORE2, raw data is already cheap enough, and the current collection default is `16x16` so payloads stay compact at `128 bytes`. Larger canvases still exist through custom minting, but they are not the default path.
+**Rule**: Keep the public default simple and cheap. Add larger canvases only when there is a clear reason.
 
 ## Design Decision: Global Palette vs Per-Token
 **Reasoning**: Global palette = 48 bytes stored once. Per-token palette = 48 bytes per mint. For 10K collection, saves 480KB of storage and ~500K gas per mint.

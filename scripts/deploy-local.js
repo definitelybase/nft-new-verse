@@ -41,6 +41,8 @@ async function main() {
   const localSeedEth = process.env.LOCAL_POOL_SEED_ETH || "1";
   const shouldLockPalette = process.env.SKIP_PALETTE_LOCK !== "YES";
   const marketFeeBps = Number(process.env.MARKETPLACE_FEE_BPS || "250");
+  const defaultWidth = Number(process.env.DEFAULT_CANVAS_WIDTH || "16");
+  const defaultHeight = Number(process.env.DEFAULT_CANVAS_HEIGHT || "16");
 
   if (!isAddress(creatorAddress) || creatorAddress === ZeroAddress) {
     throw new Error("CREATOR_ADDRESS must be a non-zero address");
@@ -64,7 +66,7 @@ async function main() {
   const NFT = await ethers.getContractFactory("OnChainPixelNFT");
   const nft = await NFT.deploy(
     "OnChainPixels", "OCPX",
-    4, 32, 32, 10000,
+    4, defaultWidth, defaultHeight, 10000,
     mintPrice, PALETTE_16
   );
   let r = await nft.deployTransaction.wait();
