@@ -67,9 +67,9 @@ function decodeMintPayloadGrid(payloadHex) {
   const grid = [];
   let offset = 0;
 
-  for (let y = 0; y < 32; y += 1) {
+  for (let y = 0; y < 16; y += 1) {
     const row = [];
-    for (let x = 0; x < 32; x += 2) {
+    for (let x = 0; x < 16; x += 2) {
       const byte = bytes[offset++];
       row.push((byte >> 4) & 0x0f);
       row.push(byte & 0x0f);
@@ -108,7 +108,7 @@ function PixelPayloadPreview({ payloadHex }) {
     >
       {showDecodedGrid ? (
         <svg
-          viewBox="0 0 32 32"
+          viewBox="0 0 16 16"
           style={{
             width: "100%",
             height: "100%",
@@ -120,7 +120,7 @@ function PixelPayloadPreview({ payloadHex }) {
             boxShadow: "0 18px 42px rgba(0,0,0,0.22)",
           }}
         >
-          <rect width="32" height="32" fill={DEFAULT_PREVIEW_PALETTE[0]} />
+          <rect width="16" height="16" fill={DEFAULT_PREVIEW_PALETTE[0]} />
           {decodedGrid.flatMap((row, y) =>
             row.map((value, x) => (
               <rect
@@ -246,7 +246,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
       return;
     }
     if (!payloadValid) {
-      setTxStatus("Need a valid 512-byte payload from the Pixel Editor.");
+      setTxStatus("Need a valid 128-byte payload from the Pixel Editor.");
       return;
     }
 
@@ -257,7 +257,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
       const signer = await wallet.provider.getSigner();
       const router = new Contract(routerAddress, PIXEL_ROUTER_ABI, signer);
       const price = await router.mintPrice();
-      const tx = await router.mint(getBytes(payloadHex), { value: price });
+      const tx = await router.mintCustom(getBytes(payloadHex), 16, 16, { value: price });
       setTxHash(tx.hash);
       setTxStatus("Submitted. Waiting for confirmation...");
       await tx.wait();
@@ -391,7 +391,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
           </FrostCard>
 
           <div style={{ display: "grid", gridTemplateColumns: mintMiniColumns, gap: 12, alignItems: "stretch" }}>
-            <MetricPanel className="site-reveal-soft" style={revealStyle(180)} label="Canvas" value="32×32" sub="4-bit packed pixel payload" tone="purple" />
+            <MetricPanel className="site-reveal-soft" style={revealStyle(180)} label="Canvas" value="16×16" sub="4-bit packed pixel payload" tone="purple" />
             <MetricPanel className="site-reveal-soft" style={revealStyle(220)} label="Minted" value={isLive ? mintedCount.toLocaleString() : "—"} sub="Historical mint count" tone="green" />
             <MetricPanel className="site-reveal-soft" style={revealStyle(260)} label="Split" value="60 / 10 / 30" sub="Pool / Treasury / Ops" tone="yellow" />
           </div>
@@ -430,7 +430,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
           <textarea
             value={payloadHex}
             onChange={(event) => setPayloadHex(event.target.value.trim())}
-            placeholder="0x... 512-byte payload from Pixel Editor"
+            placeholder="0x... 128-byte payload from Pixel Editor"
             wrap="soft"
             spellCheck={false}
             style={{
@@ -486,7 +486,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
             {payloadHex
               ? payloadValid
                 ? "Payload is valid for mint."
-                : `${payloadBytes} bytes loaded. Mint expects exactly 512 bytes.`
+                : `${payloadBytes} bytes loaded. Mint expects exactly 128 bytes.`
               : "Draw in the Pixel Editor first, then load the packed payload here."}
           </div>
         </FrostCard>

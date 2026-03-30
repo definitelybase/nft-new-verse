@@ -28,7 +28,7 @@ export function readStoredMintPayload() {
 
 export function isValidMintPayload(payloadHex) {
   if (!payloadHex || !isHexString(payloadHex)) return false;
-  return dataLength(payloadHex) === 512;
+  return dataLength(payloadHex) === 128;
 }
 
 export function revealStyle(delay = 0) {

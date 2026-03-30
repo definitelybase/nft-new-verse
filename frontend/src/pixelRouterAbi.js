@@ -7,6 +7,17 @@ export const PIXEL_ROUTER_ABI = [
     type: "function",
   },
   {
+    inputs: [
+      { internalType: "bytes", name: "pixelData", type: "bytes" },
+      { internalType: "uint8", name: "width", type: "uint8" },
+      { internalType: "uint8", name: "height", type: "uint8" },
+    ],
+    name: "mintCustom",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "mintPrice",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],

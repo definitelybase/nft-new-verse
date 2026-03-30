@@ -5,8 +5,8 @@ import { MetalButton } from "./MetalButton";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { isValidMintPayload } from "./utils/helpers";
 
-const GRID = 32;
-const CELL = 10;
+const GRID = 16;
+const CELL = 22;
 const GAP = 1;
 
 const PIXEL_BG_COLORS = [
@@ -428,7 +428,7 @@ export default function OnChainPixelEditor({ themeMode, onToggleTheme }) {
 
         <StepCard number={4} title="Attach the pixel payload" done={payloadValid} onToggle={() => {}}>
           <p style={{ color: COLORS.textMuted, fontSize: 13, margin: "0 0 12px", lineHeight: 1.6 }}>
-            Use the editor below to draw a 32×32 piece, then copy the payload into the submission field.
+            Use the editor below to draw a 16×16 piece, then copy the payload into the submission field.
           </p>
           <MiniPixelEditor onHexChange={handleHexChange} />
           <div style={{ marginTop: 12, display: "flex", gap: 6, alignItems: "center" }}>
@@ -487,9 +487,9 @@ export default function OnChainPixelEditor({ themeMode, onToggleTheme }) {
         />
         <div style={{ marginTop: 6, color: COLORS.textDim, fontSize: 10 }}>
           {payloadValid
-            ? `Valid payload (512 bytes)`
+            ? `Valid payload (128 bytes)`
             : hexInput.length > 0
-            ? `Invalid — expected 0x + 1024 hex chars (got ${hexInput.length})`
+            ? `Invalid — expected 0x + 256 hex chars (got ${hexInput.length})`
             : "Draw pixel art above, then click 'Copy payload'"}
         </div>
       </FrostCard>
