@@ -248,7 +248,7 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
     try {
       setIsSubmitting(true);
       setTxHash("");
-      setTxStatus("Claiming fees...");
+      setTxStatus("Claiming fee share...");
       const signer = await wallet.provider.getSigner();
       const poolContract = new Contract(poolAddress, PIXEL_POOL_ABI, signer);
 
@@ -256,7 +256,7 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
       setTxHash(tx.hash);
       setTxStatus("Submitted. Waiting for confirmation...");
       await tx.wait();
-      setTxStatus("Fees claimed.");
+      setTxStatus("Fee share claimed.");
     } catch (error) {
       setTxStatus(error?.reason || error?.data?.message || error?.message || "Claim failed.");
     } finally {
@@ -269,9 +269,9 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
   return (
     <div style={{ width: "calc(100vw - 24px)", margin: "0 auto", padding: "118px 12px 64px" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, alignItems: "stretch" }}>
-        <MetricPanel className="site-reveal-soft" style={revealStyle(80)} label="Total staked" value={pool.totalStaked ?? "—"} sub="NFTs accruing fee share" tone="purple" />
+        <MetricPanel className="site-reveal-soft" style={revealStyle(80)} label="Total staked" value={pool.totalStaked ?? "—"} sub="NFTs earning fee flow" tone="purple" />
         <MetricPanel className="site-reveal-soft" style={revealStyle(120)} label="Your staked" value={loadingUser ? "..." : userStaked.length} sub={summarizeTokenIds(userStaked)} tone="accent" />
-        <MetricPanel className="site-reveal-soft" style={revealStyle(160)} label="Pending fees" value={hasPending ? formatEth(pendingFees) : "0 ETH"} sub={hasPending ? `~$${(Number(formatEther(pendingFees)) * (pool.ethUsd || 2000)).toFixed(2)}` : "Nothing accrued yet"} tone="green" />
+        <MetricPanel className="site-reveal-soft" style={revealStyle(160)} label="Pending fees" value={hasPending ? formatEth(pendingFees) : "0 ETH"} sub={hasPending ? `~$${(Number(formatEther(pendingFees)) * (pool.ethUsd || 2000)).toFixed(2)}` : "No fee share accrued yet"} tone="green" />
       </div>
 
       <div
@@ -291,7 +291,7 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
               Stake NFT
             </div>
             <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
-              Lock your NFT in the pool to accrue a share of protocol trade fees while it remains staked.
+              Lock your NFT to accrue part of protocol trade fees while it remains staked.
             </div>
             <TokenGrid
               title="Your NFTs"
@@ -325,7 +325,7 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
               Unstake NFT
             </div>
             <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
-              Withdraw your NFT. Pending fees are paid out automatically.
+              Withdraw your NFT. Any pending fee share is paid out automatically.
             </div>
 
             <TokenGrid
@@ -399,7 +399,7 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
                 opacity: isSubmitting ? 0.7 : 1,
               }}
             >
-              {isSubmitting ? "Claiming..." : wallet?.account ? (hasPending ? `Claim ${formatEth(pendingFees)}` : "Nothing accrued yet") : "Claim fee share"}
+              {isSubmitting ? "Claiming..." : wallet?.account ? (hasPending ? `Claim ${formatEth(pendingFees)}` : "No fee share accrued yet") : "Claim fee share"}
             </MetalButton>
           </div>
         </FrostCard>

@@ -200,7 +200,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
     : "— ETH";
   const mintedCount = Number(pool.totalMinted || 0);
   const mintedProgress = Math.min((mintedCount / MINT_TARGET_SUPPLY) * 100, 100);
-  const stageLabel = isLive ? "Public mint route" : "Preview route";
+  const stageLabel = isLive ? "Mint route" : "Preview route";
   const networkLabel = wallet?.chainId ? `Chain ${wallet.chainId}` : getTargetChainLabel(appConfig);
   const mintMainColumns = isCompactMintLayout ? "1fr" : "minmax(0, 0.94fr) minmax(360px, 0.92fr)";
   const mintMiniColumns = isCompactMintLayout ? "1fr" : "repeat(3, minmax(0, 1fr))";
@@ -283,7 +283,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 16 }}>
             <div>
               <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 28, fontWeight: 600, letterSpacing: -0.9 }}>
-                Mint preview
+                Preview
               </div>
               <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, marginTop: 4 }}>
                 The editor payload becomes the actual on-chain image, not an off-chain placeholder.
@@ -299,12 +299,12 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
 
         <div style={{ display: "grid", gap: 14, height: "100%", alignContent: "stretch" }}>
           <FrostCard className="site-reveal" style={{ padding: 24, height: "100%", display: "flex", flexDirection: "column", ...revealStyle(130) }}>
-            <Eyebrow tone="purple">Mint collection</Eyebrow>
+            <Eyebrow tone="purple">Mint route</Eyebrow>
             <div style={{ marginTop: 14, color: COLORS.text, fontFamily: fontDisplay, fontSize: 42, fontWeight: 600, letterSpacing: -1.6, lineHeight: 0.94 }}>
               Mint OnChainPixel
             </div>
             <div style={{ marginTop: 12, color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, lineHeight: 1.8 }}>
-              Every mint creates a fully on-chain pixel piece, seeds the reserve that later supports floor quotes, and routes capital into treasury and protocol support lanes.
+              Every mint stores the artwork on-chain, routes 60% into reserve, 10% into treasury, and 30% into ops.
             </div>
 
             <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 22, marginTop: 18 }}>
@@ -314,7 +314,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
                     {stageLabel}
                   </div>
                     <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                      Router path: mint the art, seed reserve balances, and update protocol accounting in one motion.
+                      Router path: store the artwork, route funds, and update protocol accounting in one transaction.
                   </div>
                 </div>
                 <Eyebrow tone={payloadValid ? "green" : "accent"}>
@@ -414,7 +414,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
                 Payload bridge
               </div>
               <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, marginTop: 4, lineHeight: 1.7 }}>
-                Pull the current editor payload, review the raw bytes, then mint it directly through the router.
+                Load the current editor payload, inspect the raw bytes, then mint through the router.
               </div>
             </div>
             <MetalButton
@@ -430,7 +430,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
           <textarea
             value={payloadHex}
             onChange={(event) => setPayloadHex(event.target.value.trim())}
-            placeholder="0x...512-byte hex from Pixel Editor"
+            placeholder="0x... 512-byte payload from Pixel Editor"
             wrap="soft"
             spellCheck={false}
             style={{
@@ -485,9 +485,9 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
           <div style={{ marginTop: 10, color: payloadValid ? COLORS.green : COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.7 }}>
             {payloadHex
               ? payloadValid
-                ? "Payload is valid and mint-ready."
-                : `${payloadBytes} bytes loaded. A valid mint payload must be exactly 512 bytes.`
-              : "Draw in the Pixel Editor first, then pull the packed payload here."}
+                ? "Payload is valid for mint."
+                : `${payloadBytes} bytes loaded. Mint expects exactly 512 bytes.`
+              : "Draw in the Pixel Editor first, then load the packed payload here."}
           </div>
         </FrostCard>
 
@@ -501,10 +501,10 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
                   <div>
                     <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600 }}>
-                      Public mint route
+                      Mint route status
                     </div>
                     <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                      Available when the router is configured and the connected network matches the target chain.
+                      Available only when the router is configured and the connected network matches the target chain.
                     </div>
                   </div>
                   <Eyebrow tone={payloadValid ? "green" : "yellow"}>

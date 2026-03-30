@@ -1,47 +1,82 @@
-import React, { Suspense, lazy, useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import { COLORS, fonts, fontDisplay } from "./utils/constants";
+import { FrostCard, Eyebrow } from "./components/ui";
 import { MetalButton } from "./MetalButton";
 import { ThemeSwitch } from "./ThemeSwitch";
 
-const Cd = lazy(() => import("./components/AsciiCd"));
-
-const GRID = 32;
-const CELL = 14;
+const GRID = 16;
+const CELL = 22;
 const GAP = 1;
-const MINT_PAYLOAD_STORAGE_KEY = "onchainpixel.mintPayload";
 
-// Default 16-color palette (CryptoPunks-inspired + extras)
-const DEFAULT_PALETTE = [
-  "#000000", "#ffffff", "#ff0000", "#00ff00",
-  "#0066ff", "#ffcc00", "#ff6600", "#9933ff",
-  "#00cccc", "#ff3399", "#336633", "#663300",
-  "#cccccc", "#666666", "#ffccaa", "#3399ff",
+const PIXEL_BG_COLORS = [
+  "#e03c3c", "#3c7ee0", "#2eb872", "#f5a623", "#9b59b6", "#00bcd4",
+  "#f8c8dc", "#a8d8ea", "#c5e1a5", "#fff3b0", "#d1a3ff", "#ffb074",
+  "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", "#DDA0DD",
+  "#87CEEB", "#98D8C8", "#F7DC6F", "#BB8FCE",
 ];
 
-const UI = {
-  bg: "var(--editor-bg)",
-  text: "var(--editor-text)",
-  textDim: "var(--editor-text-dim)",
-  textMuted: "var(--editor-text-muted)",
-  textSoft: "var(--editor-text-soft)",
-  textFaint: "var(--editor-text-faint)",
-  panel: "var(--editor-panel)",
-  border: "1px solid var(--editor-border)",
-  borderStrong: "1px solid var(--editor-border-strong)",
-  borderSoft: "1px solid var(--editor-border-soft)",
-  button: "var(--editor-button)",
-  buttonActive: "var(--editor-button-active)",
-  accent: "var(--editor-accent)",
-  accentGlow: "var(--editor-accent-glow)",
-  previewBg: "var(--editor-preview-bg)",
-  code: "var(--editor-code)",
-  gold: "var(--editor-gold)",
-  titleGradient: "var(--editor-title-gradient)",
-};
+function PixelBackground() {
+  const canvasRef = useRef(null);
 
-function hexToBytes3(hex) {
-  const c = hex.replace("#", "");
-  return [parseInt(c.slice(0, 2), 16), parseInt(c.slice(2, 4), 16), parseInt(c.slice(4, 6), 16)];
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const pxSize = 18;
+    const dpr = window.devicePixelRatio || 1;
+
+    function draw() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      ctx.scale(dpr, dpr);
+
+      const cols = Math.ceil(w / pxSize);
+      const rows = Math.ceil(h / pxSize);
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const rand = Math.random();
+          if (rand < 0.82) {
+            // mostly transparent — keep it sparse
+            continue;
+          }
+          const color = PIXEL_BG_COLORS[Math.floor(Math.random() * PIXEL_BG_COLORS.length)];
+          ctx.globalAlpha = 0.08 + Math.random() * 0.14;
+          ctx.fillStyle = color;
+          ctx.fillRect(c * pxSize, r * pxSize, pxSize - 1, pxSize - 1);
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    draw();
+    window.addEventListener("resize", draw);
+    return () => window.removeEventListener("resize", draw);
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 0,
+        pointerEvents: "none",
+      }}
+    />
+  );
 }
+
+const DEFAULT_PALETTE = [
+  "#000000", "#ffffff", "#e03c3c", "#3c7ee0",
+  "#2eb872", "#f5a623", "#9b59b6", "#00bcd4",
+  "#f8c8dc", "#a8d8ea", "#c5e1a5", "#fff3b0",
+  "#d1a3ff", "#ffb074", "#b0b0b0", "#5c3d2e",
+];
 
 function packPixelsToHex(grid) {
   let hex = "0x";
@@ -56,105 +91,65 @@ function packPixelsToHex(grid) {
   return hex;
 }
 
-function generateRandomAgent() {
-  const grid = Array.from({ length: GRID }, () => Array(GRID).fill(0));
-  
-  // Background
-  for (let y = 0; y < GRID; y++)
-    for (let x = 0; x < GRID; x++)
-      grid[y][x] = 0;
+const TWITTER_HANDLE = "@pixel_dwallers";
+const TWITTER_POST = "https://x.com/OnChainPixel/status/XXXXXXXXX";
 
-  // Body (symmetric)
-  const bodyColor = Math.floor(Math.random() * 6) + 2;
-  const skinColor = 14;
-  const eyeColor = 1;
-  
-  // Head
-  for (let y = 8; y < 16; y++)
-    for (let x = 11; x < 21; x++)
-      grid[y][x] = skinColor;
-
-  // Eyes
-  grid[11][13] = eyeColor;
-  grid[11][14] = bodyColor;
-  grid[11][18] = eyeColor;
-  grid[11][19] = bodyColor;
-
-  // Mouth
-  for (let x = 14; x < 19; x++) grid[14][x] = 3;
-
-  // Body
-  for (let y = 16; y < 26; y++)
-    for (let x = 10; x < 22; x++)
-      grid[y][x] = bodyColor;
-
-  // Arms
-  for (let y = 17; y < 23; y++) {
-    grid[y][8] = bodyColor;
-    grid[y][9] = bodyColor;
-    grid[y][22] = bodyColor;
-    grid[y][23] = bodyColor;
-  }
-
-  // Legs
-  for (let y = 26; y < 31; y++) {
-    grid[y][12] = 11;
-    grid[y][13] = 11;
-    grid[y][18] = 11;
-    grid[y][19] = 11;
-  }
-
-  // Random accessory
-  const acc = Math.floor(Math.random() * 4);
-  if (acc === 0) { // Hat
-    for (let x = 10; x < 22; x++) grid[7][x] = 4;
-    for (let x = 12; x < 20; x++) grid[6][x] = 4;
-  } else if (acc === 1) { // Mohawk
-    for (let y = 3; y < 8; y++) grid[y][15] = 2;
-    for (let y = 3; y < 8; y++) grid[y][16] = 2;
-  } else if (acc === 2) { // Crown
-    for (let x = 11; x < 21; x++) grid[7][x] = 5;
-    grid[6][12] = 5; grid[6][16] = 5; grid[6][20] = 5;
-  }
-
-  return grid;
+function StepCard({ number, title, children, done, onToggle }) {
+  return (
+    <FrostCard style={{
+      padding: "20px 24px",
+      display: "flex",
+      alignItems: "flex-start",
+      gap: 16,
+      opacity: done ? 0.6 : 1,
+      transition: "opacity 0.2s",
+    }}>
+      <div style={{
+        width: 36, height: 36, borderRadius: 10,
+        background: done ? COLORS.greenSoft : COLORS.purpleSoft,
+        border: `1px solid ${done ? COLORS.green : COLORS.purple}`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontFamily: fonts, fontSize: 12, fontWeight: 700,
+        color: done ? COLORS.green : COLORS.purple,
+        flexShrink: 0,
+      }}>
+        {done ? "✓" : `0${number}`}
+      </div>
+      <div style={{ flex: 1 }}>
+        <div style={{
+          fontFamily: fontDisplay, fontSize: 20, fontWeight: 700,
+          color: COLORS.text, marginBottom: 6,
+        }}>
+          {title}
+        </div>
+        {children}
+      </div>
+      <div
+        onClick={onToggle}
+        style={{
+          width: 32, height: 32, borderRadius: 8,
+          border: `2px solid ${done ? COLORS.green : COLORS.border}`,
+          background: done ? COLORS.greenSoft : "transparent",
+          cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          transition: "all 0.15s",
+          flexShrink: 0,
+          marginTop: 4,
+        }}
+      >
+        {done && <span style={{ color: COLORS.green, fontSize: 16 }}>✓</span>}
+      </div>
+    </FrostCard>
+  );
 }
 
-const templates = {
-  blank: () => Array.from({ length: GRID }, () => Array(GRID).fill(0)),
-  agent: generateRandomAgent,
-  heart: () => {
-    const g = Array.from({ length: GRID }, () => Array(GRID).fill(0));
-    const h = [
-      [0,0,1,1,0,0,0,1,1,0],
-      [0,1,2,2,1,0,1,2,2,1],
-      [1,2,2,2,2,1,2,2,2,1],
-      [1,2,2,2,2,2,2,2,2,1],
-      [0,1,2,2,2,2,2,2,1,0],
-      [0,0,1,2,2,2,2,1,0,0],
-      [0,0,0,1,2,2,1,0,0,0],
-      [0,0,0,0,1,1,0,0,0,0],
-    ];
-    const ox = 11, oy = 12;
-    h.forEach((row, dy) => row.forEach((v, dx) => {
-      if (v && oy + dy < GRID && ox + dx < GRID) g[oy + dy][ox + dx] = v;
-    }));
-    return g;
-  },
-};
-
-export default function OnChainPixelEditor({ themeMode, onToggleTheme }) {
-  const [grid, setGrid] = useState(templates.blank);
+function MiniPixelEditor({ onHexChange }) {
+  const [grid, setGrid] = useState(() => Array.from({ length: GRID }, () => Array(GRID).fill(0)));
   const [selectedColor, setSelectedColor] = useState(1);
-  const [palette, setPalette] = useState([...DEFAULT_PALETTE]);
+  const [palette] = useState([...DEFAULT_PALETTE]);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [tool, setTool] = useState("draw"); // draw, erase, fill, eyedrop
-  const [showCode, setShowCode] = useState(false);
-  const [showStats, setShowStats] = useState(true);
-  const [showAsciiCd, setShowAsciiCd] = useState(false);
-  const [editingPalette, setEditingPalette] = useState(null);
+  const [tool, setTool] = useState("draw");
   const [history, setHistory] = useState([]);
-  const canvasRef = useRef(null);
 
   const pushHistory = useCallback(() => {
     setHistory(h => [...h.slice(-20), grid.map(r => [...r])]);
@@ -168,11 +163,6 @@ export default function OnChainPixelEditor({ themeMode, onToggleTheme }) {
 
   const paint = useCallback((x, y) => {
     if (x < 0 || x >= GRID || y < 0 || y >= GRID) return;
-    if (tool === "eyedrop") {
-      setSelectedColor(grid[y][x]);
-      setTool("draw");
-      return;
-    }
     if (tool === "fill") {
       pushHistory();
       const target = grid[y][x];
@@ -189,461 +179,332 @@ export default function OnChainPixelEditor({ themeMode, onToggleTheme }) {
       setGrid(newGrid);
       return;
     }
-    const color = tool === "erase" ? 0 : selectedColor;
     setGrid(g => {
-      if (g[y][x] === color) return g;
+      if (g[y][x] === selectedColor) return g;
       const ng = g.map(r => [...r]);
-      ng[y][x] = color;
+      ng[y][x] = selectedColor;
       return ng;
     });
   }, [tool, selectedColor, grid, pushHistory]);
 
-  const handleMouseDown = (x, y) => {
-    if (tool !== "fill" && tool !== "eyedrop") pushHistory();
-    setIsDrawing(true);
-    paint(x, y);
-  };
+  const handleMouseDown = (x, y) => { if (tool !== "fill") pushHistory(); setIsDrawing(true); paint(x, y); };
   const handleMouseMove = (x, y) => { if (isDrawing) paint(x, y); };
-  const handleMouseUp = () => setIsDrawing(false);
 
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key === "z" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); undo(); }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [undo]);
-
-  // Calculate stats
   const packedHex = packPixelsToHex(grid);
-  const bytesUsed = 512;
-  const usedColors = new Set(grid.flat()).size;
-  const nonEmptyPixels = grid.flat().filter(c => c !== 0).length;
+  const nonEmpty = grid.flat().filter(c => c !== 0).length;
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(MINT_PAYLOAD_STORAGE_KEY, packedHex);
-  }, [packedHex]);
-
-  // Rough gas estimate
-  const estimatedGasL1 = 180000;
-  const estimatedCostL1 = ((estimatedGasL1 * 30 * 2000) / 1e9).toFixed(2);
-  const estimatedCostBase = ((estimatedGasL1 * 0.01 * 2000) / 1e9 * 1000).toFixed(3);
-
-  const exportSVG = () => {
-    let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${GRID * 10} ${GRID * 10}" shape-rendering="crispEdges">`;
-    for (let ci = 0; ci < 16; ci++) {
-      let rects = "";
-      for (let y = 0; y < GRID; y++)
-        for (let x = 0; x < GRID; x++)
-          if (grid[y][x] === ci)
-            rects += `<rect x="${x * 10}" y="${y * 10}" width="10" height="10"/>`;
-      if (rects) svg += `<g fill="${palette[ci]}">${rects}</g>`;
-    }
-    svg += "</svg>";
-    return svg;
-  };
+  useEffect(() => { onHexChange(packedHex, nonEmpty); }, [packedHex, nonEmpty, onHexChange]);
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: UI.bg,
-      color: UI.text,
-      fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-      padding: "20px",
-      userSelect: "none",
-    }}>
-      {/* Header */}
-      <div style={{ marginBottom: 24, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-        <div style={{ flex: 1 }} />
-        <div style={{ textAlign: "center" }}>
-          <h1 style={{
-            fontSize: 22,
-            fontWeight: 800,
-            background: UI.titleGradient,
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          margin: 0,
-          letterSpacing: "0.05em",
-          }}>
-            ON-CHAIN PIXEL NFT
-          </h1>
-          <p style={{ fontSize: 11, color: UI.textDim, margin: "4px 0 0" }}>
-            SSTORE2 · 16-color palette · 512 bytes per NFT · live payload editor
-          </p>
+    <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+      <div>
+        <div
+          onMouseLeave={() => setIsDrawing(false)}
+          onMouseUp={() => setIsDrawing(false)}
+          style={{
+            display: "grid",
+            gridTemplateColumns: `repeat(${GRID}, ${CELL}px)`,
+            gap: GAP,
+            background: COLORS.surfaceStrong,
+            padding: 6,
+            borderRadius: 8,
+            border: `1px solid ${COLORS.border}`,
+            cursor: tool === "fill" ? "cell" : "pointer",
+          }}
+        >
+          {grid.map((row, y) =>
+            row.map((colorIdx, x) => (
+              <div
+                key={`${x}-${y}`}
+                onMouseDown={() => handleMouseDown(x, y)}
+                onMouseMove={() => handleMouseMove(x, y)}
+                style={{
+                  width: CELL, height: CELL,
+                  background: palette[colorIdx],
+                  borderRadius: 1,
+                }}
+              />
+            ))
+          )}
         </div>
-        <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-          <ThemeSwitch themeMode={themeMode} onToggle={onToggleTheme} size="md" />
+        <div style={{ display: "flex", gap: 4, marginTop: 8, justifyContent: "center" }}>
+          {[
+            { id: "draw", label: "Draw" },
+            { id: "fill", label: "Fill" },
+          ].map(t => (
+            <MetalButton
+              key={t.id}
+              onClick={() => setTool(t.id)}
+              tone={tool === t.id ? "accent" : "ghost"}
+              size="xs"
+              style={{ minHeight: 28, padding: "4px 10px" }}
+            >
+              {t.label}
+            </MetalButton>
+          ))}
+          <MetalButton onClick={undo} tone="ghost" size="xs" style={{ minHeight: 28, padding: "4px 10px" }}>Undo</MetalButton>
+          <MetalButton onClick={() => { pushHistory(); setGrid(Array.from({ length: GRID }, () => Array(GRID).fill(0))); }} tone="ghost" size="xs" style={{ minHeight: 28, padding: "4px 10px" }}>Clear</MetalButton>
         </div>
       </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: 3 }}>
+          {palette.map((color, i) => (
+            <div
+              key={i}
+              onClick={() => setSelectedColor(i)}
+              style={{
+                width: 24, height: 24, background: color,
+                borderRadius: 4, cursor: "pointer",
+                border: selectedColor === i ? `2px solid ${COLORS.accent}` : "2px solid transparent",
+              }}
+            />
+          ))}
+        </div>
+        <div style={{
+          marginTop: 8, color: COLORS.textMuted,
+          fontFamily: fonts, fontSize: 10,
+        }}>
+          {nonEmpty} / {GRID * GRID} pixels drawn
+        </div>
+      </div>
+    </div>
+  );
+}
 
-      <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
-        {/* Canvas */}
-        <div>
-          <div
-            ref={canvasRef}
-            onMouseLeave={() => setIsDrawing(false)}
-            onMouseUp={handleMouseUp}
-            style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(${GRID}, ${CELL}px)`,
-              gap: GAP,
-              background: UI.panel,
-              padding: 8,
-              borderRadius: 8,
-              border: UI.border,
-              cursor: tool === "eyedrop" ? "crosshair" : tool === "fill" ? "cell" : "pointer",
-            }}
+export default function OnChainPixelEditor({ themeMode, onToggleTheme }) {
+  const [steps, setSteps] = useState({ 1: false, 2: false, 3: false, 4: false });
+  const [artHex, setArtHex] = useState("");
+  const [artPixels, setArtPixels] = useState(0);
+  const [walletInput, setWalletInput] = useState("");
+  const [hexInput, setHexInput] = useState("");
+  const [hexCopied, setHexCopied] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const [pending, setPending] = useState({});
+
+  const openAndMark = (n, url) => {
+    if (steps[n] || pending[n]) return;
+    window.open(url, "_blank");
+    setPending(p => ({ ...p, [n]: true }));
+    setTimeout(() => {
+      setSteps(s => ({ ...s, [n]: true }));
+      setPending(p => ({ ...p, [n]: false }));
+    }, 5000);
+  };
+
+  const isValidWallet = /^0x[a-fA-F0-9]{40}$/.test(walletInput);
+  const allDone = steps[1] && steps[2] && isValidWallet && hexCopied && hexInput.length > 10;
+
+  const handleHexChange = useCallback((hex, pixels) => {
+    setArtHex(hex);
+    setArtPixels(pixels);
+  }, []);
+
+  return (
+    <>
+    <PixelBackground />
+    <div style={{
+      position: "relative",
+      zIndex: 1,
+      width: "calc(100vw - 24px)",
+      maxWidth: 720,
+      margin: "0 auto",
+      padding: "32px 12px 80px",
+      fontFamily: fonts,
+    }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+        <ThemeSwitch themeMode={themeMode} onToggle={onToggleTheme} size="md" />
+      </div>
+
+      <Eyebrow>Allowlist entry</Eyebrow>
+      <h1 style={{
+        fontFamily: fontDisplay,
+        fontSize: "clamp(36px, 6vw, 56px)",
+        fontWeight: 700,
+        lineHeight: 1,
+        letterSpacing: -1.5,
+        margin: "12px 0 0",
+      }}>
+        {(() => {
+          const text = "Submit your allowlist entry";
+          const isLight = themeMode === "light";
+          const clrs = isLight
+            ? ["#7E57C2","#E91E63","#F57C00","#2E7D32","#1565C0","#9C27B0","#00838F","#E64A19"]
+            : ["#B39DDB","#F48FB1","#FFCC80","#A5D6A7","#90CAF9","#CE93D8","#80DEEA","#FFAB91"];
+          return text.split("").map((ch, i) => (
+            <span key={i} style={{ color: ch === " " ? "transparent" : clrs[i % clrs.length] }}>
+              {ch === " " ? "\u00A0" : ch}
+            </span>
+          ));
+        })()}
+      </h1>
+      <p style={{
+        color: COLORS.textMuted, fontSize: 14, lineHeight: 1.7,
+        margin: "12px 0 24px", maxWidth: 520,
+      }}>
+        Open the required social links, add your wallet, and attach the payload from the pixel editor. Social steps are reviewed manually after submission.
+      </p>
+
+      <MetalButton
+        tone="accent"
+        size="sm"
+        onClick={() => window.open(TWITTER_POST, "_blank")}
+        style={{ marginBottom: 12 }}
+      >
+        Open raffle post ↗
+      </MetalButton>
+
+      <div style={{
+        borderTop: `1px dashed ${COLORS.border}`,
+        margin: "0 0 24px",
+      }} />
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <StepCard number={1} title="Open the X profile" done={steps[1]} onToggle={() => openAndMark(1, `https://x.com/${TWITTER_HANDLE.replace("@", "")}`)}>
+          <p style={{ color: COLORS.textMuted, fontSize: 13, margin: "0 0 8px", lineHeight: 1.6 }}>
+            Open <span style={{ color: COLORS.purple, fontWeight: 600 }}>{TWITTER_HANDLE}</span> on X. Follow status is checked manually after form review.
+          </p>
+          <a
+            onClick={(e) => { e.preventDefault(); openAndMark(1, `https://x.com/${TWITTER_HANDLE.replace("@", "")}`); }}
+            href={`https://x.com/${TWITTER_HANDLE.replace("@", "")}`}
+            style={{ color: steps[1] ? COLORS.green : COLORS.green, fontSize: 12, textDecoration: "none", cursor: "pointer" }}
           >
-            {grid.map((row, y) =>
-              row.map((colorIdx, x) => (
-                <div
-                  key={`${x}-${y}`}
-                  onMouseDown={() => handleMouseDown(x, y)}
-                  onMouseMove={() => handleMouseMove(x, y)}
-                  style={{
-                    width: CELL,
-                    height: CELL,
-                    background: palette[colorIdx],
-                    borderRadius: 1,
-                    transition: "background 0.05s",
-                  }}
-                />
-              ))
-            )}
-          </div>
+            {steps[1] ? "Marked complete" : pending[1] ? "Opening..." : "Open profile ↗"}
+          </a>
+        </StepCard>
 
-          {/* Tools */}
-          <div style={{ display: "flex", gap: 6, marginTop: 10, justifyContent: "center" }}>
-            {[
-              { id: "draw", label: "✏️ Draw", key: "D" },
-              { id: "erase", label: "🧹 Erase", key: "E" },
-              { id: "fill", label: "🪣 Fill", key: "F" },
-              { id: "eyedrop", label: "💧 Pick", key: "I" },
-            ].map(t => (
-              <MetalButton
-                key={t.id}
-                onClick={() => setTool(t.id)}
-                tone={tool === t.id ? "accent" : "ghost"}
-                active={tool === t.id}
-                size="xs"
-                style={{
-                  minHeight: 32,
-                  padding: "6px 11px",
-                }}
-              >
-                {t.label}
-              </MetalButton>
-            ))}
+        <StepCard number={2} title="Open the raffle task" done={steps[2]} onToggle={() => openAndMark(2, TWITTER_POST)}>
+          <p style={{ color: COLORS.textMuted, fontSize: 13, margin: "0 0 8px", lineHeight: 1.6 }}>
+            Open the raffle post and complete the required X actions there. Repost and like are checked manually after submission.
+          </p>
+          <a
+            onClick={(e) => { e.preventDefault(); openAndMark(2, TWITTER_POST); }}
+            href={TWITTER_POST}
+            style={{ color: COLORS.green, fontSize: 12, textDecoration: "none", cursor: "pointer" }}
+          >
+            {steps[2] ? "Marked complete" : pending[2] ? "Opening..." : "Open post ↗"}
+          </a>
+        </StepCard>
+
+        <StepCard number={3} title="Wallet address" done={isValidWallet} onToggle={() => {}}>
+          <p style={{ color: COLORS.textMuted, fontSize: 13, margin: "0 0 10px", lineHeight: 1.6 }}>
+            Paste the wallet you want attached to this entry.
+          </p>
+          <input
+            type="text"
+            value={walletInput}
+            onChange={(e) => setWalletInput(e.target.value.trim())}
+            placeholder="0x..."
+            spellCheck={false}
+            style={{
+              width: "100%",
+              padding: "10px 12px",
+              borderRadius: 10,
+              border: `1px solid ${isValidWallet ? COLORS.green : COLORS.border}`,
+              background: COLORS.surfaceStrong,
+              color: COLORS.text,
+              fontFamily: fonts,
+              fontSize: 12,
+              outline: "none",
+              transition: "border-color 0.15s",
+            }}
+          />
+          <div style={{ marginTop: 6, color: isValidWallet ? COLORS.green : COLORS.textDim, fontSize: 10 }}>
+            {isValidWallet
+              ? "Valid address"
+              : walletInput.length > 0
+              ? "Invalid — expected 0x + 40 hex characters"
+              : "Use the address that should receive allowlist access."}
+          </div>
+        </StepCard>
+
+        <StepCard number={4} title="Attach the pixel payload" done={hexCopied} onToggle={() => {}}>
+          <p style={{ color: COLORS.textMuted, fontSize: 13, margin: "0 0 12px", lineHeight: 1.6 }}>
+            Use the editor below, then copy the payload into the submission field.
+          </p>
+          <MiniPixelEditor onHexChange={handleHexChange} />
+          <div style={{ marginTop: 12, display: "flex", gap: 6, alignItems: "center" }}>
             <MetalButton
-              onClick={undo}
               tone="ghost"
               size="xs"
-              style={{
-                minHeight: 32,
-                padding: "6px 11px",
-              }}
+              onClick={() => { navigator.clipboard?.writeText(artHex); setHexInput(artHex); setHexCopied(true); }}
+              style={{ minHeight: 28, padding: "4px 10px" }}
             >
-              ↩ Undo
+              Copy payload
             </MetalButton>
+            <span style={{ color: COLORS.textDim, fontSize: 10 }}>
+              {artPixels > 0 ? `${(GRID * GRID / 2)} bytes packed` : "Draw before copying"}
+            </span>
           </div>
-
-          {/* Templates */}
-          <div style={{ display: "flex", gap: 6, marginTop: 8, justifyContent: "center" }}>
-            <span style={{ fontSize: 10, color: UI.textFaint, lineHeight: "28px" }}>Templates:</span>
-            {[
-              { id: "blank", label: "Clear" },
-              { id: "agent", label: "Random Agent" },
-              { id: "heart", label: "Heart" },
-            ].map(t => (
-              <MetalButton
-                key={t.id}
-                onClick={() => { pushHistory(); setGrid(templates[t.id]()); }}
-                tone="ghost"
-                size="xs"
-                style={{
-                  minHeight: 28,
-                  padding: "4px 10px",
-                }}
-              >
-                {t.label}
-              </MetalButton>
-            ))}
-          </div>
-        </div>
-
-        {/* Right panel */}
-        <div style={{ width: 260 }}>
-          {/* Palette */}
-          <div style={{
-            background: UI.panel, borderRadius: 8,
-            padding: 12, border: UI.border, marginBottom: 12,
-          }}>
-            <div style={{ fontSize: 10, color: UI.textDim, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              Palette (16 colors · on-chain)
-            </div>
-            <div style={{
-              display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: 4,
-            }}>
-              {palette.map((color, i) => (
-                <div key={i} style={{ position: "relative" }}>
-                  <div
-                    onClick={() => setSelectedColor(i)}
-                    onDoubleClick={() => setEditingPalette(i)}
-                    style={{
-                      width: 28, height: 28, background: color,
-                      borderRadius: 4, cursor: "pointer",
-                      border: selectedColor === i ? `2px solid ${UI.accent}` : "2px solid transparent",
-                      boxShadow: selectedColor === i ? `0 0 8px ${UI.accentGlow}` : "none",
-                      transition: "all 0.15s",
-                    }}
-                  />
-                  <span style={{
-                    position: "absolute", bottom: -10, left: "50%", transform: "translateX(-50%)",
-                    fontSize: 7, color: UI.textFaint,
-                  }}>{i}</span>
-                </div>
-              ))}
-            </div>
-            {editingPalette !== null && (
-              <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
-                <input
-                  type="color"
-                  value={palette[editingPalette]}
-                  onChange={(e) => {
-                    const np = [...palette];
-                    np[editingPalette] = e.target.value;
-                    setPalette(np);
-                  }}
-                  style={{ width: 40, height: 30, border: "none", background: "none", cursor: "pointer" }}
-                />
-                <span style={{ fontSize: 10, color: UI.textMuted }}>
-                  Editing color #{editingPalette}
-                </span>
-                <MetalButton
-                  onClick={() => setEditingPalette(null)}
-                  tone="ghost"
-                  size="xs"
-                  style={{
-                    marginLeft: "auto",
-                    minHeight: 26,
-                    padding: "4px 8px",
-                  }}
-                >
-                  done
-                </MetalButton>
-              </div>
-            )}
-          </div>
-
-          {/* Stats */}
-          {showStats && (
-            <div style={{
-              background: UI.panel, borderRadius: 8,
-              padding: 12, border: UI.border, marginBottom: 12,
-            }}>
-              <div style={{ fontSize: 10, color: UI.textDim, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                On-Chain Stats
-              </div>
-              {[
-                { label: "Data size", value: `${bytesUsed} bytes`, highlight: true },
-                { label: "Storage method", value: "SSTORE2" },
-                { label: "Pixels drawn", value: `${nonEmptyPixels} / 1024` },
-                { label: "Colors used", value: `${usedColors} / 16` },
-                { label: "Gas (ETH L1)", value: `~${estimatedGasL1.toLocaleString()} gas` },
-                { label: "Cost ETH L1", value: `~$${estimatedCostL1}` },
-                { label: "Cost Base L2", value: `~$${estimatedCostBase}`, highlight: true },
-              ].map((s, i) => (
-                <div key={i} style={{
-                  display: "flex", justifyContent: "space-between",
-                  padding: "3px 0", fontSize: 11,
-                  borderBottom: `1px solid ${UI.button}`,
-                }}>
-                  <span style={{ color: UI.textDim }}>{s.label}</span>
-                  <span style={{
-                    color: s.highlight ? UI.accent : UI.text,
-                    fontWeight: s.highlight ? 700 : 400,
-                  }}>{s.value}</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Preview */}
-          <div style={{
-            background: UI.panel, borderRadius: 8,
-            padding: 12, border: UI.border, marginBottom: 12,
-          }}>
-            <div style={{ fontSize: 10, color: UI.textDim, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              NFT Preview (rendered from data)
-            </div>
-          <div
-            style={{ width: "100%", aspectRatio: "1", borderRadius: 4, overflow: "hidden" }}
-            dangerouslySetInnerHTML={{ __html: exportSVG() }}
-          />
-        </div>
-
-          <div style={{
-            background: UI.panel, borderRadius: 8,
-            padding: 12, border: UI.border, marginBottom: 12,
-          }}>
-            <div style={{ fontSize: 10, color: UI.textDim, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              ASCII CD
-            </div>
-            {!showAsciiCd ? (
-              <div
-                style={{
-                  borderRadius: 4,
-                  overflow: "hidden",
-                  background: UI.previewBg,
-                  minHeight: 160,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 10,
-                  color: UI.textDim,
-                }}
-              >
-                <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                  ASCII CD is optional
-                </div>
-                <MetalButton
-                  onClick={() => setShowAsciiCd(true)}
-                  tone="accent"
-                  size="sm"
-                  style={{
-                    minHeight: 36,
-                    padding: "8px 12px",
-                  }}
-                >
-                  Load ASCII CD
-                </MetalButton>
-              </div>
-            ) : (
-              <Suspense
-                fallback={
-                  <div
-                    style={{
-                      borderRadius: 4,
-                      overflow: "hidden",
-                      background: UI.previewBg,
-                      minHeight: 160,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: UI.textDim,
-                      fontSize: 10,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
-                    Loading CD...
-                  </div>
-                }
-              >
-                <div
-                  style={{
-                    borderRadius: 4,
-                    overflow: "hidden",
-                    background: UI.previewBg,
-                    minHeight: 160,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <div style={{ transform: "scale(0.84)", transformOrigin: "center center" }}>
-                    <Cd />
-                  </div>
-                </div>
-              </Suspense>
-            )}
-          </div>
-
-          {/* Export */}
-          <div style={{ display: "flex", gap: 6 }}>
-            <MetalButton
-              onClick={() => setShowCode(!showCode)}
-              tone={showCode ? "accent" : "ghost"}
-              active={showCode}
-              size="sm"
-              block
-              style={{
-                flex: 1,
-                minHeight: 38,
-              }}
-            >
-              {showCode ? "Hide" : "Show"} Calldata
-            </MetalButton>
-            <MetalButton
-              onClick={() => {
-                navigator.clipboard?.writeText(packedHex);
-              }}
-              tone="ghost"
-              size="sm"
-              block
-              style={{
-                flex: 1,
-                minHeight: 38,
-              }}
-            >
-              Copy Hex
-            </MetalButton>
-          </div>
-        </div>
+        </StepCard>
       </div>
 
-      {/* Calldata display */}
-      {showCode && (
+      <div style={{
+        borderTop: `1px dashed ${COLORS.border}`,
+        margin: "28px 0 24px",
+      }} />
+
+      <FrostCard style={{ padding: "20px 24px" }}>
         <div style={{
-          maxWidth: 820, margin: "16px auto 0",
-          background: UI.panel, borderRadius: 8,
-          padding: 16, border: UI.border,
+          fontFamily: fontDisplay, fontSize: 18, fontWeight: 700,
+          color: COLORS.text, marginBottom: 12,
         }}>
-          <div style={{ fontSize: 10, color: UI.textDim, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-            Packed Calldata (512 bytes · ready for mint)
-          </div>
-          <div style={{
-            fontSize: 9, wordBreak: "break-all", color: UI.accent,
-            lineHeight: 1.6, fontFamily: "'JetBrains Mono', monospace",
-            background: UI.previewBg, padding: 12, borderRadius: 4,
-            maxHeight: 120, overflow: "auto",
-          }}>
-            {packedHex}
-          </div>
-
-          <div style={{ marginTop: 12, fontSize: 10, color: UI.textDim }}>
-            <div style={{ marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              Solidity mint call:
-            </div>
-            <code style={{
-              fontSize: 9, color: UI.code, display: "block",
-              background: UI.previewBg, padding: 8, borderRadius: 4,
-              wordBreak: "break-all",
-            }}>
-              {`contract.mint(msg.sender, ${packedHex.slice(0, 40)}..., "MyAgent")`}
-            </code>
-          </div>
-
-          <div style={{ marginTop: 12, fontSize: 10, color: UI.textDim }}>
-            <div style={{ marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              Palette as bytes3[16]:
-            </div>
-            <code style={{
-              fontSize: 9, color: UI.gold, display: "block",
-              background: UI.previewBg, padding: 8, borderRadius: 4,
-              wordBreak: "break-all",
-            }}>
-              [{palette.map(c => `0x${c.replace("#", "")}`).join(", ")}]
-            </code>
-          </div>
+          Payload field
         </div>
-      )}
+        <textarea
+          value={hexInput}
+          onChange={(e) => setHexInput(e.target.value.trim())}
+          placeholder="0x... (paste the payload from the editor above)"
+          spellCheck={false}
+          style={{
+            width: "100%",
+            minHeight: 72,
+            padding: 12,
+            borderRadius: 10,
+            border: `1px solid ${COLORS.border}`,
+            background: COLORS.surfaceStrong,
+            color: COLORS.text,
+            fontFamily: fonts,
+            fontSize: 11,
+            resize: "vertical",
+            outline: "none",
+            wordBreak: "break-all",
+          }}
+        />
+        <div style={{ marginTop: 6, color: COLORS.textDim, fontSize: 10 }}>
+          {hexInput.startsWith("0x") && hexInput.length === 258
+            ? `Valid payload (128 bytes)`
+            : hexInput.length > 0
+            ? `Invalid — expected 0x + 256 hex chars (got ${hexInput.length})`
+            : "Draw pixel art above, then click 'Copy payload'"}
+        </div>
+      </FrostCard>
 
-      <p style={{ textAlign: "center", fontSize: 9, color: UI.textFaint, marginTop: 20 }}>
-        Double-click palette color to edit · Ctrl+Z to undo · 32×32 grid · 4-bit per pixel
-      </p>
+      <div style={{ marginTop: 24, textAlign: "center" }}>
+        <MetalButton
+          tone={allDone && !submitted ? "accent" : "ghost"}
+          size="md"
+          onClick={() => { if (allDone) setSubmitted(true); }}
+          style={{
+            minWidth: 240,
+            opacity: allDone ? 1 : 0.4,
+            pointerEvents: allDone ? "auto" : "none",
+          }}
+        >
+          {submitted ? "Entry submitted" : "Submit entry"}
+        </MetalButton>
+        {!allDone && (
+          <p style={{ color: COLORS.textDim, fontSize: 11, marginTop: 8 }}>
+            Open both social links, enter your wallet, and attach the payload before submitting.
+          </p>
+        )}
+        {submitted && (
+          <p style={{ color: COLORS.green, fontSize: 12, marginTop: 8 }}>
+            Entry received. Social steps will be reviewed manually before allowlist selection.
+          </p>
+        )}
+      </div>
     </div>
+    </>
   );
 }

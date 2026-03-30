@@ -344,7 +344,7 @@ async function switchToChain(appConfig) {
 export function WrongChainBanner({ wallet, appConfig }) {
   const targetChainId = getTargetChainId(appConfig);
   const chainErr = wallet?.chainId && wallet.chainId !== targetChainId
-    ? `Wrong network (chainId ${wallet.chainId}). Switch to ${getTargetChainLabel(appConfig)}.`
+    ? `Wrong network (chainId ${wallet.chainId}). Switch to ${getTargetChainLabel(appConfig)} to use this route.`
     : null;
   if (!chainErr || !wallet?.account) return null;
   return (
@@ -450,7 +450,7 @@ export function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode,
               OnChainPixel
             </div>
             <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 0.7 }}>
-              Fully on-chain pixel liquidity
+              Fully on-chain pixel protocol
             </div>
           </div>
         </MetalButton>
@@ -534,7 +534,7 @@ export function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode,
           whiteSpace: "nowrap",
           boxShadow: "0 4px 24px rgba(0,0,0,0.4)",
         }}>
-          Soon...
+          Preview only
         </div>
       )}
     </header>
@@ -589,7 +589,7 @@ export function PoolViz({ pool, className = "", style, fmtEth }) {
             Liquidity pool
           </div>
           <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, marginTop: 6 }}>
-            Reserve snapshot shown as gallery tiles rather than exchange widgets.
+            Current reserve, inventory, pool quote, and listing reference.
           </div>
         </div>
         <Eyebrow tone="green">Reserve snapshot</Eyebrow>
@@ -619,7 +619,7 @@ export function PoolViz({ pool, className = "", style, fmtEth }) {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginTop: 14, alignItems: "stretch" }}>
         <FrostCard style={{ padding: 14, background: COLORS.surfaceStrong, borderRadius: 24, minHeight: 108, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-          <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Sell quote</div>
+          <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Pool sell quote</div>
           <div style={{ marginTop: 8, color: COLORS.red, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>{pool.sellPrice} ETH</div>
         </FrostCard>
         <FrostCard style={{ padding: 14, background: COLORS.surfaceStrong, borderRadius: 24, minHeight: 108, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
@@ -627,7 +627,7 @@ export function PoolViz({ pool, className = "", style, fmtEth }) {
           <div style={{ marginTop: 8, color: COLORS.yellow, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>{pool.floor} ETH</div>
         </FrostCard>
         <FrostCard style={{ padding: 14, background: COLORS.surfaceStrong, borderRadius: 24, minHeight: 108, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-          <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Listing ref</div>
+          <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Listing reference</div>
           <div style={{ marginTop: 8, color: COLORS.green, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>{pool.listingPrice} ETH</div>
         </FrostCard>
       </div>

@@ -53,8 +53,8 @@ function NftMarquee({ ids, speed = 28, reverse = false }) {
 function HeroGallery({ pool }) {
   const heroStats = [
     { label: "Mint split", value: "60% / 10% / 30%", sub: "reserve / treasury / ops", tone: COLORS.accent },
-    { label: "Market lane", value: "Native P2P", sub: "premium discovery stays in-market", tone: COLORS.purple },
-    { label: "Trade fee", value: "2.5% routed", sub: "pool / treasury / stakers / protocol", tone: COLORS.green },
+    { label: "Market lane", value: "Native market", sub: "premium discovery stays outside the pool", tone: COLORS.purple },
+    { label: "Trade fee", value: "2.5% fee", sub: "stakers / pool / treasury / protocol", tone: COLORS.green },
   ];
 
   return (
@@ -84,7 +84,7 @@ function HeroGallery({ pool }) {
       {/* Верх: текст + стата */}
       <div style={{ position: "relative", zIndex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
         <div>
-          <Eyebrow>Protocol gallery</Eyebrow>
+          <Eyebrow>Protocol overview</Eyebrow>
           <div
             style={{
               marginTop: 24,
@@ -117,9 +117,9 @@ function HeroGallery({ pool }) {
               lineHeight: 1.75,
             }}
           >
-            A gallery-first NFT protocol where the collection, the native market, and the
-            reserve-aware floor lane live in one on-chain stack. The goal is not to price every
-            rare piece on-chain. The goal is to separate floor liquidity from premium discovery.
+            Fully on-chain pixel collection with a native market and a reserve-backed floor lane.
+            Premium pricing stays in the market. The pool only handles the floor side when
+            reserve coverage and market-state rules allow it.
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10, marginTop: 22 }}>
@@ -148,12 +148,12 @@ function HeroGallery({ pool }) {
         {/* Правая часть: инфо */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, alignItems: "stretch" }}>
           {[
-            { label: "Collection", value: "10,000 genesis", tone: "#7C56D8", desc: "Packed pixel pieces stored and rendered on-chain, without external image hosting." },
-            { label: "Floor lane", value: "Reserve-gated", tone: "#1DB37A", desc: "The pool quotes a floor only after launch protection and while coverage stays healthy. It is a conditional exit lane, not an always-on promise." },
-            { label: "Buyback policy", value: "Selective", tone: "#E8853A", desc: "Treasury buyback activates only in weak-demand or stale-inventory conditions, and only while reserve coverage remains strong enough." },
-            { label: "Staking", value: "Fee accrual", tone: "#D4497A", desc: "Staking routes a slice of protocol trade fees to locked NFTs. Payout depends on real trading activity, not token emissions." },
-            { label: "Pool pricing", value: "Rule-based", tone: "#2AABCF", desc: "The floor quote follows reserve, sell pressure, and EMA guardrails. It is not a rare-trait appraisal engine." },
-            { label: "On-chain art", value: "Chain-rendered", tone: "#C9A800", desc: "Pixel data lives as packed bytes in Ethereum storage and renders directly from the chain." },
+            { label: "Collection", value: "10,000 genesis", tone: "#7C56D8", desc: "Every piece is stored and rendered on-chain, without external image hosting." },
+            { label: "Floor lane", value: "Reserve-gated", tone: "#1DB37A", desc: "The pool opens only after launch protection and only while reserve coverage and market-state rules stay inside range." },
+            { label: "Buyback policy", value: "Selective", tone: "#E8853A", desc: "Treasury removes stale inventory only in weak demand and only with strong coverage. It is cleanup logic, not a support switch." },
+            { label: "Staking", value: "Fee flow", tone: "#D4497A", desc: "Stakers receive 10% of protocol trade fees from real trading activity. No emissions and no fixed yield." },
+            { label: "Pool pricing", value: "Rule-based", tone: "#2AABCF", desc: "The floor quote follows reserve, sell pressure, and EMA guardrails. It does not price rare traits." },
+            { label: "On-chain art", value: "Chain-rendered", tone: "#C9A800", desc: "Pixel data is packed into Ethereum storage and rendered directly from the chain." },
           ].map((item) => (
             <div key={item.label} style={{ padding: "20px 22px", borderRadius: 20, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.03)", display: "flex", flexDirection: "column", gap: 8 }}>
               <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>{item.label}</div>
@@ -186,9 +186,9 @@ function LiquiditySystemOverview({ className = "", style }) {
 
   const splitCards = [
     { label: "Pool reserve", value: "60%", sub: "Every mint seeds floor liquidity.", tone: COLORS.accent },
-    { label: "Treasury lane", value: "10%", sub: "Buyback and burn pressure valve.", tone: COLORS.purple },
-    { label: "Protocol ops", value: "30%", sub: "Funds rollout, maintenance and collection support.", tone: COLORS.yellow },
-    { label: "Trade fee", value: "2.5%", sub: "Each trade routes fee into stakers, pool reserve, treasury, and protocol fees.", tone: COLORS.green },
+    { label: "Treasury lane", value: "10%", sub: "Buyback and stale-inventory cleanup.", tone: COLORS.purple },
+    { label: "Protocol ops", value: "30%", sub: "Funds rollout, maintenance, and operating support.", tone: COLORS.yellow },
+    { label: "Trade fee", value: "2.5%", sub: "Each trade routes fee into stakers, reserve, treasury, and protocol fees.", tone: COLORS.green },
   ];
 
   const zones = [
@@ -205,7 +205,7 @@ function LiquiditySystemOverview({ className = "", style }) {
             How liquidity works
           </div>
           <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, marginTop: 6, lineHeight: 1.7, maxWidth: 560 }}>
-            Mints seed the reserve, the pool quotes a reserve-aware floor when gates are open, treasury handles weak-demand cleanup, and premium pricing stays in the marketplace.
+            Mints seed the reserve, the pool quotes a floor only while gates stay open, treasury handles weak-demand cleanup, and premium pricing stays in the marketplace.
           </div>
         </div>
         <Eyebrow tone="purple">Protocol flow</Eyebrow>
@@ -353,14 +353,14 @@ function LiquiditySystemOverview({ className = "", style }) {
 
         <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 24, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <div style={{ color: "#1A9B67", fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
-            What the protocol does
+            Protocol rules
           </div>
           <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
             {[
               ["Mint", "Every mint routes 60% into reserve, 10% into treasury, and 30% into ops. The reserve is funded on day one instead of waiting for secondary demand."],
-              ["Quote the floor", "The pool quotes the collection floor, not rare-piece prices. If coverage is weak or the market is already strong, sell-to-pool closes."],
-              ["Clean up stale inventory", "When weak demand leaves old inventory in the pool, treasury buyback can remove part of it. That is cleanup logic, not price support."],
-              ["Stake for fee flow", "Stakers receive 10% of protocol trade fees. No emissions, no APR promise, just fee flow when trading happens."],
+              ["Quote the floor", "The pool only quotes the collection floor. Rare pieces are still priced in the market, and sell-to-pool closes when coverage weakens or expansion starts."],
+              ["Clean up stale inventory", "Weak demand can leave old inventory sitting in the pool. Treasury buyback removes part of it when the cleanup gates are open."],
+              ["Stake for fee flow", "Stakers receive 10% of protocol trade fees. No emissions, no fixed APR, only fee flow when trading actually happens."],
             ].map(([title, body]) => (
               <div key={title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, minHeight: 124 }}>
                 <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
@@ -387,17 +387,17 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
   const features = [
     {
       title: "SSTORE2-backed art",
-      desc: "Images live as packed pixel data inside Ethereum storage patterns, not external image hosting.",
+      desc: "Images live as packed pixel data on-chain, not on an external image server.",
       tone: "accent",
     },
     {
       title: "Floor-liquidity thesis",
-      desc: "The protocol quotes the floor lane while the market decides which pieces deserve premium prices.",
+      desc: "The protocol quotes only the floor lane while the market decides which pieces deserve premium prices.",
       tone: "green",
     },
     {
       title: "Gallery-style market",
-      desc: "The interface should feel curated and calm, with strong cards and clear spacing, not exchange noise.",
+      desc: "The market is meant to read like a collection view, not an exchange terminal.",
       tone: "purple",
     },
   ];
@@ -408,13 +408,13 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
 
       <div className="site-reveal-soft" style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 12, alignItems: "center", ...revealStyle(320) }}>
         <MetalButton onClick={showSoon} tone="ghost" style={{ opacity: 0.5, cursor: "default" }}>
-          Mint room
+          Mint route
         </MetalButton>
         <MetalButton onClick={showSoon} tone="ghost" style={{ opacity: 0.5, cursor: "default" }}>
-          Marketplace
+          Market route
         </MetalButton>
         <MetalButton onClick={showSoon} tone="ghost" style={{ opacity: 0.5, cursor: "default" }}>
-          Staking
+          Stake route
         </MetalButton>
       </div>
       {toast && (
@@ -434,7 +434,7 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
           pointerEvents: "none",
           whiteSpace: "nowrap",
         }}>
-          Soon...
+          Preview only
         </div>
       )}
 
@@ -445,7 +445,7 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
               Protocol core
             </div>
             <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-              Three short ideas that explain what this protocol is before the deeper liquidity diagram.
+              Three short rules that explain the protocol before the deeper liquidity diagram.
             </div>
           </div>
           <Eyebrow tone="purple">Core notes</Eyebrow>
