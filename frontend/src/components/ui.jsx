@@ -379,17 +379,11 @@ export function WrongChainBanner({ wallet, appConfig }) {
 }
 
 export function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode, onToggleTheme, targetChainId }) {
-  const [toast, setToast] = useState(false);
-  const showSoon = useCallback(() => {
-    setToast(true);
-    setTimeout(() => setToast(false), 2000);
-  }, []);
-
   const items = [
-    { id: "home", label: "Home", disabled: false },
-    { id: "mint", label: "Mint", disabled: true },
-    { id: "market", label: "Marketplace", disabled: true },
-    { id: "staking", label: "Staking", disabled: true },
+    { id: "home", label: "Home" },
+    { id: "mint", label: "Mint" },
+    { id: "market", label: "Marketplace" },
+    { id: "staking", label: "Staking" },
   ];
 
   return (
@@ -468,15 +462,13 @@ export function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode,
             const button = (
               <MetalButton
                 key={item.id}
-                onClick={item.disabled ? showSoon : () => setPage(item.id)}
+                onClick={() => setPage(item.id)}
                 tone={page === item.id ? "accent" : "ghost"}
                 active={page === item.id}
                 size="sm"
                 style={{
                   minHeight: 38,
                   padding: "9px 15px",
-                  opacity: item.disabled ? 0.5 : 1,
-                  cursor: item.disabled ? "default" : "pointer",
                 }}
               >
                 {item.label}
@@ -516,27 +508,6 @@ export function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode,
           ) : "Connect Wallet"}
         </MetalButton>
       </FrostCard>
-      {toast && (
-        <div style={{
-          position: "fixed",
-          top: 80,
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "#18181f",
-          border: "1px solid rgba(255,255,255,0.1)",
-          borderRadius: 12,
-          padding: "10px 22px",
-          fontFamily: fonts,
-          fontSize: 13,
-          color: "rgba(255,255,255,0.6)",
-          zIndex: 9999,
-          pointerEvents: "none",
-          whiteSpace: "nowrap",
-          boxShadow: "0 4px 24px rgba(0,0,0,0.4)",
-        }}>
-          Preview only
-        </div>
-      )}
     </header>
   );
 }
