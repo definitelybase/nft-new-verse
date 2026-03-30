@@ -1,11 +1,12 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import { COLORS, fonts, fontDisplay } from "./utils/constants";
+import { COLORS, fonts, fontDisplay, MINT_PAYLOAD_STORAGE_KEY } from "./utils/constants";
 import { FrostCard, Eyebrow } from "./components/ui";
 import { MetalButton } from "./MetalButton";
 import { ThemeSwitch } from "./ThemeSwitch";
+import { isValidMintPayload } from "./utils/helpers";
 
-const GRID = 16;
-const CELL = 22;
+const GRID = 32;
+const CELL = 10;
 const GAP = 1;
 
 const PIXEL_BG_COLORS = [
@@ -32,6 +33,8 @@ function PixelBackground() {
       canvas.height = h * dpr;
       canvas.style.width = w + "px";
       canvas.style.height = h + "px";
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.scale(dpr, dpr);
 
       const cols = Math.ceil(w / pxSize);
@@ -277,7 +280,6 @@ export default function OnChainPixelEditor({ themeMode, onToggleTheme }) {
   const [artPixels, setArtPixels] = useState(0);
   const [walletInput, setWalletInput] = useState("");
   const [hexInput, setHexInput] = useState("");
-  const [hexCopied, setHexCopied] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const [pending, setPending] = useState({});
@@ -293,12 +295,18 @@ export default function OnChainPixelEditor({ themeMode, onToggleTheme }) {
   };
 
   const isValidWallet = /^0x[a-fA-F0-9]{40}$/.test(walletInput);
-  const allDone = steps[1] && steps[2] && isValidWallet && hexCopied && hexInput.length > 10;
+  const payloadValid = isValidMintPayload(hexInput);
+  const allDone = steps[1] && steps[2] && isValidWallet && payloadValid;
 
   const handleHexChange = useCallback((hex, pixels) => {
     setArtHex(hex);
     setArtPixels(pixels);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !artHex) return;
+    window.localStorage.setItem(MINT_PAYLOAD_STORAGE_KEY, artHex);
+  }, [artHex]);
 
   return (
     <>
@@ -418,16 +426,22 @@ export default function OnChainPixelEditor({ themeMode, onToggleTheme }) {
           </div>
         </StepCard>
 
-        <StepCard number={4} title="Attach the pixel payload" done={hexCopied} onToggle={() => {}}>
+        <StepCard number={4} title="Attach the pixel payload" done={payloadValid} onToggle={() => {}}>
           <p style={{ color: COLORS.textMuted, fontSize: 13, margin: "0 0 12px", lineHeight: 1.6 }}>
-            Use the editor below, then copy the payload into the submission field.
+            Use the editor below to draw a 32×32 piece, then copy the payload into the submission field.
           </p>
           <MiniPixelEditor onHexChange={handleHexChange} />
           <div style={{ marginTop: 12, display: "flex", gap: 6, alignItems: "center" }}>
             <MetalButton
               tone="ghost"
               size="xs"
-              onClick={() => { navigator.clipboard?.writeText(artHex); setHexInput(artHex); setHexCopied(true); }}
+              onClick={() => {
+                navigator.clipboard?.writeText(artHex);
+                setHexInput(artHex);
+                if (typeof window !== "undefined") {
+                  window.localStorage.setItem(MINT_PAYLOAD_STORAGE_KEY, artHex);
+                }
+              }}
               style={{ minHeight: 28, padding: "4px 10px" }}
             >
               Copy payload
@@ -472,10 +486,10 @@ export default function OnChainPixelEditor({ themeMode, onToggleTheme }) {
           }}
         />
         <div style={{ marginTop: 6, color: COLORS.textDim, fontSize: 10 }}>
-          {hexInput.startsWith("0x") && hexInput.length === 258
-            ? `Valid payload (128 bytes)`
+          {payloadValid
+            ? `Valid payload (512 bytes)`
             : hexInput.length > 0
-            ? `Invalid — expected 0x + 256 hex chars (got ${hexInput.length})`
+            ? `Invalid — expected 0x + 1024 hex chars (got ${hexInput.length})`
             : "Draw pixel art above, then click 'Copy payload'"}
         </div>
       </FrostCard>
