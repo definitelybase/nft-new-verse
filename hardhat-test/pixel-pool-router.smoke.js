@@ -74,7 +74,7 @@ async function seedPoolReserve(pool, owner, routerAddress, amount) {
 
 async function setStabilizationSnapshot(pool, owner) {
   const floor = await pool.getFloorPrice();
-  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor)).wait();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, STABILIZATION_SPREAD_BPS))).wait();
 }
 
 function addBps(value, bps) {
@@ -297,7 +297,7 @@ describe("PixelPool + PixelRouter smoke suite", function () {
     assert.strictEqual(await nft.ownerOf(0), pool.address);
     assert.strictEqual((await pool.availableNFTs()).toString(), "1");
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
-    assert.strictEqual((await pool.marketState()).toString(), "2");
+    assert.strictEqual((await pool.marketState()).toString(), "1");
 
     await setStabilizationSnapshot(pool, owner);
     const floor = await pool.getFloorPrice();

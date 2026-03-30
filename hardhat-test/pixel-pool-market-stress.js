@@ -72,7 +72,7 @@ async function getState(pool) {
 
 async function setStabilizationSnapshot(pool, owner) {
   const floor = await pool.getFloorPrice();
-  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor)).wait();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor.add(floor.mul(2000).div(10000)))).wait();
 }
 
 describe("Market-state stress tests", function () {
@@ -87,18 +87,18 @@ describe("Market-state stress tests", function () {
     assert.strictEqual(await getState(pool), "Expansion");
   });
 
-  it("transitions from Expansion to WeakDemand after first sell post-launch", async function () {
+  it("transitions from Expansion to Stabilization after first sell post-launch", async function () {
     const { owner, alice, nft, pool, router, mintPrice } = await deployStack();
 
     await mintOne(router, alice, mintPrice);
     await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("5"));
     await increaseTime(LAUNCH_PROTECTION + 1);
 
-    // First sell — pressure goes to max (sells>0, buys=0), should move to WeakDemand
+    // First sell alone is no longer enough for WeakDemand: it should fall back to Stabilization.
     await (await nft.connect(alice).approve(router.address, 0)).wait();
     await (await router.connect(alice).sellNFT(0, 0)).wait();
 
-    assert.strictEqual(await getState(pool), "WeakDemand");
+    assert.strictEqual(await getState(pool), "Stabilization");
   });
 
   it("recovers from WeakDemand enough to release inventory externally after a healthy market snapshot", async function () {
@@ -110,14 +110,17 @@ describe("Market-state stress tests", function () {
     await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("5"));
     await increaseTime(LAUNCH_PROTECTION + 1);
 
-    // Sell to enter WeakDemand
+    // Sells alone now only soften the state; a weak external snapshot is what should push the pool into WeakDemand.
     await (await nft.connect(alice).approve(router.address, 0)).wait();
     await (await router.connect(alice).sellNFT(0, 0)).wait();
-    assert.strictEqual(await getState(pool), "WeakDemand");
 
     // Add one more sell so the pool has fresh inventory to release outward.
     await (await nft.connect(alice).approve(router.address, 1)).wait();
     await (await router.connect(alice).sellNFT(1, 0)).wait();
+
+    const floor = await pool.getFloorPrice();
+    await (await pool.connect(owner).setExternalMarketSnapshot(0, 200, floor.sub(1))).wait();
+    assert.strictEqual(await getState(pool), "WeakDemand");
 
     await setStabilizationSnapshot(pool, owner);
 

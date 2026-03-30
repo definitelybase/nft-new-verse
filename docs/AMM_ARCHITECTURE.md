@@ -211,6 +211,9 @@ Important constants:
 - `EXPANSION_PURCHASE_RATE_BPS = 35`
 - `EXPANSION_LISTING_PRESSURE_BPS = 800`
 - `EXPANSION_FLOOR_RATIO_BPS = 12000`
+- `RELEASE_PURCHASE_RATE_BPS = 15`
+- `RELEASE_LISTING_PRESSURE_BPS = 1200`
+- `RELEASE_FLOOR_RATIO_BPS = 12000`
 - `WEAK_DEMAND_PURCHASE_RATE_BPS = 10`
 - `WEAK_DEMAND_LISTING_PRESSURE_BPS = 1500`
 - `WEAK_DEMAND_FLOOR_RATIO_BPS = 10000`
@@ -219,6 +222,16 @@ Interpretation:
 
 - expansion means strong sales, manageable listing pressure, and marketplace floor above protocol floor
 - weak demand means weak sales, heavy listings, and marketplace floor no longer outperforming the protocol floor
+- release-ready stabilization means the market is strong enough to absorb protocol inventory at `floor * 1.2`
+
+Important nuance:
+
+- when the marketplace has zero active listings but still shows recent sales, the pool treats that as a sold-through market rather than as a weak floor signal
+- weak demand is not triggered by a single noisy datapoint
+- instead, the state machine now treats weak demand as `2 of 3` weak signals:
+  - weak purchase rate
+  - heavy listing pressure
+  - marketplace floor at or below protocol floor
 
 The pool still supports manual owner-set snapshots as a fallback, but the native marketplace is now the normal signal source.
 
@@ -248,8 +261,21 @@ Typical meaning:
 
 Protocol behavior:
 
-- `canReleaseInventoryForListing()` can become true
+- `canReleaseInventoryForListing()` can become true only if all release thresholds are met
 - pool inventory and vault inventory can move into the marketplace
+
+Release gate:
+
+- `purchaseRateBps >= 15`
+- `listingPressureBps <= 1200`
+- `floorRatioBps >= 12000`
+
+This is intentionally stricter than plain stabilization.
+
+Why:
+
+- stabilization means “not weak”
+- release means “strong enough to list protocol inventory at spread”
 
 ### WeakDemand
 
@@ -258,6 +284,12 @@ Typical meaning:
 - sales are weak
 - listing pressure is elevated
 - market floor does not clearly outperform protocol floor
+
+Protocol behavior:
+
+- sell-to-pool can still be open if reserve coverage is healthy
+- protocol inventory release stays blocked
+- treasury buyback can activate if weak demand is real or if inventory is stale / excessive
 
 Protocol behavior:
 

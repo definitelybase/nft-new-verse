@@ -7,6 +7,7 @@ const TREASURY_BPS = 1000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
 const INVENTORY_STALE_AGE = 7 * 24 * 60 * 60;
 const MARKET_STATE_SLOT = 24;
+const STABILIZATION_SPREAD_BPS = 2000;
 
 const slotCache = {};
 
@@ -29,6 +30,10 @@ function slotHex(slot) {
 
 function valueHex(value) {
   return ethers.utils.hexZeroPad(ethers.BigNumber.from(value).toHexString(), 32);
+}
+
+function addBps(value, bps) {
+  return value.add(value.mul(bps).div(BPS));
 }
 
 async function increaseTime(seconds) {
@@ -197,8 +202,19 @@ describe("PixelPool market-state thresholds and negative gates", function () {
     await forceMarketState(pool, 2);
     assert.strictEqual(await pool.canReleaseInventoryForListing(), false);
 
-    await forceMarketState(pool, 1);
+    const floor = await pool.getFloorPrice();
+    await setMarketSnapshot(pool, owner, 2, 120, addBps(floor, STABILIZATION_SPREAD_BPS));
     assert.strictEqual(await pool.canReleaseInventoryForListing(), true);
+  });
+
+  it("keeps the market in stabilization when only one weak signal is present", async function () {
+    const { owner, pool } = await deployStack();
+    const floor = await pool.getFloorPrice();
+
+    await increaseTime(LAUNCH_PROTECTION + 1);
+    await setMarketSnapshot(pool, owner, 0, 120, addBps(floor, STABILIZATION_SPREAD_BPS));
+
+    assert.strictEqual((await pool.marketState()).toString(), "1");
   });
 
   it("keeps buyback disabled at exact weak-market boundary values", async function () {

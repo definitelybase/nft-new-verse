@@ -113,6 +113,9 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     uint256 public constant EXPANSION_PURCHASE_RATE_BPS = 35;
     uint256 public constant EXPANSION_LISTING_PRESSURE_BPS = 800;
     uint256 public constant EXPANSION_FLOOR_RATIO_BPS = 12000;
+    uint256 public constant RELEASE_PURCHASE_RATE_BPS = 15;
+    uint256 public constant RELEASE_LISTING_PRESSURE_BPS = 1200;
+    uint256 public constant RELEASE_FLOOR_RATIO_BPS = 12000;
     uint256 public constant WEAK_DEMAND_PURCHASE_RATE_BPS = 10;
     uint256 public constant WEAK_DEMAND_LISTING_PRESSURE_BPS = 1500;
     uint256 public constant WEAK_DEMAND_FLOOR_RATIO_BPS = 10000;
@@ -237,8 +240,10 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
             listingPressureBps = (observedListings * BPS) / liveSupply;
         }
 
-        if (protocolFloor == 0 || observedListings == 0 || observedFloor == 0) {
+        if (protocolFloor == 0) {
             floorRatioBps = BPS;
+        } else if (observedListings == 0 || observedFloor == 0) {
+            floorRatioBps = observedSales24h > 0 ? EXPANSION_FLOOR_RATIO_BPS : BPS;
         } else {
             floorRatioBps = (observedFloor * BPS) / protocolFloor;
         }
@@ -261,10 +266,14 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     }
 
     function canReleaseInventoryForListing() public view returns (bool) {
-        return
-            marketState == MarketState.Stabilization &&
-            listingVault != address(0) &&
-            (_poolNfts.length > 0 || _vaultNfts.length > 0);
+        if (
+            marketState != MarketState.Stabilization ||
+            listingVault == address(0) ||
+            (_poolNfts.length == 0 && _vaultNfts.length == 0)
+        ) return false;
+
+        (uint256 purchaseRateBps, uint256 listingPressureBps, uint256 floorRatioBps,) = getMarketSignals();
+        return _isReleaseSignal(purchaseRateBps, listingPressureBps, floorRatioBps);
     }
 
     // ---- Sell ----
@@ -322,16 +331,11 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
 
     // ---- Treasury Buyback ----
     function getBuybackMode() public view returns (uint8 mode, uint256 maxBuy) {
-        (uint256 purchaseRateBps, uint256 listingPressureBps, uint256 floorRatioBps, uint256 coverageRatioBps) =
-            getMarketSignals();
+        (, , , uint256 coverageRatioBps) = getMarketSignals();
         uint256 price = getFloorPrice();
         bool staleInventory = getOldestPoolInventoryAge() >= INVENTORY_STALE_AGE;
         bool excessInventory = _poolNfts.length > INVENTORY_HIGH;
-        bool weakMarket =
-            marketState == MarketState.WeakDemand &&
-            purchaseRateBps < WEAK_DEMAND_PURCHASE_RATE_BPS &&
-            listingPressureBps > WEAK_DEMAND_LISTING_PRESSURE_BPS &&
-            floorRatioBps < WEAK_DEMAND_FLOOR_RATIO_BPS;
+        bool weakMarket = marketState == MarketState.WeakDemand;
         if (
             !(staleInventory || excessInventory || weakMarket) ||
             coverageRatioBps < 20000
@@ -657,17 +661,9 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
             next = MarketState.Expansion;
         } else {
             (uint256 purchaseRateBps, uint256 listingPressureBps, uint256 floorRatioBps,) = getMarketSignals();
-            if (
-                purchaseRateBps >= EXPANSION_PURCHASE_RATE_BPS &&
-                listingPressureBps <= EXPANSION_LISTING_PRESSURE_BPS &&
-                floorRatioBps >= EXPANSION_FLOOR_RATIO_BPS
-            ) {
+            if (_isExpansionSignal(purchaseRateBps, listingPressureBps, floorRatioBps)) {
                 next = MarketState.Expansion;
-            } else if (
-                purchaseRateBps < WEAK_DEMAND_PURCHASE_RATE_BPS ||
-                listingPressureBps > WEAK_DEMAND_LISTING_PRESSURE_BPS ||
-                floorRatioBps < WEAK_DEMAND_FLOOR_RATIO_BPS
-            ) {
+            } else if (_weakSignalCount(purchaseRateBps, listingPressureBps, floorRatioBps) >= 2) {
                 next = MarketState.WeakDemand;
             } else {
                 next = MarketState.Stabilization;
@@ -683,6 +679,38 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
 
     function _applySpread(uint256 floor) private pure returns (uint256) {
         return floor + ((floor * STABILIZATION_SPREAD_BPS) / BPS);
+    }
+
+    function _isExpansionSignal(
+        uint256 purchaseRateBps,
+        uint256 listingPressureBps,
+        uint256 floorRatioBps
+    ) private pure returns (bool) {
+        return
+            purchaseRateBps >= EXPANSION_PURCHASE_RATE_BPS &&
+            listingPressureBps <= EXPANSION_LISTING_PRESSURE_BPS &&
+            floorRatioBps >= EXPANSION_FLOOR_RATIO_BPS;
+    }
+
+    function _isReleaseSignal(
+        uint256 purchaseRateBps,
+        uint256 listingPressureBps,
+        uint256 floorRatioBps
+    ) private pure returns (bool) {
+        return
+            purchaseRateBps >= RELEASE_PURCHASE_RATE_BPS &&
+            listingPressureBps <= RELEASE_LISTING_PRESSURE_BPS &&
+            floorRatioBps >= RELEASE_FLOOR_RATIO_BPS;
+    }
+
+    function _weakSignalCount(
+        uint256 purchaseRateBps,
+        uint256 listingPressureBps,
+        uint256 floorRatioBps
+    ) private pure returns (uint256 count) {
+        if (purchaseRateBps < WEAK_DEMAND_PURCHASE_RATE_BPS) count += 1;
+        if (listingPressureBps > WEAK_DEMAND_LISTING_PRESSURE_BPS) count += 1;
+        if (floorRatioBps < WEAK_DEMAND_FLOOR_RATIO_BPS) count += 1;
     }
 
     function _coverageRatio(uint256 floor) private view returns (uint256) {

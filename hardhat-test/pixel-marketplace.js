@@ -93,10 +93,11 @@ describe("PixelMarketplace", function () {
   });
 
   it("auto-lists protocol inventory in the native market and settles sale back into the pool", async function () {
-    const { owner, creator, user, buyer, nft, pool, router, market, mintPrice } = await deployStack();
+    const { owner, creator, user, buyer, other, nft, pool, router, market, mintPrice } = await deployStack();
 
     await (await router.connect(user)["mint(bytes)"](onePixel(3), { value: mintPrice })).wait();
     await (await router.connect(buyer)["mint(bytes)"](onePixel(4), { value: mintPrice })).wait();
+    await (await router.connect(other)["mint(bytes)"](onePixel(5), { value: mintPrice })).wait();
     await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("6"));
     await increaseTime(LAUNCH_PROTECTION + 1);
 
@@ -106,19 +107,22 @@ describe("PixelMarketplace", function () {
 
     const userListingPrice = addBps(await pool.getFloorPrice(), STABILIZATION_SPREAD_BPS);
     await (await nft.connect(buyer).approve(market.address, 1)).wait();
+    await (await nft.connect(other).approve(market.address, 2)).wait();
     await (await market.connect(buyer).createListing(1, userListingPrice)).wait();
+    await (await market.connect(other).createListing(2, userListingPrice)).wait();
     await (await market.connect(creator).buyListing(1, { value: userListingPrice })).wait();
+    await (await market.connect(creator).buyListing(2, { value: userListingPrice })).wait();
 
     assert.strictEqual(Number(await pool.marketState()), 1);
 
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
-    const protocolListing = await market.listings(2);
+    const protocolListing = await market.listings(3);
     assert.strictEqual(protocolListing.protocolOwned, true);
     assert.strictEqual(protocolListing.fromPoolInventory, true);
     assert.strictEqual(await nft.ownerOf(0), market.address);
 
     const ethBalanceBefore = await pool.ethBalance();
-    await (await market.connect(user).buyListing(2, { value: protocolListing.price })).wait();
+    await (await market.connect(user).buyListing(3, { value: protocolListing.price })).wait();
 
     assert.strictEqual(await nft.ownerOf(0), user.address);
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "0");

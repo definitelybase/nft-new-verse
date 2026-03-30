@@ -130,6 +130,7 @@ describe("PixelFactory end-to-end", function () {
 
     await (await router.connect(buyer)["mint(bytes)"](onePixel(3), { value: mintPrice })).wait();
     await (await router.connect(nextBuyer)["mint(bytes)"](onePixel(4), { value: mintPrice })).wait();
+    await (await router.connect(nextBuyer)["mint(bytes)"](onePixel(5), { value: mintPrice })).wait();
     await seedPoolReserve(pool, creator, router.address, ethers.utils.parseEther("6"));
 
     await increaseTime(LAUNCH_PROTECTION + 1);
@@ -142,8 +143,11 @@ describe("PixelFactory end-to-end", function () {
 
     const listingPrice = addBps(await pool.getFloorPrice(), STABILIZATION_SPREAD_BPS);
     await (await nft.connect(nextBuyer).approve(market.address, 1)).wait();
+    await (await nft.connect(nextBuyer).approve(market.address, 2)).wait();
     await (await market.connect(nextBuyer).createListing(1, listingPrice)).wait();
+    await (await market.connect(nextBuyer).createListing(2, listingPrice)).wait();
     await (await market.connect(creator).buyListing(1, { value: listingPrice })).wait();
+    await (await market.connect(creator).buyListing(2, { value: listingPrice })).wait();
 
     await (await pool.connect(creator).releasePoolInventoryForListing(1)).wait();
 

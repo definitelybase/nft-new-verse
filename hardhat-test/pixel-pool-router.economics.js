@@ -30,6 +30,10 @@ function valueHex(value) {
   return ethers.utils.hexZeroPad(ethers.BigNumber.from(value).toHexString(), 32);
 }
 
+function addBps(value, bps) {
+  return value.add(value.mul(bps).div(BPS));
+}
+
 async function increaseTime(seconds) {
   await ethers.provider.send("evm_increaseTime", [seconds]);
   await ethers.provider.send("evm_mine", []);
@@ -123,7 +127,7 @@ async function forceMarketState(pool, desiredState) {
 }
 
 async function setStabilizationSnapshot(pool, owner, floorOverride) {
-  const floor = floorOverride || await pool.getFloorPrice();
+  const floor = floorOverride || addBps(await pool.getFloorPrice(), 2000);
   await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor)).wait();
 }
 
@@ -249,7 +253,11 @@ describe("PixelPool + PixelRouter economics flows", function () {
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
 
     const targetPrice = await pool.getVaultListingTarget(1);
-    await setStabilizationSnapshot(pool, owner, targetPrice);
+    const releaseReadyFloor = addBps(await pool.getFloorPrice(), 2000);
+    const observedFloor = targetPrice.gt(releaseReadyFloor)
+      ? targetPrice
+      : releaseReadyFloor;
+    await setStabilizationSnapshot(pool, owner, observedFloor);
     assert.strictEqual((await pool.marketState()).toString(), "1");
 
     await (await pool.connect(owner).relistFromVault(1)).wait();

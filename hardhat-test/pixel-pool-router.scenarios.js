@@ -170,7 +170,7 @@ async function setUintVar(contract, getterName, value, probeValue = 987654321) {
 
 async function setStabilizationSnapshot(pool, owner) {
   const floor = await pool.getFloorPrice();
-  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor)).wait();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, STABILIZATION_SPREAD_BPS))).wait();
 }
 
 describe("PixelPool longer scenarios", function () {

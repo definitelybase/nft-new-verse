@@ -137,7 +137,11 @@ async function forceMarketState(pool, value) {
 
 async function setStabilizationSnapshot(pool, owner) {
   const floor = await pool.getFloorPrice();
-  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor)).wait();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, STABILIZATION_SPREAD_BPS))).wait();
+}
+
+function addBps(value, bps) {
+  return value.add(value.mul(bps).div(BPS));
 }
 
 async function deployFactoryStack() {
