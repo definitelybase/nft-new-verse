@@ -280,3 +280,16 @@ export const PIXEL_POOL_ABI = [
     type: "function",
   },
 ];
+
+export const ONCHAIN_PIXEL_NFT_ABI = [
+  {
+    inputs: [],
+    name: "defaultCanvasSize",
+    outputs: [
+      { internalType: "uint8", name: "width", type: "uint8" },
+      { internalType: "uint8", name: "height", type: "uint8" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+];

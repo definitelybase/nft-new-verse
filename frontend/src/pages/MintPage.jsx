@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Contract, dataLength, getBytes, isHexString } from "ethers-v6";
-import { PIXEL_ROUTER_ABI } from "../pixelRouterAbi";
+import { Contract, JsonRpcProvider, dataLength, getBytes, isHexString } from "ethers-v6";
+import { ONCHAIN_PIXEL_NFT_ABI, PIXEL_ROUTER_ABI } from "../pixelRouterAbi";
 import { MetalButton } from "../MetalButton";
 import { COLORS, DEFAULT_PREVIEW_PALETTE, MINT_TARGET_SUPPLY, fonts, fontDisplay } from "../utils/constants";
 import { checkChain, getTargetChainLabel, isValidMintPayload, readStoredMintPayload, revealStyle } from "../utils/helpers";
@@ -188,11 +188,13 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
   const [txStatus, setTxStatus] = useState("");
   const [txHash, setTxHash] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [collectionCanvas, setCollectionCanvas] = useState({ width: 16, height: 16, loaded: false });
   const [isCompactMintLayout, setIsCompactMintLayout] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 1020 : false
   );
 
   const routerAddress = appConfig?.routerAddress || "";
+  const nftAddress = appConfig?.nftAddress || "";
   const payloadBytes = isHexString(payloadHex) ? dataLength(payloadHex) : 0;
   const payloadValid = isValidMintPayload(payloadHex);
   const mintPriceLabel = isLive && pool.mintPriceEth != null
@@ -204,6 +206,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
   const networkLabel = wallet?.chainId ? `Chain ${wallet.chainId}` : getTargetChainLabel(appConfig);
   const mintMainColumns = isCompactMintLayout ? "1fr" : "minmax(0, 0.94fr) minmax(360px, 0.92fr)";
   const mintMiniColumns = isCompactMintLayout ? "1fr" : "repeat(3, minmax(0, 1fr))";
+  const shouldUseCustomMint = collectionCanvas.width !== 16 || collectionCanvas.height !== 16;
 
   useEffect(() => {
     const syncPayload = () => {
@@ -231,6 +234,45 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
     return () => window.removeEventListener("resize", updateLayoutMode);
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCanvasPreset() {
+      if (!nftAddress) return;
+
+      let provider = wallet?.provider || null;
+      if (!provider && appConfig?.rpcUrl) {
+        try {
+          provider = new JsonRpcProvider(appConfig.rpcUrl);
+        } catch {
+          provider = null;
+        }
+      }
+      if (!provider) return;
+
+      try {
+        const nft = new Contract(nftAddress, ONCHAIN_PIXEL_NFT_ABI, provider);
+        const [width, height] = await nft.defaultCanvasSize();
+        if (!cancelled) {
+          setCollectionCanvas({
+            width: Number(width),
+            height: Number(height),
+            loaded: true,
+          });
+        }
+      } catch {
+        if (!cancelled) {
+          setCollectionCanvas((current) => ({ ...current, loaded: true }));
+        }
+      }
+    }
+
+    loadCanvasPreset();
+    return () => {
+      cancelled = true;
+    };
+  }, [wallet?.provider, appConfig?.rpcUrl, nftAddress]);
+
   async function handleMint() {
     if (!wallet?.provider || !wallet?.account) {
       setTxStatus("Connect wallet first.");
@@ -257,7 +299,9 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
       const signer = await wallet.provider.getSigner();
       const router = new Contract(routerAddress, PIXEL_ROUTER_ABI, signer);
       const price = await router.mintPrice();
-      const tx = await router.mintCustom(getBytes(payloadHex), 16, 16, { value: price });
+      const tx = shouldUseCustomMint
+        ? await router.mintCustom(getBytes(payloadHex), 16, 16, { value: price })
+        : await router.mint(getBytes(payloadHex), { value: price });
       setTxHash(tx.hash);
       setTxStatus("Submitted. Waiting for confirmation...");
       await tx.wait();
@@ -314,7 +358,9 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
                     {stageLabel}
                   </div>
                     <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                      Router path: store the artwork, route funds, and update protocol accounting in one transaction.
+                      {shouldUseCustomMint
+                        ? `Legacy collection preset detected (${collectionCanvas.width}×${collectionCanvas.height}). The app uses the 16×16 custom mint route on this deployment.`
+                        : "Router path: store the artwork, route funds, and update protocol accounting in one transaction."}
                   </div>
                 </div>
                 <Eyebrow tone={payloadValid ? "green" : "accent"}>
