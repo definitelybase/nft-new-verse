@@ -15,9 +15,10 @@
 
 export const APP_CONFIG = Object.freeze({
   chainId: "11155111",
-  poolAddress: "0x21C73708625CcCfAf05C2758dA2Ab199C2A3E36E",
-  routerAddress: "0xB25472D7b953E61BD4FCa00f890517F14F8031fa",
-  nftAddress: "0x9637A490eE28a4aE0a1Ca2Bc8ad100CFcDC1ADeB",
+  poolAddress: "0xB4B0290a80B5c188853feB8b7a130b7E3ac51F2a",
+  routerAddress: "0x8689267181AeB402Ce1Bde40Fa1852A1be125a9c",
+  nftAddress: "0xFE81A756c27255C32639398710FbAA414Dbed735",
+  marketplaceAddress: "0xd27441AeE09561Ea399a178796f4954Ac2986753",
   rpcUrl: "https://1rpc.io/sepolia",
   // Approximate ETH/USD for display. Not used for transactions.
   ethUsd: "2000",
