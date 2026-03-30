@@ -353,14 +353,14 @@ function LiquiditySystemOverview({ className = "", style }) {
 
         <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 24, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <div style={{ color: "#1A9B67", fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
-            What the pool actually does
+            What the protocol does
           </div>
           <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
             {[
-              ["Mint", "A fresh mint routes capital into the reserve on day one instead of waiting for secondary demand."],
-              ["Quote the floor", "The protocol aims to quote the collection floor when reserve and market conditions allow it. Rare pieces still price above that lane in the market."],
-              ["Absorb weakness", "If demand fades, treasury and burn logic can remove stale inventory instead of pretending infinite liquidity exists."],
-              ["Fee-share staking", "Locked supply accrues a slice of protocol trade fees while trading is active. It is fee flow, not emissions."],
+              ["Mint", "Every mint routes 60% into reserve, 10% into treasury, and 30% into ops. The reserve is funded on day one instead of waiting for secondary demand."],
+              ["Quote the floor", "The pool quotes the collection floor, not rare-piece prices. If coverage is weak or the market is already strong, sell-to-pool closes."],
+              ["Clean up stale inventory", "When weak demand leaves old inventory in the pool, treasury buyback can remove part of it. That is cleanup logic, not price support."],
+              ["Stake for fee flow", "Stakers receive 10% of protocol trade fees. No emissions, no APR promise, just fee flow when trading happens."],
             ].map(([title, body]) => (
               <div key={title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, minHeight: 124 }}>
                 <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
