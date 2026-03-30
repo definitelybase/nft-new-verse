@@ -269,7 +269,7 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
   return (
     <div style={{ width: "calc(100vw - 24px)", margin: "0 auto", padding: "118px 12px 64px" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, alignItems: "stretch" }}>
-        <MetricPanel className="site-reveal-soft" style={revealStyle(80)} label="Total staked" value={pool.totalStaked ?? "—"} sub="NFTs earning fees" tone="purple" />
+        <MetricPanel className="site-reveal-soft" style={revealStyle(80)} label="Total staked" value={pool.totalStaked ?? "—"} sub="NFTs accruing fee share" tone="purple" />
         <MetricPanel className="site-reveal-soft" style={revealStyle(120)} label="Your staked" value={loadingUser ? "..." : userStaked.length} sub={summarizeTokenIds(userStaked)} tone="accent" />
         <MetricPanel className="site-reveal-soft" style={revealStyle(160)} label="Pending fees" value={hasPending ? formatEth(pendingFees) : "0 ETH"} sub={hasPending ? `~$${(Number(formatEther(pendingFees)) * (pool.ethUsd || 2000)).toFixed(2)}` : "No fees to claim"} tone="green" />
       </div>
@@ -291,7 +291,7 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
               Stake NFT
             </div>
             <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
-              Lock your NFT in the pool to earn a share of trading fees.
+              Lock your NFT in the pool to accrue a share of protocol trade fees while it remains staked.
             </div>
             <TokenGrid
               title="Your NFTs"
@@ -378,10 +378,10 @@ export default function StakingPage({ pool, isLive, wallet, appConfig, poolError
           }}
         >
           <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 24, fontWeight: 600 }}>
-            Claim staking rewards
+            Claim fee share
           </div>
           <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
-            Stakers earn 10% of the protocol trade fee from both sides of the market. Fees accumulate automatically and can be claimed at any time. Unstaking also pays out pending rewards.
+            Stakers receive 10% of the protocol trade fee from both sides of the market. Fees accrue only when trading happens and can be claimed at any time. Unstaking also pays out pending fees.
           </div>
 
           <div style={{ marginTop: 16, display: "grid", gap: 10 }}>

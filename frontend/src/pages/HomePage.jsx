@@ -1,58 +1,93 @@
 import React from "react";
 import { MetalButton } from "../MetalButton";
+import { useThemeMode } from "../ThemeModeContext";
 import { COLORS, fonts, fontDisplay } from "../utils/constants";
 import { FEATURED_COLLECTION_IDS } from "../utils/generatedCollection";
 import { driftStyle, fmtEth, revealStyle } from "../utils/helpers";
 import { DataBadge, Eyebrow, FrostCard } from "../components/ui";
 
+const ROW1_IDS = Array.from({ length: 25 }, (_, i) => 80 + i * 4);
+const ROW2_IDS = Array.from({ length: 25 }, (_, i) => 81 + i * 4);
+const ROW3_IDS = Array.from({ length: 25 }, (_, i) => 82 + i * 4);
+const ROW4_IDS = Array.from({ length: 25 }, (_, i) => 83 + i * 4);
+
+function NftMarquee({ ids, speed = 28, reverse = false }) {
+  const items = [...ids, ...ids]; // дублируем для бесконечности
+  const totalWidth = ids.length * (80 + 8); // size + gap
+  const duration = totalWidth / speed;
+  return (
+    <div style={{ overflow: "hidden", width: "100%" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          width: "max-content",
+          animation: `marquee${reverse ? "Rev" : ""} ${duration}s linear infinite`,
+        }}
+      >
+        {items.map((id, i) => (
+          <div
+            key={i}
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 16,
+              border: `1px solid ${COLORS.border}`,
+              background: "rgba(255,255,255,0.04)",
+              overflow: "hidden",
+              flexShrink: 0,
+            }}
+          >
+            <img
+              src={`/collection/images/${id}.svg`}
+              alt={`NFT #${id}`}
+              style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated", display: "block" }}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function HeroGallery({ pool }) {
-  const tiles = [
-    { title: "Permanent art", desc: "SSTORE2-backed data", image: `/collection/images/${FEATURED_COLLECTION_IDS[0]}.svg` },
-    { title: "Live market", desc: "Pool-aware pricing", image: `/collection/images/${FEATURED_COLLECTION_IDS[1]}.svg` },
-    { title: "Instant exits", desc: "Floor-liquidity thesis", image: `/collection/images/${FEATURED_COLLECTION_IDS[2]}.svg` },
-    { title: "On-chain render", desc: "SVG output", image: `/collection/images/${FEATURED_COLLECTION_IDS[3]}.svg` },
-  ];
   const heroStats = [
-    { label: "Mint split", value: "60 / 10 / 30", tone: COLORS.accent },
-    { label: "Market lane", value: "Native P2P", tone: COLORS.purple },
-    { label: "Trade fee", value: "2.5% routed", tone: COLORS.green },
+    { label: "Mint split", value: "60% / 10% / 30%", sub: "reserve / treasury / ops", tone: COLORS.accent },
+    { label: "Market lane", value: "Native P2P", sub: "premium discovery stays in-market", tone: COLORS.purple },
+    { label: "Trade fee", value: "2.5% routed", sub: "pool / treasury / stakers / protocol", tone: COLORS.green },
   ];
 
   return (
-    <div
+    <FrostCard
+      className="site-reveal"
       style={{
-        display: "grid",
-        gridTemplateColumns: "1.05fr 0.95fr",
-        gap: 12,
-        minHeight: 428,
+        padding: 28,
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        position: "relative",
+        gap: 24,
+        ...revealStyle(80),
       }}
     >
-      <FrostCard
-        className="site-reveal"
+      <div
+        className="site-pulse-glow"
         style={{
-          padding: 28,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          position: "relative",
-          ...revealStyle(80),
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(circle at top right, rgba(255,255,255,0.06), transparent 28%), radial-gradient(circle at bottom left, rgba(255,255,255,0.04), transparent 30%)",
+          pointerEvents: "none",
         }}
-      >
-        <div
-          className="site-pulse-glow"
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "radial-gradient(circle at top right, rgba(255,255,255,0.06), transparent 28%), radial-gradient(circle at bottom left, rgba(255,255,255,0.04), transparent 30%)",
-          }}
-        />
-        <div style={{ position: "relative", zIndex: 1 }}>
+      />
+
+      {/* Верх: текст + стата */}
+      <div style={{ position: "relative", zIndex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
+        <div>
           <Eyebrow>Protocol gallery</Eyebrow>
           <div
             style={{
               marginTop: 24,
-              color: COLORS.text,
               fontFamily: fontDisplay,
               fontSize: "clamp(40px, 7vw, 78px)",
               lineHeight: 0.94,
@@ -60,9 +95,17 @@ function HeroGallery({ pool }) {
               letterSpacing: -2.6,
             }}
           >
-            Pixel art.
+            {"Pixel art".split("").map((ch, i) => {
+              const clrs = ["#B39DDB","#F48FB1","#FFCC80","#A5D6A7","#90CAF9","#CE93D8","#80DEEA","#FFAB91"];
+              return <span key={i} style={{ color: ch === " " ? "transparent" : clrs[i % clrs.length] }}>{ch === " " ? "\u00A0" : ch}</span>;
+            })}
+            <span style={{ color: "#F48FB1" }}>.</span>
             <br />
-            Liquidity engine.
+            {"Liquidity engine".split("").map((ch, i) => {
+              const clrs = ["#A5D6A7","#90CAF9","#FFCC80","#FFAB91","#F48FB1","#B39DDB","#80DEEA","#CE93D8"];
+              return <span key={i} style={{ color: ch === " " ? "transparent" : clrs[i % clrs.length] }}>{ch === " " ? "\u00A0" : ch}</span>;
+            })}
+            <span style={{ color: "#90CAF9" }}>.</span>
           </div>
           <p
             style={{
@@ -74,18 +117,12 @@ function HeroGallery({ pool }) {
               lineHeight: 1.75,
             }}
           >
-            A gallery-first NFT protocol where the collection, the market, and the floor
-            quote all live on-chain. The interface should feel like a curated room, not a dashboard graveyard.
+            A gallery-first NFT protocol where the collection, the native market, and the
+            reserve-aware floor lane live in one on-chain stack. The goal is not to price every
+            rare piece on-chain. The goal is to separate floor liquidity from premium discovery.
           </p>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-              gap: 10,
-              marginTop: 22,
-            }}
-          >
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10, marginTop: 22 }}>
             {heroStats.map((item) => (
               <div
                 key={item.label}
@@ -100,135 +137,75 @@ function HeroGallery({ pool }) {
                   justifyContent: "space-between",
                 }}
               >
-                <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-                  {item.label}
-                </div>
-                <div style={{ marginTop: 8, color: item.tone, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600, lineHeight: 1.05 }}>
-                  {item.value}
-                </div>
+                <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>{item.label}</div>
+                <div style={{ marginTop: 8, color: item.tone, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600, lineHeight: 1.05 }}>{item.value}</div>
+                {item.sub && <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, letterSpacing: 0.5 }}>{item.sub}</div>}
               </div>
             ))}
           </div>
         </div>
 
-      </FrostCard>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        {tiles.map((tile, index) => (
-          <FrostCard
-            key={tile.image}
-            hoverable
-            className="site-reveal site-hover-lift"
-            style={{
-              padding: 16,
-              minHeight: 176,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              ...revealStyle(140 + index * 70),
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-                width: "100%",
-              }}
-            >
-              <div
-                style={{
-                  minWidth: 0,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <div
-                  style={{
-                    color: COLORS.text,
-                    fontFamily: fontDisplay,
-                    fontSize: 18,
-                    fontWeight: 600,
-                    lineHeight: 1.1,
-                    textAlign: "left",
-                  }}
-                >
-                  {tile.title}
-                </div>
-                <div
-                  style={{
-                    color: COLORS.textMuted,
-                    fontFamily: fonts,
-                    fontSize: 13,
-                    lineHeight: 1.35,
-                    textAlign: "left",
-                  }}
-                >
-                  {tile.desc}
-                </div>
-              </div>
-              <div style={{ display: "flex", justifyContent: "center", marginTop: 10 }}>
-                <div className="site-drift" style={driftStyle(index * 360, 7 + index)}>
-                  <div
-                    style={{
-                      width: 108,
-                      height: 108,
-                      borderRadius: 22,
-                      border: `1px solid ${COLORS.border}`,
-                      background: "rgba(255,255,255,0.04)",
-                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 28px rgba(0,0,0,0.12)",
-                      overflow: "hidden",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <img
-                      src={tile.image}
-                      alt={tile.desc}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        imageRendering: "pixelated",
-                        display: "block",
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
+        {/* Правая часть: инфо */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, alignItems: "stretch" }}>
+          {[
+            { label: "Collection", value: "10,000 genesis", tone: "#7C56D8", desc: "Packed pixel pieces stored and rendered on-chain, without external image hosting." },
+            { label: "Floor lane", value: "Reserve-gated", tone: "#1DB37A", desc: "The pool quotes a floor only after launch protection and while coverage stays healthy. It is a conditional exit lane, not an always-on promise." },
+            { label: "Buyback policy", value: "Selective", tone: "#E8853A", desc: "Treasury buyback activates only in weak-demand or stale-inventory conditions, and only while reserve coverage remains strong enough." },
+            { label: "Staking", value: "Fee accrual", tone: "#D4497A", desc: "Staking routes a slice of protocol trade fees to locked NFTs. Payout depends on real trading activity, not token emissions." },
+            { label: "Pool pricing", value: "Rule-based", tone: "#2AABCF", desc: "The floor quote follows reserve, sell pressure, and EMA guardrails. It is not a rare-trait appraisal engine." },
+            { label: "On-chain art", value: "Chain-rendered", tone: "#C9A800", desc: "Pixel data lives as packed bytes in Ethereum storage and renders directly from the chain." },
+          ].map((item) => (
+            <div key={item.label} style={{ padding: "20px 22px", borderRadius: 20, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.03)", display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>{item.label}</div>
+              <div style={{ color: item.tone, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>{item.value}</div>
+              <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, lineHeight: 1.7 }}>{item.desc}</div>
             </div>
-          </FrostCard>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+
+      {/* 4 ленты */}
+      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
+        <NftMarquee ids={ROW1_IDS} speed={20} />
+        <NftMarquee ids={ROW2_IDS} speed={15} reverse />
+        <NftMarquee ids={ROW3_IDS} speed={18} />
+        <NftMarquee ids={ROW4_IDS} speed={12} reverse />
+      </div>
+    </FrostCard>
   );
 }
 
 function LiquiditySystemOverview({ className = "", style }) {
+  const themeMode = useThemeMode();
+  const isLight = themeMode === "light";
+  const chartGrid = isLight ? "rgba(42,51,68,0.18)" : "rgba(255,255,255,0.10)";
+  const chartDivider = isLight ? "rgba(42,51,68,0.28)" : "rgba(255,255,255,0.16)";
+  const chartText = isLight ? "#4A5266" : "#8A91A5";
+  const chartFloor = isLight ? "#6B7592" : "#8A91A5";
+  const chartBg = isLight ? "#eef0f6" : "#07070B";
+
   const splitCards = [
     { label: "Pool reserve", value: "60%", sub: "Every mint seeds floor liquidity.", tone: COLORS.accent },
     { label: "Treasury lane", value: "10%", sub: "Buyback and burn pressure valve.", tone: COLORS.purple },
     { label: "Protocol ops", value: "30%", sub: "Funds rollout, maintenance and collection support.", tone: COLORS.yellow },
-    { label: "Trade fee", value: "2.5%", sub: "Each trade feeds the pool, treasury, and the protocol loop.", tone: COLORS.green },
+    { label: "Trade fee", value: "2.5%", sub: "Each trade routes fee into stakers, pool reserve, treasury, and protocol fees.", tone: COLORS.green },
   ];
 
   const zones = [
-    { label: "Weak demand", color: "rgba(244, 207, 102, 0.12)", border: "rgba(244,207,102,0.22)" },
-    { label: "Stabilization", color: "rgba(186, 156, 255, 0.12)", border: "rgba(186,156,255,0.22)" },
-    { label: "Expansion", color: "rgba(124, 183, 246, 0.12)", border: "rgba(124,183,246,0.22)" },
+    { label: "Weak demand", dot: "#D6B861" },
+    { label: "Stabilization", dot: "#AE8BFF" },
+    { label: "Expansion", dot: "#76AEEB" },
   ];
 
   return (
     <FrostCard className={className} style={{ padding: 20, ...style }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18 }}>
         <div>
-          <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 28, fontWeight: 600, letterSpacing: -0.9 }}>
+          <div style={{ color: "#7C56D8", fontFamily: fontDisplay, fontSize: 28, fontWeight: 600, letterSpacing: -0.9 }}>
             How liquidity works
           </div>
           <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, marginTop: 6, lineHeight: 1.7, maxWidth: 560 }}>
-            The home page should explain the mechanism first: mints seed the reserve, the pool quotes the floor, treasury absorbs weak demand, and premium pricing stays with the market.
+            Mints seed the reserve, the pool quotes a reserve-aware floor when gates are open, treasury handles weak-demand cleanup, and premium pricing stays in the marketplace.
           </div>
         </div>
         <Eyebrow tone="purple">Protocol flow</Eyebrow>
@@ -252,8 +229,8 @@ function LiquiditySystemOverview({ className = "", style }) {
 
       <div style={{ display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 14, marginTop: 14, alignItems: "stretch" }}>
         <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 24, display: "flex", flexDirection: "column", minHeight: 100 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 12 }}>
-            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ color: "#E8853A", fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
               Market-state curve
             </div>
             <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
@@ -261,131 +238,129 @@ function LiquiditySystemOverview({ className = "", style }) {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 12 }}>
+          <div style={{ display: "flex", gap: 20, marginBottom: 10 }}>
             {zones.map((zone) => (
-              <div
-                key={zone.label}
-                style={{
-                  padding: "9px 12px",
-                  borderRadius: 999,
-                  border: `1px solid ${zone.border}`,
-                  background: zone.color,
-                  color: COLORS.text,
-                  fontFamily: fonts,
-                  fontSize: 10,
-                  letterSpacing: 1,
-                  textTransform: "uppercase",
-                  textAlign: "center",
-                }}
-              >
-                {zone.label}
+              <div key={zone.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: zone.dot, flexShrink: 0 }} />
+                <span style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                  {zone.label}
+                </span>
               </div>
             ))}
           </div>
 
           <div
             style={{
-              borderRadius: 20,
+              borderRadius: 16,
               overflow: "hidden",
-              border: `1px solid ${COLORS.border}`,
-              background: "linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.03))",
+              border: `1px solid ${chartDivider}`,
+              background: chartBg,
               flex: 1,
               display: "flex",
-              minHeight: 320,
+              minHeight: 300,
             }}
           >
+            {/*
+              X-axis = demand pressure (left = weak, right = strong)
+              Y-axis = price (bottom = protocol floor, top = market premium)
+
+              FLOOR CURVE: linear decay 60%→15% of mint price as sells accumulate
+                - starts high-left (fresh pool, 60% bid), drops to 15% floor over ~3000 sells
+                - EMA guard smooths it — no instant collapse
+              MARKET PRICE: tracks demand
+                - weak demand: market ≤ floor (floorRatio ≤ 100%) → buyback eligible if coverage ≥ 200%
+                - stabilization: market 100–120% of floor → inventory release, sell-to-pool open
+                - expansion: market ≥ 120% of floor → sell-to-pool CLOSED, pool protects reserve
+            */}
             <svg viewBox="0 0 920 420" preserveAspectRatio="xMidYMid meet" style={{ display: "block", width: "100%", height: "100%" }}>
-              <rect x="0" y="0" width="306.7" height="420" fill="rgba(228,184,78,0.08)" />
-              <rect x="306.7" y="0" width="306.7" height="420" fill="rgba(174,139,255,0.08)" />
-              <rect x="613.4" y="0" width="306.6" height="420" fill="rgba(118,174,235,0.08)" />
 
-              {[86, 168, 250, 332].map((y) => (
-                <line key={y} x1="46" y1={y} x2="872" y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" />
+              {/* zone backgrounds */}
+              <rect x="46" y="28" width="260" height="330" fill={isLight ? "rgba(214,184,97,0.08)" : "rgba(214,184,97,0.05)"} />
+              <rect x="306" y="28" width="307" height="330" fill={isLight ? "rgba(174,139,255,0.07)" : "rgba(174,139,255,0.05)"} />
+              <rect x="613" y="28" width="277" height="330" fill={isLight ? "rgba(118,174,235,0.07)" : "rgba(118,174,235,0.05)"} />
+
+              {/* horizontal grid lines */}
+              {[80, 150, 220, 290].map((y) => (
+                <line key={y} x1="46" y1={y} x2="890" y2={y} stroke={chartGrid} strokeWidth="1" />
               ))}
-              {[306.7, 613.4].map((x) => (
-                <line key={x} x1={x} y1="36" x2={x} y2="366" stroke="rgba(255,255,255,0.09)" strokeDasharray="8 11" strokeWidth="1.5" />
-              ))}
-              <line x1="46" y1="36" x2="306.7" y2="36" stroke="rgba(228,184,78,0.34)" strokeWidth="2" />
-              <line x1="306.7" y1="36" x2="613.4" y2="36" stroke="rgba(174,139,255,0.34)" strokeWidth="2" />
-              <line x1="613.4" y1="36" x2="872" y2="36" stroke="rgba(118,174,235,0.34)" strokeWidth="2" />
 
+              {/* zone dividers */}
+              <line x1="306" y1="28" x2="306" y2="358" stroke={chartDivider} strokeDasharray="3 5" strokeWidth="1" />
+              <line x1="613" y1="28" x2="613" y2="358" stroke={chartDivider} strokeDasharray="3 5" strokeWidth="1" />
+
+              {/* zone labels */}
+              <text x="176" y="44" fill="#D6B861" fillOpacity={isLight ? "0.75" : "0.5"} fontSize="9" fontFamily="IBM Plex Mono, monospace" letterSpacing="1.5" textAnchor="middle">WEAK DEMAND</text>
+              <text x="459" y="44" fill="#AE8BFF" fillOpacity={isLight ? "0.75" : "0.5"} fontSize="9" fontFamily="IBM Plex Mono, monospace" letterSpacing="1.5" textAnchor="middle">STABILIZATION</text>
+              <text x="751" y="44" fill="#76AEEB" fillOpacity={isLight ? "0.75" : "0.5"} fontSize="9" fontFamily="IBM Plex Mono, monospace" letterSpacing="1.5" textAnchor="middle">EXPANSION</text>
+
+              {/* Y-axis labels */}
+              <text x="50" y="80" fill={chartText} fontSize="9" fontFamily="IBM Plex Mono, monospace">60% mint</text>
+              <text x="50" y="290" fill={chartText} fontSize="9" fontFamily="IBM Plex Mono, monospace">15% mint</text>
+              <text x="50" y="360" fill={chartText} fontSize="9" fontFamily="IBM Plex Mono, monospace">FLOOR</text>
+
+              {/* ── PROTOCOL FLOOR (curve bid decay: 60%→15% of mint) ── */}
               <path
-                d="M68 300 C168 294, 246 278, 306.7 258"
-                fill="none"
-                stroke="#D6B861"
-                strokeWidth="10"
-                strokeLinecap="round"
+                d="M68 78 C120 82, 200 110, 306 200 C380 260, 460 285, 613 292 C720 296, 800 294, 862 292"
+                fill="none" stroke={chartFloor} strokeWidth="1.5" strokeLinecap="round" strokeDasharray="4 5"
               />
+              <text x="868" y="296" fill={chartFloor} fontSize="8" fontFamily="IBM Plex Mono, monospace">bid floor</text>
+
+              {/* spread fill between floor and market — weak demand */}
               <path
-                d="M306.7 258 C402 224, 504 206, 613.4 204"
-                fill="none"
-                stroke="#B79AF0"
-                strokeWidth="8"
-                strokeLinecap="round"
-              />
-              <path
-                d="M613.4 204 C692 202, 774 214, 852 244"
-                fill="none"
-                stroke="#8AA5D2"
-                strokeWidth="8"
-                strokeDasharray="16 12"
-                strokeLinecap="round"
-              />
-              <path
-                d="M68 248 C160 238, 248 210, 306.7 170"
-                fill="none"
-                stroke="#E4B84E"
-                strokeWidth="6"
-                strokeDasharray="16 12"
-                strokeLinecap="round"
-              />
-              <path
-                d="M306.7 170 C428 124, 542 94, 613.4 86"
-                fill="none"
-                stroke="#AE8BFF"
-                strokeWidth="6"
-                strokeDasharray="16 12"
-                strokeLinecap="round"
-              />
-              <path
-                d="M613.4 86 C756 72, 822 76, 860 84"
-                fill="none"
-                stroke="#76AEEB"
-                strokeWidth="6"
-                strokeDasharray="16 12"
-                strokeLinecap="round"
+                d="M68 310 C120 295, 200 240, 306 200 C200 110, 120 82, 68 78 Z"
+                fill="rgba(214,184,97,0.06)"
               />
 
-              <circle cx="306.7" cy="258" r="13" fill="#AE8BFF" />
-              <circle cx="613.4" cy="204" r="13" fill="#76AEEB" />
+              {/* ── MARKET PRICE ── */}
+              <path d="M68 310 C120 295, 200 240, 306 200" fill="none" stroke="#D6B861" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M306 200 C380 175, 500 148, 613 128" fill="none" stroke="#AE8BFF" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M613 128 C700 112, 790 100, 862 96"  fill="none" stroke="#76AEEB" strokeWidth="2.5" strokeLinecap="round" />
 
-              <text x="74" y="52" fill="rgba(255,255,255,0.56)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="1">MARKET PREMIUM / P2P PRICE</text>
-              <text x="74" y="378" fill="rgba(255,255,255,0.56)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="1">PROTOCOL FLOOR / EXIT LANE</text>
+              <defs>
+                <marker id="arrowGold" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#D6B861" />
+                </marker>
+              </defs>
 
-              <text x="46" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Weak market</text>
-              <text x="406" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Balanced</text>
-              <text x="764" y="405" fill="rgba(255,255,255,0.58)" fontSize="13" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Strong market</text>
+              {/* buyback arrow — weak demand, coverage ≥200% */}
+              <line x1="150" y1="322" x2="150" y2="302" stroke="#D6B861" strokeWidth="1.5" markerEnd="url(#arrowGold)" opacity={isLight ? "0.9" : "0.75"} />
+              <text x="108" y="338" fill="#D6B861" fillOpacity={isLight ? "0.9" : "0.7"} fontSize="9" fontFamily="IBM Plex Mono, monospace">buyback</text>
+              <text x="105" y="349" fill="#D6B861" fillOpacity={isLight ? "0.65" : "0.4"} fontSize="8" fontFamily="IBM Plex Mono, monospace">coverage ≥200%</text>
 
-              <text x="78" y="142" fill="rgba(228,184,78,0.94)" fontSize="12" fontFamily="IBM Plex Mono, monospace" letterSpacing="0.8">Weak demand / buyback zone</text>
-              <rect x="184" y="286" width="246" height="28" rx="14" fill="rgba(255,255,255,0.56)" />
-              <text x="198" y="304" fill="rgba(123,89,214,0.98)" fontSize="12" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.8">Stabilization / release zone</text>
-              <rect x="496" y="228" width="236" height="46" rx="16" fill="rgba(255,255,255,0.56)" />
-              <text x="510" y="246" fill="rgba(79,137,212,0.98)" fontSize="12" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.8">Expansion / market leads</text>
-              <text x="510" y="264" fill="rgba(79,137,212,0.98)" fontSize="11" fontFamily="IBM Plex Mono, monospace" fontWeight="700" letterSpacing="0.6">sell-to-pool closes here</text>
+              {/* sell-to-pool: open */}
+              <rect x="316" y="212" width="114" height="20" rx="4" fill={isLight ? "rgba(174,139,255,0.14)" : "rgba(174,139,255,0.1)"} stroke="#AE8BFF" strokeOpacity={isLight ? "0.5" : "0.2"} strokeWidth="1" />
+              <text x="373" y="226" fill="#AE8BFF" fillOpacity={isLight ? "0.95" : "0.85"} fontSize="9" fontFamily="IBM Plex Mono, monospace" textAnchor="middle">sell-to-pool: open</text>
+
+              {/* sell-to-pool: closed */}
+              <rect x="622" y="97" width="118" height="20" rx="4" fill={isLight ? "rgba(224,96,96,0.12)" : "rgba(224,96,96,0.1)"} stroke={isLight ? "rgba(224,96,96,0.45)" : "rgba(224,96,96,0.25)"} strokeWidth="1" />
+              <text x="681" y="111" fill="rgba(224,96,96,0.95)" fontSize="9" fontFamily="IBM Plex Mono, monospace" textAnchor="middle">sell-to-pool: closed</text>
+
+              {/* transition dots */}
+              <circle cx="306" cy="200" r="5" fill="#AE8BFF" />
+              <circle cx="306" cy="200" r="9" fill="none" stroke="#AE8BFF" strokeWidth="1" opacity={isLight ? "0.5" : "0.3"} />
+              <text x="262" y="194" fill="#AE8BFF" fillOpacity={isLight ? "0.85" : "0.65"} fontSize="8" fontFamily="IBM Plex Mono, monospace">ratio=100%</text>
+
+              <circle cx="613" cy="128" r="5" fill="#76AEEB" />
+              <circle cx="613" cy="128" r="9" fill="none" stroke="#76AEEB" strokeWidth="1" opacity={isLight ? "0.5" : "0.3"} />
+              <text x="569" y="122" fill="#76AEEB" fillOpacity={isLight ? "0.85" : "0.65"} fontSize="8" fontFamily="IBM Plex Mono, monospace">ratio=120%</text>
+
+              {/* X axis label */}
+              <text x="460" y="410" fill={chartText} fontSize="9" fontFamily="IBM Plex Mono, monospace" textAnchor="middle" letterSpacing="1">← demand pressure (purchaseRate / listingPressure) →</text>
+
             </svg>
           </div>
         </FrostCard>
 
-        <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 24, height: "100%", display: "flex", flexDirection: "column" }}>
-          <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
+        <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 24, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <div style={{ color: "#1A9B67", fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
             What the pool actually does
           </div>
           <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
             {[
               ["Mint", "A fresh mint routes capital into the reserve on day one instead of waiting for secondary demand."],
-              ["Quote the floor", "The protocol only tries to guarantee the collection floor. Rare pieces still price above it in the market."],
+              ["Quote the floor", "The protocol aims to quote the collection floor when reserve and market conditions allow it. Rare pieces still price above that lane in the market."],
               ["Absorb weakness", "If demand fades, treasury and burn logic can remove stale inventory instead of pretending infinite liquidity exists."],
-              ["Reward conviction", "Stakers earn a slice of both buy-side and sell-side fees for locking supply and tightening the market."],
+              ["Fee-share staking", "Locked supply accrues a slice of protocol trade fees while trading is active. It is fee flow, not emissions."],
             ].map(([title, body]) => (
               <div key={title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, minHeight: 124 }}>
                 <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
@@ -404,6 +379,11 @@ function LiquiditySystemOverview({ className = "", style }) {
 }
 
 export default function HomePage({ setPage, pool, isLive, poolError }) {
+  const [toast, setToast] = React.useState(false);
+  const showSoon = React.useCallback(() => {
+    setToast(true);
+    setTimeout(() => setToast(false), 2000);
+  }, []);
   const features = [
     {
       title: "SSTORE2-backed art",
@@ -412,7 +392,7 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
     },
     {
       title: "Floor-liquidity thesis",
-      desc: "The protocol quotes the floor while the market decides which pieces deserve premium prices.",
+      desc: "The protocol quotes the floor lane while the market decides which pieces deserve premium prices.",
       tone: "green",
     },
     {
@@ -427,22 +407,41 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
       <HeroGallery pool={pool} />
 
       <div className="site-reveal-soft" style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 12, alignItems: "center", ...revealStyle(320) }}>
-        <MetalButton onClick={() => setPage("mint")} tone="accent">
-          Open mint room
+        <MetalButton onClick={showSoon} tone="ghost" style={{ opacity: 0.5, cursor: "default" }}>
+          Mint room
         </MetalButton>
-        <MetalButton onClick={() => setPage("market")} tone="ghost">
-          Browse market cards
+        <MetalButton onClick={showSoon} tone="ghost" style={{ opacity: 0.5, cursor: "default" }}>
+          Marketplace
         </MetalButton>
-        <MetalButton onClick={() => setPage("staking")} tone="purple">
-          Earn fees
+        <MetalButton onClick={showSoon} tone="ghost" style={{ opacity: 0.5, cursor: "default" }}>
+          Staking
         </MetalButton>
-        <DataBadge isLive={isLive} error={poolError} />
       </div>
+      {toast && (
+        <div style={{
+          position: "fixed",
+          top: 80,
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "var(--ocp-surface-strong)",
+          border: "1px solid var(--ocp-border)",
+          borderRadius: 12,
+          padding: "10px 20px",
+          fontFamily: `'IBM Plex Mono', monospace`,
+          fontSize: 13,
+          color: "var(--ocp-text-muted)",
+          zIndex: 200,
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+        }}>
+          Soon...
+        </div>
+      )}
 
       <FrostCard className="site-reveal" style={{ padding: 18, marginTop: 22, ...revealStyle(620) }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
           <div>
-            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 24, fontWeight: 600, letterSpacing: -0.8 }}>
+            <div style={{ color: "#D4497A", fontFamily: fontDisplay, fontSize: 24, fontWeight: 600, letterSpacing: -0.8 }}>
               Protocol core
             </div>
             <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>

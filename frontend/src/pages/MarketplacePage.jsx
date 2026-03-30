@@ -317,19 +317,19 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
               Pool lane
             </div>
             <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-              The pool is the instant-exit layer. Discovery and premium pricing stay in the native market, while protocol inventory is routed into the protocol marketplace once the spread is attractive enough.
+              The pool is the reserve-gated floor-exit lane. Discovery and premium pricing stay in the native market, while protocol inventory is routed into marketplace listings only after release thresholds are met.
             </div>
             <div style={{ marginTop: 14, display: "grid", gap: 10 }}>
               <div style={{ padding: 12, borderRadius: 16, background: COLORS.surfaceStrong }}>
                 <div style={{ color: COLORS.green, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Listing lane</div>
                 <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                  Protocol inventory can be released into the native marketplace once stabilization conditions are met.
+                  Protocol inventory can move into the native marketplace only after stabilization and release-ready thresholds are met.
                 </div>
               </div>
               <div style={{ padding: 12, borderRadius: 16, background: COLORS.surfaceStrong }}>
                 <div style={{ color: COLORS.red, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Sell lane</div>
                 <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                  Lets holders exit at the collection floor instead of hunting for bids.
+                  Lets holders use the protocol floor only after launch protection ends and while coverage stays healthy enough.
                 </div>
               </div>
             </div>
@@ -456,8 +456,8 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
                   Protocol listing lane
                 </div>
                 <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
-                  The protocol no longer sells inventory directly out of the pool. Instead, inventory that came in through floor bids is released into the native marketplace once the market stabilizes and the listing spread is healthy enough.
-                  {!pool.listingEnabled ? <span style={{ color: COLORS.yellow }}> Listing release opens only in stabilization with inventory ready.</span> : null}
+                  The protocol no longer sells inventory directly out of the pool. Inventory that entered through floor bids is routed into native marketplace listings only when the market is strong enough to absorb the release spread.
+                  {!pool.listingEnabled ? <span style={{ color: COLORS.yellow }}> Listing release requires stabilization plus healthy purchase, listing, and floor signals.</span> : null}
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: isCompactMarketLayout ? "1fr" : "repeat(3, 1fr)", gap: 12, marginTop: 16, alignItems: "stretch" }}>
@@ -481,13 +481,13 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
                       How it works now
                     </div>
                     <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.8 }}>
-                      Holders still exit through the protocol floor bid. But once inventory accumulates, the protocol routes that inventory into the native marketplace instead of selling it directly out of the pool. Rare pieces keep their premium in open price discovery.
+                      Holders can still use the protocol floor when that lane is open. Once inventory accumulates, the protocol routes it into the native marketplace rather than retail-selling directly from the pool. Rare pieces keep their premium in open price discovery.
                     </div>
                   </FrostCard>
                   <FrostCard style={{ padding: 16, background: COLORS.surfaceStrong, borderRadius: 18 }}>
                     <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Current policy</div>
                     <div style={{ marginTop: 8, color: COLORS.text, fontFamily: fonts, fontSize: 11, lineHeight: 1.8 }}>
-                      Release is allowed only in stabilization, with inventory on hand, and uses the protocol listing reference rather than a direct on-chain retail checkout.
+                      Release is allowed only in release-ready stabilization, with inventory on hand, and only when the marketplace floor supports the protocol spread. It is a routing rule, not an always-open checkout.
                     </div>
                   </FrostCard>
                   <WrongChainBanner wallet={wallet} appConfig={appConfig} />
@@ -499,8 +499,8 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
                   Sell into the floor bid
                 </div>
                 <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
-                  Sell your NFT into the pool at the current floor bid minus fee. Click an item card below to prefill the token ID, or type it manually.
-                  {!pool.canSell ? <span style={{ color: COLORS.yellow }}> Selling opens only after launch protection ends and coverage is healthy enough.</span> : null}
+                  Sell your NFT into the pool at the current floor bid minus fee when the sell lane is open. Click an item card below to prefill the token ID, or type it manually.
+                  {!pool.canSell ? <span style={{ color: COLORS.yellow }}> Selling opens only after launch protection ends, coverage stays healthy enough, and the market is not in expansion.</span> : null}
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: isCompactMarketLayout ? "1fr" : "repeat(3, 1fr)", gap: 12, marginTop: 16, alignItems: "stretch" }}>

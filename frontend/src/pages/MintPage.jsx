@@ -304,7 +304,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
               Mint OnChainPixel
             </div>
             <div style={{ marginTop: 12, color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, lineHeight: 1.8 }}>
-              Every mint creates a fully on-chain 32×32 piece, seeds the floor-liquidity reserve, and routes part of the capital into treasury and protocol support lanes.
+              Every mint creates a fully on-chain pixel piece, seeds the reserve that later supports floor quotes, and routes capital into treasury and protocol support lanes.
             </div>
 
             <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 22, marginTop: 18 }}>
@@ -313,8 +313,8 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
                   <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 24, fontWeight: 600 }}>
                     {stageLabel}
                   </div>
-                  <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                    Router path: mint the art, seed the reserve, and update market state in one motion.
+                    <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
+                      Router path: mint the art, seed reserve balances, and update protocol accounting in one motion.
                   </div>
                 </div>
                 <Eyebrow tone={payloadValid ? "green" : "accent"}>
@@ -524,8 +524,8 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
             </div>
             <div style={{ marginTop: 12, display: "grid", gap: 10 }}>
               {[
-                ["Reserve seed", "60% of each mint goes to the pool reserve and initializes the floor-liquidity side of the protocol."],
-                ["Treasury lane", "10% is routed to treasury for buybacks, stale inventory cleanup and system balancing."],
+                ["Reserve seed", "60% of each mint goes to the pool reserve and seeds the reserve-backed floor lane of the protocol."],
+                ["Treasury lane", "10% is routed to treasury for buyback, stale inventory cleanup, and weak-demand inventory management."],
                 ["Protocol ops", "30% sustains rollout, collection maintenance and the operating layer around the protocol."],
               ].map(([title, body]) => (
                 <div key={title} style={{ padding: 14, borderRadius: 18, background: COLORS.surfaceStrong, border: `1px solid ${COLORS.border}` }}>
