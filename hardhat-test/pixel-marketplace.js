@@ -179,7 +179,7 @@ describe("PixelMarketplace", function () {
     await (await nft.connect(user).approve(market.address, 0)).wait();
 
     const listingPrice = ethers.utils.parseEther("0.015");
-    await (await market.connect(user).createListing(0, listingPrice)).wait();
+    await (await market.connect(user).createListing(0, listingPrice, 0)).wait();
 
     let snapshot = await market.getMarketSnapshot();
     assert.strictEqual(snapshot.listedCount.toString(), "1");
@@ -211,8 +211,8 @@ describe("PixelMarketplace", function () {
     const userListingPrice = addBps(await pool.getFloorPrice(), STABILIZATION_SPREAD_BPS);
     await (await nft.connect(buyer).approve(market.address, 1)).wait();
     await (await nft.connect(other).approve(market.address, 2)).wait();
-    await (await market.connect(buyer).createListing(1, userListingPrice)).wait();
-    await (await market.connect(other).createListing(2, userListingPrice)).wait();
+    await (await market.connect(buyer).createListing(1, userListingPrice, 0)).wait();
+    await (await market.connect(other).createListing(2, userListingPrice, 0)).wait();
     await (await market.connect(creator).buyListing(1, { value: userListingPrice })).wait();
     await setUintVar(pool, "totalMinted", 10);
     assert.strictEqual(await pool.canReleaseInventoryForListing(), true);
@@ -246,8 +246,8 @@ describe("PixelMarketplace", function () {
     const listingPriceOne = ethers.utils.parseEther("0.012");
     const listingPriceTwo = ethers.utils.parseEther("0.013");
 
-    await (await market.connect(user).createListing(0, listingPriceOne)).wait();
-    await (await market.connect(user).createListing(1, listingPriceTwo)).wait();
+    await (await market.connect(user).createListing(0, listingPriceOne, 0)).wait();
+    await (await market.connect(user).createListing(1, listingPriceTwo, 0)).wait();
 
     await owner.sendTransaction({ to: attacker.address, value: listingPriceTwo });
     await (await attacker.attackBuy(1, 2, listingPriceTwo, { value: listingPriceOne })).wait();
@@ -283,8 +283,8 @@ describe("PixelMarketplace", function () {
     const firstPrice = ethers.utils.parseEther("0.014");
     const secondPrice = ethers.utils.parseEther("0.016");
 
-    await (await market.connect(user).createListing(0, firstPrice)).wait();
-    await (await market.connect(user).createListing(1, secondPrice)).wait();
+    await (await market.connect(user).createListing(0, firstPrice, 0)).wait();
+    await (await market.connect(user).createListing(1, secondPrice, 0)).wait();
 
     await (await market.connect(buyer).buyListing(1, { value: firstPrice })).wait();
     await expectCustomError(

@@ -1,11 +1,20 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Contract } from "ethers-v6";
-import { ERC721_ABI, PIXEL_ROUTER_ABI } from "../pixelRouterAbi";
+import { Contract, formatEther } from "ethers-v6";
+import { ERC721_ABI, PIXEL_ROUTER_ABI, PIXEL_MARKETPLACE_ABI } from "../pixelRouterAbi";
 import { MetalButton } from "../MetalButton";
 import { COLORS, fonts, fontDisplay } from "../utils/constants";
 import { FEATURED_COLLECTION_IDS, GENERATED_COLLECTION } from "../utils/generatedCollection";
-import { checkChain, fmtEth, revealStyle } from "../utils/helpers";
+import { checkChain, fmtEth, revealStyle, shortAddress } from "../utils/helpers";
 import { DataBadge, Eyebrow, FrostCard, PoolViz, TxStatusBar, WrongChainBanner } from "../components/ui";
+
+const ACTIVITY_LABELS = {
+  1: { label: "Listed", color: COLORS.green },
+  2: { label: "Cancelled", color: COLORS.textMuted },
+  3: { label: "Sale", color: COLORS.accent },
+  4: { label: "Offer", color: COLORS.purple },
+  5: { label: "Offer accepted", color: COLORS.yellow },
+  6: { label: "Offer cancelled", color: COLORS.textDim },
+};
 
 export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolError }) {
   const [tab, setTab] = useState("listing");
@@ -22,8 +31,17 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
     typeof window !== "undefined" ? window.innerWidth < 1080 : false
   );
 
+  const [offerTokenId, setOfferTokenId] = useState("");
+  const [offerAmount, setOfferAmount] = useState("");
+  const [offerDuration, setOfferDuration] = useState("86400"); // 1 day default
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [activeOffers, setActiveOffers] = useState([]);
+  const [loadingActivity, setLoadingActivity] = useState(false);
+  const [loadingOffers, setLoadingOffers] = useState(false);
+
   const routerAddress = appConfig?.routerAddress || "";
   const nftAddress = appConfig?.nftAddress || "";
+  const marketplaceAddress = appConfig?.marketplaceAddress || "";
   const collectionSupply = GENERATED_COLLECTION.length;
 
   useEffect(() => {
@@ -179,6 +197,120 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
     }
   }
 
+  // Load recent activity
+  useEffect(() => {
+    if (!wallet?.provider || !marketplaceAddress || collectionTab !== "activity") return;
+    let cancelled = false;
+    async function loadActivity() {
+      setLoadingActivity(true);
+      try {
+        const market = new Contract(marketplaceAddress, PIXEL_MARKETPLACE_ABI, wallet.provider);
+        const nextId = await market.nextActivityId();
+        if (Number(nextId) === 0) { setRecentActivity([]); return; }
+        const activities = await market.getRecentActivity(nextId, 20);
+        if (!cancelled) setRecentActivity(activities);
+      } catch {
+        if (!cancelled) setRecentActivity([]);
+      } finally {
+        if (!cancelled) setLoadingActivity(false);
+      }
+    }
+    loadActivity();
+    return () => { cancelled = true; };
+  }, [wallet?.provider, marketplaceAddress, collectionTab, txHash]);
+
+  // Load active offers
+  useEffect(() => {
+    if (!wallet?.provider || !marketplaceAddress || collectionTab !== "offers") return;
+    let cancelled = false;
+    async function loadOffers() {
+      setLoadingOffers(true);
+      try {
+        const market = new Contract(marketplaceAddress, PIXEL_MARKETPLACE_ABI, wallet.provider);
+        const nextId = Number(await market.nextOfferId());
+        const offers = [];
+        for (let i = nextId - 1; i >= 1 && offers.length < 20; i--) {
+          const offer = await market.offers(i);
+          if (offer.active) {
+            offers.push({ id: i, ...offer });
+          }
+        }
+        if (!cancelled) setActiveOffers(offers);
+      } catch {
+        if (!cancelled) setActiveOffers([]);
+      } finally {
+        if (!cancelled) setLoadingOffers(false);
+      }
+    }
+    loadOffers();
+    return () => { cancelled = true; };
+  }, [wallet?.provider, marketplaceAddress, collectionTab, txHash]);
+
+  async function handleMakeOffer() {
+    if (!wallet?.provider || !wallet?.account) { setTxStatus("Connect wallet first."); return; }
+    if (!marketplaceAddress) { setTxStatus("Marketplace address not set."); return; }
+    const chainErr = checkChain(wallet, appConfig);
+    if (chainErr) { setTxStatus(chainErr); return; }
+
+    const tokenId = offerTokenId.trim();
+    const amount = offerAmount.trim();
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+      setTxStatus("Enter a valid offer amount.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setTxHash("");
+      const signer = await wallet.provider.getSigner();
+      const market = new Contract(marketplaceAddress, PIXEL_MARKETPLACE_ABI, signer);
+      const value = BigInt(Math.floor(Number(amount) * 1e18));
+      const duration = Number(offerDuration) || 0;
+
+      let tx;
+      if (tokenId === "" || tokenId === "collection") {
+        setTxStatus("Making collection offer...");
+        tx = await market.makeCollectionOffer(duration, { value });
+      } else {
+        setTxStatus(`Making offer on #${tokenId}...`);
+        tx = await market.makeOffer(Number(tokenId), duration, { value });
+      }
+
+      setTxHash(tx.hash);
+      setTxStatus("Submitted. Waiting for confirmation...");
+      await tx.wait();
+      setTxStatus("Offer placed.");
+      setOfferAmount("");
+    } catch (error) {
+      setTxStatus(error?.reason || error?.data?.message || error?.message || "Offer failed.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleCancelOffer(offerId) {
+    if (!wallet?.provider || !wallet?.account) return;
+    const chainErr = checkChain(wallet, appConfig);
+    if (chainErr) { setTxStatus(chainErr); return; }
+
+    try {
+      setIsSubmitting(true);
+      setTxHash("");
+      setTxStatus(`Cancelling offer #${offerId}...`);
+      const signer = await wallet.provider.getSigner();
+      const market = new Contract(marketplaceAddress, PIXEL_MARKETPLACE_ABI, signer);
+      const tx = await market.cancelOffer(offerId);
+      setTxHash(tx.hash);
+      setTxStatus("Submitted...");
+      await tx.wait();
+      setTxStatus("Offer cancelled. ETH returned.");
+    } catch (error) {
+      setTxStatus(error?.reason || error?.data?.message || error?.message || "Cancel failed.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <div style={{ width: "calc(100vw - 24px)", margin: "0 auto", padding: "118px 12px 64px" }}>
       <FrostCard className="site-reveal" style={{ padding: 22, ...revealStyle(80) }}>
@@ -252,7 +384,197 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
         </div>
       </FrostCard>
 
-      <div
+      {/* ═══ OFFERS TAB ═══ */}
+      {collectionTab === "offers" && (
+        <div style={{ marginTop: 16, display: "grid", gap: 14 }}>
+          <FrostCard className="site-reveal" style={{ padding: 24, ...revealStyle(140) }}>
+            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>
+              Make an offer
+            </div>
+            <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
+              Place an offer on a specific token or on the entire collection. Your ETH is escrowed until the offer is accepted or cancelled.
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: isCompactMarketLayout ? "1fr" : "1fr 1fr 1fr auto", gap: 10, marginTop: 16, alignItems: "end" }}>
+              <div>
+                <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>Token ID (blank = collection)</div>
+                <input
+                  type="text"
+                  value={offerTokenId}
+                  onChange={(e) => setOfferTokenId(e.target.value)}
+                  placeholder="e.g. 42 or leave blank"
+                  style={{ width: "100%", padding: 12, background: COLORS.surfaceStrong, border: `1px solid ${COLORS.border}`, borderRadius: 14, color: COLORS.text, fontFamily: fonts, fontSize: 13, outline: "none" }}
+                />
+              </div>
+              <div>
+                <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>Amount (ETH)</div>
+                <input
+                  type="number"
+                  step="0.001"
+                  min="0"
+                  value={offerAmount}
+                  onChange={(e) => setOfferAmount(e.target.value)}
+                  placeholder="0.05"
+                  style={{ width: "100%", padding: 12, background: COLORS.surfaceStrong, border: `1px solid ${COLORS.border}`, borderRadius: 14, color: COLORS.text, fontFamily: fonts, fontSize: 13, outline: "none" }}
+                />
+              </div>
+              <div>
+                <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>Duration</div>
+                <select
+                  value={offerDuration}
+                  onChange={(e) => setOfferDuration(e.target.value)}
+                  style={{ width: "100%", padding: 12, background: COLORS.surfaceStrong, border: `1px solid ${COLORS.border}`, borderRadius: 14, color: COLORS.text, fontFamily: fonts, fontSize: 12, outline: "none" }}
+                >
+                  <option value="3600">1 hour</option>
+                  <option value="86400">1 day</option>
+                  <option value="604800">7 days</option>
+                  <option value="2592000">30 days</option>
+                  <option value="0">No expiry (max 90d)</option>
+                </select>
+              </div>
+              <MetalButton
+                onClick={handleMakeOffer}
+                disabled={isSubmitting}
+                tone="purple"
+                active
+                size="md"
+                style={{ padding: "12px 24px", cursor: isSubmitting ? "progress" : "pointer" }}
+              >
+                {isSubmitting ? "Sending..." : "Place offer"}
+              </MetalButton>
+            </div>
+            <TxStatusBar txStatus={txStatus} txHash={txHash} chainId={wallet?.chainId} />
+          </FrostCard>
+
+          <FrostCard className="site-reveal" style={{ padding: 24, ...revealStyle(200) }}>
+            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
+              Active offers
+            </div>
+            {loadingOffers ? (
+              <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 12 }}>Loading offers...</div>
+            ) : activeOffers.length === 0 ? (
+              <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 12, marginTop: 12 }}>No active offers.</div>
+            ) : (
+              <div style={{ marginTop: 12, display: "grid", gap: 0 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "60px 1fr 1fr 1fr auto", gap: 12, padding: "10px 14px", borderBottom: `1px solid ${COLORS.border}`, color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                  <div>ID</div>
+                  <div>Token</div>
+                  <div>Amount</div>
+                  <div>Maker</div>
+                  <div></div>
+                </div>
+                {activeOffers.map((offer) => {
+                  const isCollection = offer.tokenId.toString() === "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+                  const isMine = wallet?.account && offer.maker.toLowerCase() === wallet.account.toLowerCase();
+                  return (
+                    <div key={offer.id} style={{ display: "grid", gridTemplateColumns: "60px 1fr 1fr 1fr auto", gap: 12, padding: "12px 14px", borderBottom: `1px solid ${COLORS.border}`, alignItems: "center" }}>
+                      <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12 }}>#{offer.id}</div>
+                      <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 14, fontWeight: 600 }}>
+                        {isCollection ? "Collection" : `#${offer.tokenId.toString()}`}
+                      </div>
+                      <div style={{ color: COLORS.yellow, fontFamily: fontDisplay, fontSize: 14, fontWeight: 600 }}>
+                        {Number(formatEther(offer.amount)).toFixed(4)} ETH
+                      </div>
+                      <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11 }}>
+                        {shortAddress(offer.maker)}
+                      </div>
+                      <div>
+                        {isMine && (
+                          <MetalButton
+                            onClick={() => handleCancelOffer(offer.id)}
+                            disabled={isSubmitting}
+                            tone="red"
+                            size="xs"
+                            style={{ padding: "6px 12px" }}
+                          >
+                            Cancel
+                          </MetalButton>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </FrostCard>
+        </div>
+      )}
+
+      {/* ═══ ACTIVITY TAB ═══ */}
+      {collectionTab === "activity" && (
+        <div style={{ marginTop: 16 }}>
+          <FrostCard className="site-reveal" style={{ padding: 24, ...revealStyle(140) }}>
+            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>
+              Recent activity
+            </div>
+            <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
+              On-chain marketplace activity log — listings, sales, offers, and cancellations.
+            </div>
+            {loadingActivity ? (
+              <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, marginTop: 16 }}>Loading activity...</div>
+            ) : recentActivity.length === 0 ? (
+              <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 12, marginTop: 16 }}>No activity recorded yet.</div>
+            ) : (
+              <div style={{ marginTop: 16, display: "grid", gap: 0 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isCompactMarketLayout ? "1fr 1fr auto" : "120px 80px 1fr 1fr 1fr auto", gap: 12, padding: "10px 14px", borderBottom: `1px solid ${COLORS.border}`, color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                  {!isCompactMarketLayout && <div>Event</div>}
+                  {!isCompactMarketLayout && <div>Token</div>}
+                  {!isCompactMarketLayout && <div>From</div>}
+                  <div>Price</div>
+                  <div>{isCompactMarketLayout ? "Event" : "To"}</div>
+                  <div>Time</div>
+                </div>
+                {recentActivity.map((act, idx) => {
+                  const info = ACTIVITY_LABELS[Number(act.activityType)] || { label: "Unknown", color: COLORS.textDim };
+                  const ts = Number(act.timestamp);
+                  const ago = Math.floor(Date.now() / 1000) - ts;
+                  let timeLabel = "";
+                  if (ago < 60) timeLabel = "just now";
+                  else if (ago < 3600) timeLabel = `${Math.floor(ago / 60)}m ago`;
+                  else if (ago < 86400) timeLabel = `${Math.floor(ago / 3600)}h ago`;
+                  else timeLabel = `${Math.floor(ago / 86400)}d ago`;
+                  const price = Number(formatEther(act.price));
+
+                  return (
+                    <div key={idx} style={{ display: "grid", gridTemplateColumns: isCompactMarketLayout ? "1fr 1fr auto" : "120px 80px 1fr 1fr 1fr auto", gap: 12, padding: "12px 14px", borderBottom: `1px solid ${COLORS.border}`, alignItems: "center" }}>
+                      {!isCompactMarketLayout && (
+                        <div style={{ color: info.color, fontFamily: fonts, fontSize: 11, fontWeight: 600 }}>{info.label}</div>
+                      )}
+                      {!isCompactMarketLayout && (
+                        <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 14, fontWeight: 600 }}>#{act.tokenId.toString()}</div>
+                      )}
+                      {!isCompactMarketLayout && (
+                        <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11 }}>{shortAddress(act.from)}</div>
+                      )}
+                      <div style={{ color: COLORS.yellow, fontFamily: fontDisplay, fontSize: 13, fontWeight: 600 }}>
+                        {price > 0 ? `${price.toFixed(4)} ETH` : "—"}
+                      </div>
+                      <div style={{ color: isCompactMarketLayout ? info.color : COLORS.textMuted, fontFamily: fonts, fontSize: 11 }}>
+                        {isCompactMarketLayout ? `${info.label} #${act.tokenId.toString()}` : shortAddress(act.to)}
+                      </div>
+                      <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10 }}>{timeLabel}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </FrostCard>
+        </div>
+      )}
+
+      {/* ═══ HOLDERS TAB (placeholder) ═══ */}
+      {collectionTab === "holders" && (
+        <div style={{ marginTop: 16 }}>
+          <FrostCard className="site-reveal" style={{ padding: 24, ...revealStyle(140) }}>
+            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>Holders</div>
+            <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 12, marginTop: 12 }}>
+              Holder distribution data will populate after mainnet launch.
+            </div>
+          </FrostCard>
+        </div>
+      )}
+
+      {/* ═══ ITEMS TAB (existing) ═══ */}
+      {collectionTab === "items" && <div
         style={{
           display: "grid",
           gridTemplateColumns: isCompactMarketLayout ? "1fr" : "260px minmax(0, 1fr)",
@@ -901,7 +1223,7 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
             )}
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

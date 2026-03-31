@@ -22,6 +22,7 @@ const ROOT = path.join(__dirname, "..");
 const PUBLIC_COLLECTION_DIR = path.join(ROOT, "frontend", "public", "collection");
 const PUBLIC_IMAGES_DIR = path.join(PUBLIC_COLLECTION_DIR, "images");
 const PUBLIC_METADATA_DIR = path.join(PUBLIC_COLLECTION_DIR, "metadata");
+const PUBLIC_PAYLOADS_DIR = path.join(PUBLIC_COLLECTION_DIR, "payloads");
 const GENERATED_COLLECTION_MODULE = path.join(ROOT, "frontend", "src", "utils", "generatedCollection.js");
 
 // ══════════════════════════════════════════════
@@ -425,6 +426,42 @@ function generate(seed) {
 }
 
 // ══════════════════════════════════════════════
+//  ON-CHAIN PAYLOAD (4-bit packed, 128 bytes)
+// ══════════════════════════════════════════════
+
+const CONTRACT_PALETTE = [
+  [0x00,0x00,0x00], [0xFF,0x00,0x00], [0x00,0xFF,0x00], [0x00,0x00,0xFF],
+  [0xFF,0xFF,0x00], [0xFF,0x00,0xFF], [0x00,0xFF,0xFF], [0xFF,0xFF,0xFF],
+  [0x80,0x00,0x00], [0x00,0x80,0x00], [0x00,0x00,0x80], [0x80,0x80,0x00],
+  [0x80,0x00,0x80], [0x00,0x80,0x80], [0x80,0x80,0x80], [0xC0,0xC0,0xC0],
+];
+
+function nearestPaletteIndex(hexColor) {
+  const [r, g, b] = parseHex(hexColor);
+  let best = 0;
+  let bestDist = Infinity;
+  for (let i = 0; i < CONTRACT_PALETTE.length; i++) {
+    const [pr, pg, pb] = CONTRACT_PALETTE[i];
+    const dist = (r - pr) ** 2 + (g - pg) ** 2 + (b - pb) ** 2;
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = i;
+    }
+  }
+  return best;
+}
+
+/** Convert a 256-element hex grid into a 128-byte packed 4-bit payload (hex string). */
+function toPayload(grid) {
+  const indices = grid.map(nearestPaletteIndex);
+  const bytes = [];
+  for (let i = 0; i < 256; i += 2) {
+    bytes.push((indices[i] << 4) | indices[i + 1]);
+  }
+  return "0x" + bytes.map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+// ══════════════════════════════════════════════
 //  SVG EXPORT
 // ══════════════════════════════════════════════
 
@@ -483,6 +520,7 @@ function resetOutputDirectory(dir) {
 function generateCollection(count = 100, startId = 0) {
   resetOutputDirectory(PUBLIC_IMAGES_DIR);
   resetOutputDirectory(PUBLIC_METADATA_DIR);
+  resetOutputDirectory(PUBLIC_PAYLOADS_DIR);
 
   const seen = new Set();
   const traitStats = {};
@@ -512,6 +550,10 @@ function generateCollection(count = 100, startId = 0) {
     // Write metadata
     const meta = toMetadata(tokenId, result.traits, result.tier);
     fs.writeFileSync(path.join(PUBLIC_METADATA_DIR, `${tokenId}.json`), JSON.stringify(meta, null, 2));
+
+    // Write on-chain payload (4-bit packed, 128 bytes)
+    const payload = toPayload(result.grid);
+    fs.writeFileSync(path.join(PUBLIC_PAYLOADS_DIR, `${tokenId}.txt`), payload);
 
     generatedCollection.push({
       id: tokenId,
@@ -547,6 +589,14 @@ function generateCollection(count = 100, startId = 0) {
   };
 
   fs.writeFileSync(path.join(PUBLIC_COLLECTION_DIR, "summary.json"), JSON.stringify(summary, null, 2));
+
+  // Write combined payloads for batch-mint script
+  const allPayloads = {};
+  for (let i = startId; i < startId + count; i++) {
+    allPayloads[i] = fs.readFileSync(path.join(PUBLIC_PAYLOADS_DIR, `${i}.txt`), "utf8");
+  }
+  fs.writeFileSync(path.join(PUBLIC_COLLECTION_DIR, "payloads.json"), JSON.stringify(allPayloads, null, 2));
+
   writeGeneratedCollectionModule(generatedCollection);
 
   console.log(`\nDone in ${elapsed}s`);
@@ -568,4 +618,4 @@ if (require.main === module) {
   generateCollection(count, startId);
 }
 
-module.exports = { generate, toSVG, toMetadata, generateCollection };
+module.exports = { generate, toSVG, toMetadata, generateCollection, toPayload };

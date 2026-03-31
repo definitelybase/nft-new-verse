@@ -223,8 +223,8 @@ describe("PixelFactory end-to-end", function () {
     const listingPrice = addBps(await pool.getFloorPrice(), STABILIZATION_SPREAD_BPS);
     await (await nft.connect(nextBuyer).approve(market.address, 1)).wait();
     await (await nft.connect(nextBuyer).approve(market.address, 2)).wait();
-    await (await market.connect(nextBuyer).createListing(1, listingPrice)).wait();
-    await (await market.connect(nextBuyer).createListing(2, listingPrice)).wait();
+    await (await market.connect(nextBuyer).createListing(1, listingPrice, 0)).wait();
+    await (await market.connect(nextBuyer).createListing(2, listingPrice, 0)).wait();
     await (await market.connect(creator).buyListing(1, { value: listingPrice })).wait();
     await setUintVar(pool, "totalMinted", 10);
     assert.strictEqual(await pool.canReleaseInventoryForListing(), true);

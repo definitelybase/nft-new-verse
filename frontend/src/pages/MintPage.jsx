@@ -3,7 +3,7 @@ import { Contract, JsonRpcProvider, dataLength, getBytes, isHexString } from "et
 import { ONCHAIN_PIXEL_NFT_ABI, PIXEL_ROUTER_ABI } from "../pixelRouterAbi";
 import { MetalButton } from "../MetalButton";
 import { COLORS, DEFAULT_PREVIEW_PALETTE, fonts, fontDisplay } from "../utils/constants";
-import { COLLECTION_SUPPLY } from "../utils/generatedCollection";
+import { COLLECTION_SUPPLY, GENERATED_COLLECTION } from "../utils/generatedCollection";
 import { checkChain, getTargetChainLabel, isValidMintPayload, readStoredMintPayload, revealStyle } from "../utils/helpers";
 import { DataBadge, Eyebrow, FrostCard, MetricPanel, TxStatusBar, WrongChainBanner } from "../components/ui";
 
@@ -189,6 +189,9 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
   const [txStatus, setTxStatus] = useState("");
   const [txHash, setTxHash] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [batchCount, setBatchCount] = useState("");
+  const [batchProgress, setBatchProgress] = useState(null);
+  const [payloadsCache, setPayloadsCache] = useState(null);
   const [collectionPreset, setCollectionPreset] = useState({
     width: 16,
     height: 16,
@@ -324,6 +327,108 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
     }
   }
 
+  async function loadPayloads() {
+    if (payloadsCache) return payloadsCache;
+    try {
+      const res = await fetch("/collection/payloads.json");
+      const data = await res.json();
+      setPayloadsCache(data);
+      return data;
+    } catch {
+      return null;
+    }
+  }
+
+  async function handleBatchMint() {
+    if (!wallet?.provider || !wallet?.account) {
+      setTxStatus("Connect wallet first.");
+      return;
+    }
+    if (!routerAddress) {
+      setTxStatus("Router address not set.");
+      return;
+    }
+    const chainErr = checkChain(wallet, appConfig);
+    if (chainErr) {
+      setTxStatus(chainErr);
+      return;
+    }
+
+    const count = parseInt(batchCount) || 0;
+    if (count <= 0) {
+      setTxStatus("Enter a number of NFTs to mint.");
+      return;
+    }
+
+    const currentMinted = Number(pool.totalMinted || 0);
+    const remaining = COLLECTION_SUPPLY - currentMinted;
+    const toMint = Math.min(count, remaining);
+
+    if (toMint <= 0) {
+      setTxStatus("Collection fully minted.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setTxHash("");
+      setTxStatus("Loading collection payloads...");
+
+      const payloads = await loadPayloads();
+      if (!payloads) {
+        setTxStatus("Failed to load payloads. Run generate-collection first.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Collect payloads for tokens that need minting
+      const payloadArray = [];
+      for (let i = currentMinted; i < currentMinted + toMint; i++) {
+        const p = payloads[String(i)];
+        if (!p) {
+          setTxStatus(`Missing payload for token #${i}.`);
+          setIsSubmitting(false);
+          return;
+        }
+        payloadArray.push(p);
+      }
+
+      const signer = await wallet.provider.getSigner();
+      const router = new Contract(routerAddress, PIXEL_ROUTER_ABI, signer);
+      const price = await router.mintPrice();
+
+      // Mint in batches of 20 to avoid gas limits
+      const BATCH_SIZE = 20;
+      let minted = 0;
+
+      for (let i = 0; i < payloadArray.length; i += BATCH_SIZE) {
+        const batch = payloadArray.slice(i, i + BATCH_SIZE);
+        const totalValue = price * BigInt(batch.length);
+        const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+        const totalBatches = Math.ceil(payloadArray.length / BATCH_SIZE);
+
+        setBatchProgress({ minted, total: toMint });
+        setTxStatus(`Batch ${batchNum}/${totalBatches}: minting ${batch.length} NFTs. Confirm in wallet...`);
+
+        const tx = await router.mintBatch(batch, { value: totalValue });
+        setTxHash(tx.hash);
+        setTxStatus(`Batch ${batchNum}/${totalBatches}: submitted, waiting...`);
+        await tx.wait();
+
+        minted += batch.length;
+        setBatchProgress({ minted, total: toMint });
+      }
+
+      setTxStatus(`Done! Minted ${minted} NFTs.`);
+      setBatchProgress(null);
+    } catch (error) {
+      setTxStatus(error?.reason || error?.data?.message || error?.message || "Batch mint failed.");
+      setBatchProgress(null);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <div style={{ width: "calc(100vw - 24px)", margin: "0 auto", padding: "118px 12px 64px" }}>
       <div
@@ -445,6 +550,72 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
               <WrongChainBanner wallet={wallet} appConfig={appConfig} />
               <TxStatusBar txStatus={txStatus} txHash={txHash} chainId={wallet?.chainId} />
             </div>
+
+            <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 22, marginTop: 14 }}>
+              <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600 }}>
+                Batch mint from collection
+              </div>
+              <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
+                Mint multiple pre-generated NFTs in one go. Uses mintBatch — one wallet confirmation per 20 NFTs.
+              </div>
+              <div style={{ display: "flex", gap: 10, marginTop: 12, alignItems: "center" }}>
+                <input
+                  type="number"
+                  min="1"
+                  max={COLLECTION_SUPPLY}
+                  value={batchCount}
+                  onChange={(e) => setBatchCount(e.target.value)}
+                  placeholder="Amount (e.g. 100)"
+                  style={{
+                    flex: 1,
+                    height: 44,
+                    borderRadius: 14,
+                    border: `1px solid ${COLORS.border}`,
+                    background: COLORS.surface,
+                    color: COLORS.text,
+                    fontFamily: fontDisplay,
+                    fontSize: 18,
+                    fontWeight: 600,
+                    padding: "0 14px",
+                    outline: "none",
+                    minWidth: 0,
+                  }}
+                />
+                <MetalButton
+                  onClick={handleBatchMint}
+                  disabled={isSubmitting || !batchCount}
+                  tone="purple"
+                  active={!!batchCount && !isSubmitting}
+                  size="md"
+                  style={{
+                    minWidth: 160,
+                    cursor: isSubmitting ? "progress" : batchCount ? "pointer" : "not-allowed",
+                    opacity: isSubmitting ? 0.7 : 1,
+                  }}
+                >
+                  {isSubmitting
+                    ? batchProgress
+                      ? `${batchProgress.minted}/${batchProgress.total}`
+                      : "Minting..."
+                    : `Batch mint${batchCount ? ` ${batchCount}` : ""}`}
+                </MetalButton>
+              </div>
+              {batchProgress && (
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ height: 6, borderRadius: 999, overflow: "hidden", background: "rgba(255,255,255,0.06)" }}>
+                    <div
+                      style={{
+                        width: `${(batchProgress.minted / batchProgress.total) * 100}%`,
+                        height: "100%",
+                        borderRadius: 999,
+                        background: "linear-gradient(90deg, #BA9CFF, #7CB7F6)",
+                        transition: "width 0.3s ease",
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </FrostCard>
           </FrostCard>
 
           <div style={{ display: "grid", gridTemplateColumns: mintMiniColumns, gap: 12, alignItems: "stretch" }}>

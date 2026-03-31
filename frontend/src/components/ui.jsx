@@ -95,6 +95,11 @@ export function SiteMotionStyles() {
         100% { transform: translateY(0px); }
       }
 
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .site-reveal,
         .site-reveal-soft,
@@ -224,7 +229,7 @@ export function PixelAvatar({ size = 48, seed = 0 }) {
   );
 }
 
-export function TokenGrid({ title, tokens, selectedTokenId, onSelect, emptyLabel, loading, tone = "accent" }) {
+export function TokenGrid({ title, tokens, selectedTokenId, onSelect, emptyLabel, loading, tone = "accent", multi = false }) {
   return (
     <div style={{ marginTop: 14 }}>
       <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 11, letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 10 }}>
@@ -246,7 +251,7 @@ export function TokenGrid({ title, tokens, selectedTokenId, onSelect, emptyLabel
           }}
         >
           {tokens.map((tokenId) => {
-            const selected = selectedTokenId === tokenId;
+            const selected = multi && Array.isArray(selectedTokenId) ? selectedTokenId.includes(tokenId) : selectedTokenId === tokenId;
             const toneMap = {
               accent: { bg: COLORS.accentSoft, text: COLORS.accent },
               purple: { bg: COLORS.purpleSoft, text: COLORS.purple },

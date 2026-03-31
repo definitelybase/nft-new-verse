@@ -175,6 +175,41 @@ contract PixelRouter is Ownable, ReentrancyGuard {
         emit Minted(msg.sender, tokenId, msg.value, poolShare);
     }
 
+    /// @notice Mint multiple NFTs in one transaction.
+    /// @param pixelDataArray Array of packed pixel payloads
+    function mintBatch(bytes[] calldata pixelDataArray) external payable nonReentrant {
+        uint256 count = pixelDataArray.length;
+        if (count == 0) revert InvalidAmount();
+        if (msg.value != mintPrice * count) revert IncorrectPayment();
+
+        uint256 poolShare;
+        uint256 treasuryShare;
+        uint256 creatorShare;
+
+        for (uint256 i = 0; i < count; i++) {
+            uint256 perMint = mintPrice;
+            uint256 pPool = (perMint * poolSeedBps) / 10000;
+            uint256 pTreasury = (perMint * treasuryBps) / 10000;
+
+            poolShare += pPool;
+            treasuryShare += pTreasury;
+            creatorShare += perMint - pPool - pTreasury;
+
+            uint256 tokenId = nftContract.totalSupply();
+            nftContract.mintTo(msg.sender, pixelDataArray[i]);
+            pool.setTotalMinted(tokenId + 1);
+
+            emit Minted(msg.sender, tokenId, perMint, pPool);
+        }
+
+        pool.seedLiquidity{value: poolShare}();
+        totalSeeded += poolShare;
+        pool.seedTreasury{value: treasuryShare}();
+
+        (bool success, ) = creator.call{value: creatorShare}("");
+        if (!success) revert TransferFailed();
+    }
+
     // ============================================================
     //                    SWAP: SELL NFT → ETH
     // ============================================================

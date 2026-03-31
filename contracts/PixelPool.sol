@@ -54,6 +54,9 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     error NotListingVenue();
     error ManualSnapshotDisabled();
     error ManualSnapshotModeInactive();
+    error LockNotExpired();
+    error EmptyArray();
+    error InvalidLockTier();
 
     event NFTSold(address indexed seller, uint256 indexed tokenId, uint256 price, uint256 fee);
     event LiquidityAdded(uint256 ethAmount);
@@ -84,6 +87,10 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         bool fromPoolInventory
     );
     event ProtocolListingReturned(uint256 indexed tokenId, bool fromPoolInventory);
+    event BatchStaked(address indexed staker, uint256 count);
+    event BatchUnstaked(address indexed staker, uint256 count);
+    event LockApplied(address indexed staker, uint256 indexed tokenId, uint8 tier, uint256 expiresAt);
+    event EmergencyUnstaked(address indexed staker, uint256 indexed tokenId, uint256 penalty);
     event MarketStateUpdated(
         MarketState indexed previousState,
         MarketState indexed newState,
@@ -148,13 +155,29 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     mapping(uint256 => uint256) public poolListedAt;
 
     uint256 public totalStaked;
-    uint256 public accFeePerStake;
+    uint256 public totalWeight;
+    uint256 public accFeePerWeight;
     mapping(uint256 => address) public stakedBy;
     mapping(address => uint256) public stakedCount;
+    mapping(address => uint256) public userWeight;
     mapping(address => uint256[]) private _userStaked;
     mapping(uint256 => uint256) private _userStakedIdx;
     mapping(address => uint256) public rewardDebt;
     mapping(address => uint256) public pendingRewards;
+
+    uint256[4] public LOCK_DURATIONS = [0, 7 days, 30 days, 90 days];
+    uint256[4] public LOCK_MULTIPLIERS = [100, 125, 150, 200];
+    uint256 public constant LOCK_BASIS = 100;
+    uint256 public constant EMERGENCY_PENALTY_BPS = 5000;
+
+    mapping(uint256 => uint8) public tokenLockTier;
+    mapping(uint256 => uint256) public tokenLockExpiry;
+    mapping(uint256 => uint256) public tokenWeight;
+
+    uint256 public totalFeesDistributed;
+    uint256 public totalEmergencyPenalties;
+
+    uint256 public accFeePerStake; // legacy compat
 
     MarketState public marketState;
     uint256 public floorEma;
@@ -319,39 +342,153 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     }
 
     // ---- Staking ----
+
     function stake(uint256 tokenId) external nonReentrant {
-        if (stakedBy[tokenId] != address(0)) revert AlreadyStaked();
-        if (nftContract.ownerOf(tokenId) != msg.sender) revert NotNFTOwner();
-        _settle(msg.sender);
-        nftContract.transferFrom(msg.sender, address(this), tokenId);
-        stakedBy[tokenId] = msg.sender;
-        _userStakedIdx[tokenId] = _userStaked[msg.sender].length;
-        _userStaked[msg.sender].push(tokenId);
-        stakedCount[msg.sender] += 1; totalStaked += 1;
-        rewardDebt[msg.sender] = stakedCount[msg.sender] * accFeePerStake;
+        _stakeOne(msg.sender, tokenId, 0);
         emit NFTStaked(msg.sender, tokenId);
     }
+
+    function stakeWithLock(uint256 tokenId, uint8 lockTier) external nonReentrant {
+        if (lockTier > 3) revert InvalidLockTier();
+        _stakeOne(msg.sender, tokenId, lockTier);
+        emit NFTStaked(msg.sender, tokenId);
+        if (lockTier > 0) emit LockApplied(msg.sender, tokenId, lockTier, tokenLockExpiry[tokenId]);
+    }
+
+    function stakeBatch(uint256[] calldata tokenIds) external nonReentrant {
+        if (tokenIds.length == 0) revert EmptyArray();
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            _stakeOne(msg.sender, tokenIds[i], 0);
+            emit NFTStaked(msg.sender, tokenIds[i]);
+        }
+        emit BatchStaked(msg.sender, tokenIds.length);
+    }
+
+    function stakeBatchWithLock(uint256[] calldata tokenIds, uint8 lockTier) external nonReentrant {
+        if (tokenIds.length == 0) revert EmptyArray();
+        if (lockTier > 3) revert InvalidLockTier();
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            _stakeOne(msg.sender, tokenIds[i], lockTier);
+            emit NFTStaked(msg.sender, tokenIds[i]);
+            if (lockTier > 0) emit LockApplied(msg.sender, tokenIds[i], lockTier, tokenLockExpiry[tokenIds[i]]);
+        }
+        emit BatchStaked(msg.sender, tokenIds.length);
+    }
+
+    function _stakeOne(address user, uint256 tokenId, uint8 lockTier) private {
+        if (stakedBy[tokenId] != address(0)) revert AlreadyStaked();
+        if (nftContract.ownerOf(tokenId) != user) revert NotNFTOwner();
+        _settle(user);
+        nftContract.transferFrom(user, address(this), tokenId);
+        stakedBy[tokenId] = user;
+        _userStakedIdx[tokenId] = _userStaked[user].length;
+        _userStaked[user].push(tokenId);
+        uint256 w = LOCK_MULTIPLIERS[lockTier];
+        tokenWeight[tokenId] = w;
+        tokenLockTier[tokenId] = lockTier;
+        if (lockTier > 0) tokenLockExpiry[tokenId] = block.timestamp + LOCK_DURATIONS[lockTier];
+        stakedCount[user] += 1; totalStaked += 1;
+        userWeight[user] += w; totalWeight += w;
+        rewardDebt[user] = userWeight[user] * accFeePerWeight;
+    }
+
     function unstake(uint256 tokenId) external nonReentrant {
+        _unstakeOne(msg.sender, tokenId, false);
+        emit NFTUnstaked(msg.sender, tokenId);
+        _payPending(msg.sender);
+    }
+
+    function unstakeBatch(uint256[] calldata tokenIds) external nonReentrant {
+        if (tokenIds.length == 0) revert EmptyArray();
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            _unstakeOne(msg.sender, tokenIds[i], false);
+            emit NFTUnstaked(msg.sender, tokenIds[i]);
+        }
+        _payPending(msg.sender);
+        emit BatchUnstaked(msg.sender, tokenIds.length);
+    }
+
+    function emergencyUnstake(uint256 tokenId) external nonReentrant whenPaused {
         if (stakedBy[tokenId] != msg.sender) revert NotStaker();
         _settle(msg.sender);
-        stakedBy[tokenId] = address(0); _rmUserStaked(msg.sender, tokenId);
-        stakedCount[msg.sender] -= 1; totalStaked -= 1;
-        rewardDebt[msg.sender] = stakedCount[msg.sender] * accFeePerStake;
-        nftContract.transferFrom(address(this), msg.sender, tokenId);
+        uint256 penalty;
         uint256 p = pendingRewards[msg.sender];
-        if (p > 0) { pendingRewards[msg.sender] = 0; (bool ok,) = msg.sender.call{value: p}(""); if (!ok) revert TransferFailed(); emit FeesClaimed(msg.sender, p); }
-        emit NFTUnstaked(msg.sender, tokenId);
+        if (p > 0) {
+            penalty = (p * EMERGENCY_PENALTY_BPS) / BPS;
+            pendingRewards[msg.sender] = p - penalty;
+            ethBalance += penalty;
+            totalEmergencyPenalties += penalty;
+        }
+        _removeStake(msg.sender, tokenId);
+        nftContract.transferFrom(address(this), msg.sender, tokenId);
+        rewardDebt[msg.sender] = userWeight[msg.sender] * accFeePerWeight;
+        emit EmergencyUnstaked(msg.sender, tokenId, penalty);
+        _payPending(msg.sender);
     }
+
+    function _unstakeOne(address user, uint256 tokenId, bool emergency) private {
+        if (stakedBy[tokenId] != user) revert NotStaker();
+        if (!emergency && tokenLockExpiry[tokenId] > block.timestamp) revert LockNotExpired();
+        _settle(user);
+        _removeStake(user, tokenId);
+        nftContract.transferFrom(address(this), user, tokenId);
+        rewardDebt[user] = userWeight[user] * accFeePerWeight;
+    }
+
+    function _removeStake(address user, uint256 tokenId) private {
+        uint256 w = tokenWeight[tokenId];
+        stakedBy[tokenId] = address(0); _rmUserStaked(user, tokenId);
+        stakedCount[user] -= 1; totalStaked -= 1;
+        userWeight[user] -= w; totalWeight -= w;
+        delete tokenWeight[tokenId]; delete tokenLockTier[tokenId]; delete tokenLockExpiry[tokenId];
+    }
+
+    function _payPending(address user) private {
+        uint256 p = pendingRewards[user];
+        if (p > 0) { pendingRewards[user] = 0; (bool ok,) = user.call{value: p}(""); if (!ok) revert TransferFailed(); emit FeesClaimed(user, p); }
+    }
+
     function claimFees() external nonReentrant {
         _settle(msg.sender); uint256 p = pendingRewards[msg.sender]; if (p == 0) revert NothingToClaim();
-        rewardDebt[msg.sender] = stakedCount[msg.sender] * accFeePerStake;
+        rewardDebt[msg.sender] = userWeight[msg.sender] * accFeePerWeight;
         pendingRewards[msg.sender] = 0; (bool ok,) = msg.sender.call{value: p}(""); if (!ok) revert TransferFailed();
         emit FeesClaimed(msg.sender, p);
     }
+
     function viewPendingFees(address u) external view returns (uint256) {
-        return pendingRewards[u] + ((stakedCount[u] * accFeePerStake - rewardDebt[u]) / 1e18);
+        if (userWeight[u] == 0) return pendingRewards[u];
+        return pendingRewards[u] + ((userWeight[u] * accFeePerWeight - rewardDebt[u]) / 1e18);
     }
+
     function getUserStakedTokens(address u) external view returns (uint256[] memory) { return _userStaked[u]; }
+
+    // ---- Staking Stats ----
+
+    function getStakingInfo(address u) external view returns (
+        uint256 stakedTokens, uint256 effectiveWeight, uint256 pending, uint256 shareOfPoolBps
+    ) {
+        stakedTokens = stakedCount[u]; effectiveWeight = userWeight[u];
+        if (effectiveWeight == 0) { pending = pendingRewards[u]; }
+        else { pending = pendingRewards[u] + ((effectiveWeight * accFeePerWeight - rewardDebt[u]) / 1e18); }
+        shareOfPoolBps = totalWeight > 0 ? (effectiveWeight * BPS) / totalWeight : 0;
+    }
+
+    function getTokenStakeInfo(uint256 tokenId) external view returns (
+        address staker, uint8 lockTier, uint256 lockExpiry, uint256 weight, bool lockExpired
+    ) {
+        staker = stakedBy[tokenId]; lockTier = tokenLockTier[tokenId];
+        lockExpiry = tokenLockExpiry[tokenId]; weight = tokenWeight[tokenId];
+        lockExpired = lockExpiry > 0 && block.timestamp >= lockExpiry;
+    }
+
+    function getStakingStats() external view returns (
+        uint256 _totalStaked, uint256 _totalWeight, uint256 _totalFeesDistributed,
+        uint256 _totalEmergencyPenalties, uint256 avgMultiplierBps
+    ) {
+        _totalStaked = totalStaked; _totalWeight = totalWeight;
+        _totalFeesDistributed = totalFeesDistributed; _totalEmergencyPenalties = totalEmergencyPenalties;
+        avgMultiplierBps = totalStaked > 0 ? (totalWeight * BPS) / (totalStaked * LOCK_BASIS) : 0;
+    }
 
     // ---- Treasury Buyback ----
     function getBuybackMode() public view returns (uint8 mode, uint256 maxBuy) {
@@ -630,9 +767,9 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         uint256 s = (fee * STAKER_FEE_BPS) / BPS; uint256 p = (fee * POOL_FEE_BPS) / BPS;
         uint256 b = (fee * BUYBACK_FEE_BPS) / BPS; uint256 pr = fee - s - p - b;
         protocolFees += pr; ethBalance += p; treasuryBalance += b;
-        if (totalStaked > 0) accFeePerStake += (s * 1e18) / totalStaked; else ethBalance += s;
+        if (totalWeight > 0) { accFeePerWeight += (s * 1e18) / totalWeight; totalFeesDistributed += s; } else { ethBalance += s; }
     }
-    function _settle(address u) private { if (stakedCount[u] > 0) { pendingRewards[u] += ((stakedCount[u] * accFeePerStake) - rewardDebt[u]) / 1e18; rewardDebt[u] = stakedCount[u] * accFeePerStake; } }
+    function _settle(address u) private { if (userWeight[u] > 0) { pendingRewards[u] += ((userWeight[u] * accFeePerWeight) - rewardDebt[u]) / 1e18; rewardDebt[u] = userWeight[u] * accFeePerWeight; } }
     function _addPool(uint256 id) private {
         _poolIdx[id] = _poolNfts.length;
         _poolNfts.push(id);
