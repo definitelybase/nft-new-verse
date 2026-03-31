@@ -531,6 +531,10 @@ function LiquiditySystemOverview({ className = "", style }) {
     ["Activity log", "Full on-chain trade history"],
   ];
 
+  const afterMintWidths = ["100%", "78%", "88%"];
+  const afterMintAlign = ["flex-start", "flex-end", "flex-start"];
+  const stateHeights = [112, 138, 126];
+
   return (
     <div className={className} style={{ display: "grid", gap: 14, ...style }}>
       <div style={{ display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 14, alignItems: "stretch" }}>
@@ -538,17 +542,49 @@ function LiquiditySystemOverview({ className = "", style }) {
           <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600, lineHeight: 1.25 }}>
             Most NFTs have no native exit lane at all.
           </div>
-          <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
-            {problemColumns.map((column) => (
-              <div key={column.label} style={{ padding: 16, borderRadius: 20, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.07)" }}>
+          <div
+            style={{
+              marginTop: 16,
+              display: "grid",
+              gridTemplateColumns: "0.92fr 1.08fr",
+              gap: 14,
+              padding: 14,
+              borderRadius: 24,
+              background: "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))",
+              border: `1px solid ${COLORS.border}`,
+            }}
+          >
+            {problemColumns.map((column, columnIndex) => (
+              <div
+                key={column.label}
+                style={{
+                  padding: columnIndex === 0 ? "14px 14px 12px" : "16px 16px 14px",
+                  borderRadius: 20,
+                  background: columnIndex === 0 ? "rgba(255,255,255,0.05)" : `${column.tone}10`,
+                  border: columnIndex === 0 ? `1px solid ${COLORS.border}` : `1px solid ${column.tone}26`,
+                  display: "grid",
+                  gap: 10,
+                  alignContent: "start",
+                }}
+              >
                 <div style={{ color: column.tone, fontFamily: fonts, fontSize: 11, letterSpacing: 1, textTransform: "uppercase", fontWeight: 700 }}>
                   {column.label}
                 </div>
-                <div style={{ marginTop: 12, display: "grid", gap: 8 }}>
+                <div style={{ display: "grid", gap: columnIndex === 0 ? 9 : 10 }}>
                   {column.rows.map((row, index) => (
-                    <div key={row} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ color: column.tone, fontFamily: fontDisplay, fontSize: 14, fontWeight: 600 }}>
-                        {index < 4 && column.label === "Standard NFT" ? "x" : "+"}
+                    <div
+                      key={row}
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "16px 1fr",
+                        gap: 8,
+                        alignItems: "start",
+                        paddingBottom: index === column.rows.length - 1 ? 0 : 7,
+                        borderBottom: index === column.rows.length - 1 ? "none" : `1px dashed ${columnIndex === 0 ? "rgba(217,106,92,0.18)" : "rgba(26,155,103,0.18)"}`,
+                      }}
+                    >
+                      <div style={{ color: column.tone, fontFamily: fontDisplay, fontSize: 14, fontWeight: 600, lineHeight: 1.2 }}>
+                        {columnIndex === 0 ? "x" : "✓"}
                       </div>
                       <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.55 }}>
                         {row}
@@ -577,9 +613,19 @@ function LiquiditySystemOverview({ className = "", style }) {
             </div>
           </div>
 
-          <div style={{ marginTop: 18, display: "grid", gap: 12 }}>
+          <div style={{ marginTop: 18, display: "grid", gap: 14 }}>
             {mintSplitRows.map(([title, body, tone]) => (
-              <div key={title} style={{ display: "grid", gridTemplateColumns: "auto auto 1fr", alignItems: "start", gap: 10 }}>
+              <div
+                key={title}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "auto minmax(110px, 0.55fr) 1fr",
+                  alignItems: "start",
+                  gap: 10,
+                  paddingBottom: 10,
+                  borderBottom: `1px dashed ${COLORS.border}`,
+                }}
+              >
                 <div style={{ width: 10, height: 10, borderRadius: 999, background: tone, marginTop: 6 }} />
                 <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 17, fontWeight: 600 }}>{title}</div>
                 <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.65 }}>{body}</div>
@@ -592,8 +638,21 @@ function LiquiditySystemOverview({ className = "", style }) {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, alignItems: "stretch" }}>
         <InsightPanel title="After you mint" tone={COLORS.green} glyph="↗" pixels={INFO_PANEL_PIXELS.afterMint}>
           <div style={{ display: "grid", gap: 12 }}>
-            {afterMintCards.map(([title, body, background]) => (
-              <div key={title} style={{ padding: 16, borderRadius: 20, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.08)", display: "grid", gridTemplateColumns: "42px 1fr", gap: 14, alignItems: "start" }}>
+            {afterMintCards.map(([title, body, background], index) => (
+              <div key={title} style={{ display: "flex", justifyContent: afterMintAlign[index] }}>
+                <div
+                  style={{
+                    width: afterMintWidths[index],
+                    padding: 16,
+                    borderRadius: 20,
+                    border: `1px solid ${COLORS.border}`,
+                    background: "rgba(255,255,255,0.08)",
+                    display: "grid",
+                    gridTemplateColumns: "42px 1fr",
+                    gap: 14,
+                    alignItems: "start",
+                  }}
+                >
                 <div style={{ width: 42, height: 42, borderRadius: 14, background, border: `1px solid ${COLORS.border}` }} />
                 <div>
                   <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
@@ -602,6 +661,7 @@ function LiquiditySystemOverview({ className = "", style }) {
                   <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
                     {body}
                   </div>
+                </div>
                 </div>
               </div>
             ))}
@@ -614,7 +674,18 @@ function LiquiditySystemOverview({ className = "", style }) {
               const tones = [COLORS.accent, COLORS.purple, COLORS.yellow];
               const tone = tones[index];
               return (
-                <div key={title} style={{ padding: 16, borderRadius: 20, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.08)" }}>
+                <div
+                  key={title}
+                  style={{
+                    padding: 16,
+                    borderRadius: 20,
+                    border: `1px solid ${COLORS.border}`,
+                    background: "rgba(255,255,255,0.08)",
+                    minHeight: stateHeights[index],
+                    display: "grid",
+                    alignContent: "start",
+                  }}
+                >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <div style={{ width: 9, height: 9, borderRadius: 999, background: tone }} />
@@ -681,22 +752,41 @@ function LiquiditySystemOverview({ className = "", style }) {
             The protocol does not need OpenSea to understand its own market. V1 is designed around native trading.
           </div>
 
-          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
-            {marketTiles.map(([title, body]) => (
-              <div key={title} style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.08)" }}>
-                <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{title}</div>
-                <div style={{ marginTop: 5, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.65 }}>{body}</div>
-              </div>
-            ))}
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 10 }}>
+            <div style={{ display: "grid", gap: 10 }}>
+              {marketTiles.slice(0, 2).map(([title, body]) => (
+                <div key={title} style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.08)" }}>
+                  <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{title}</div>
+                  <div style={{ marginTop: 5, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.65 }}>{body}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "grid", gap: 10 }}>
+              {marketTiles.slice(2).map(([title, body]) => (
+                <div key={title} style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.08)" }}>
+                  <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{title}</div>
+                  <div style={{ marginTop: 5, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.65 }}>{body}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10 }}>
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: 10 }}>
             {[
               "Rolling 24h sales count",
               "Active listing count",
               "Market floor signal",
-            ].map((label) => (
-              <div key={label} style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 11, lineHeight: 1.55 }}>
+            ].map((label, index) => (
+              <div
+                key={label}
+                style={{
+                  color: COLORS.textDim,
+                  fontFamily: fonts,
+                  fontSize: 11,
+                  lineHeight: 1.55,
+                  paddingTop: index === 0 ? 2 : 10,
+                }}
+              >
                 {label}
               </div>
             ))}
