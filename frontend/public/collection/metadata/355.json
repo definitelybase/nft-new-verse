@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #355",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/355.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human light"
+    },
+    {
+      "trait_type": "Background",
+      "value": "forest"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "mohawk orange"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "green"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "smile"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "white tee"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "none"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

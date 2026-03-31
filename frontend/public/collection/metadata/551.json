@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #551",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/551.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human light"
+    },
+    {
+      "trait_type": "Background",
+      "value": "ice"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "bald teal"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "shades"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "small"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "green suit"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "earring gold"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #921",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/921.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human light"
+    },
+    {
+      "trait_type": "Background",
+      "value": "slate"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "short pink"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "normal"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "teeth"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "blue tee"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "none"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

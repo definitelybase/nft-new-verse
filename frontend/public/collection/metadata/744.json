@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #744",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/744.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human tan"
+    },
+    {
+      "trait_type": "Background",
+      "value": "ice"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "tall brown"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "normal"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "grin"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "orange collar"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "earring gold"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

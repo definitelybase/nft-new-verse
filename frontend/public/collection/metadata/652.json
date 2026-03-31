@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #652",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/652.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "alien green"
+    },
+    {
+      "trait_type": "Background",
+      "value": "ice"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "short blonde"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "normal"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "neutral"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "black tank"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "earring gold"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Epic"
+    }
+  ]
+}

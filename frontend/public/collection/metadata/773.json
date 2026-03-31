@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #773",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/773.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "robot"
+    },
+    {
+      "trait_type": "Background",
+      "value": "forest"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "beanie black"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "closed"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "neutral"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "red collar"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "chain"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Legendary"
+    }
+  ]
+}

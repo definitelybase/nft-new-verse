@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #832",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/832.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human tan"
+    },
+    {
+      "trait_type": "Background",
+      "value": "forest"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "short pink"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "laser"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "smile"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "white tank"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "earring gold"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

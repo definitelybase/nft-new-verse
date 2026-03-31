@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #777",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/777.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human tan"
+    },
+    {
+      "trait_type": "Background",
+      "value": "slate"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "afro red"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "blue"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "smile"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "red suit"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "blush"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

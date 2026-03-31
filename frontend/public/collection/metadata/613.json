@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #613",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/613.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human light"
+    },
+    {
+      "trait_type": "Background",
+      "value": "midnight"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "side_part black"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "cyan"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "open"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "orange tee"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "earring silver"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #609",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/609.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human light"
+    },
+    {
+      "trait_type": "Background",
+      "value": "crimson"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "flat pink"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "normal"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "grin"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "yellow tank"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "bandaid"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

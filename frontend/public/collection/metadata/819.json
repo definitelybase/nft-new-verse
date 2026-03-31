@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #819",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/819.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "robot"
+    },
+    {
+      "trait_type": "Background",
+      "value": "purple"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "afro black"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "green"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "frown"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "purple tee"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "nose ring"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Legendary"
+    }
+  ]
+}

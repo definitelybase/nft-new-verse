@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #229",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/229.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "gold"
+    },
+    {
+      "trait_type": "Background",
+      "value": "navy"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "afro white"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "closed"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "fangs"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "yellow suit"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "earring silver"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Legendary"
+    }
+  ]
+}

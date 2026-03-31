@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #681",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/681.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "gold"
+    },
+    {
+      "trait_type": "Background",
+      "value": "midnight"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "side_part blonde"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "normal"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "open"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "grey hoodie"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "crown"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Legendary"
+    }
+  ]
+}

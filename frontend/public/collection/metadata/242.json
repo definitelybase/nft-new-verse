@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #242",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/242.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "robot"
+    },
+    {
+      "trait_type": "Background",
+      "value": "gold"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "afro blonde"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "normal"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "neutral"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "grey hoodie"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "bandaid"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Legendary"
+    }
+  ]
+}

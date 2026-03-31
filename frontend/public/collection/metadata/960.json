@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #960",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/960.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human tan"
+    },
+    {
+      "trait_type": "Background",
+      "value": "midnight"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "buzz blue"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "cyan"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "teeth"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "grey tank"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "tattoo"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

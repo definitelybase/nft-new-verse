@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #792",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/792.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human light"
+    },
+    {
+      "trait_type": "Background",
+      "value": "ice"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "mohawk pink"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "normal"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "open"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "black tank"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "monocle"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

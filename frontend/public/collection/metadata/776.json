@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #776",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/776.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human light"
+    },
+    {
+      "trait_type": "Background",
+      "value": "midnight"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "tall pink"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "laser"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "smile"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "black hoodie"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "none"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

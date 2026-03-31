@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #719",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/719.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human tan"
+    },
+    {
+      "trait_type": "Background",
+      "value": "purple"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "mohawk blue"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "normal"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "fangs"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "purple turtleneck"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "none"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

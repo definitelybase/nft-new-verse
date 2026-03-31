@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #887",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/887.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human tan"
+    },
+    {
+      "trait_type": "Background",
+      "value": "forest"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "afro red"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "visor"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "fangs"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "black tank"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "none"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

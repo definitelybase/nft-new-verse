@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #603",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/603.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human tan"
+    },
+    {
+      "trait_type": "Background",
+      "value": "gold"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "mohawk white"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "blue"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "smile"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "grey tee"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "blush"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

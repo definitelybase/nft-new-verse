@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #533",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/533.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human light"
+    },
+    {
+      "trait_type": "Background",
+      "value": "navy"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "short white"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "blue"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "frown"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "red turtleneck"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "mask"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

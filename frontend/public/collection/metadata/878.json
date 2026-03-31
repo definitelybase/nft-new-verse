@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #878",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/878.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human pale"
+    },
+    {
+      "trait_type": "Background",
+      "value": "midnight"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "flat red"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "visor"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "fangs"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "grey suit"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "blush"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Rare"
+    }
+  ]
+}

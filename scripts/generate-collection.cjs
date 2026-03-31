@@ -6,7 +6,7 @@
  *
  * Usage:
  *   node scripts/generate-collection.cjs [count] [startId]
- *   node scripts/generate-collection.cjs 100 0
+ *   node scripts/generate-collection.cjs 1000 0
  *
  * Output:
  *   frontend/public/collection/images/*.svg
@@ -517,7 +517,7 @@ function resetOutputDirectory(dir) {
 //  BATCH GENERATOR
 // ══════════════════════════════════════════════
 
-function generateCollection(count = 100, startId = 0) {
+function generateCollection(count = 1000, startId = 0) {
   resetOutputDirectory(PUBLIC_IMAGES_DIR);
   resetOutputDirectory(PUBLIC_METADATA_DIR);
   resetOutputDirectory(PUBLIC_PAYLOADS_DIR);
@@ -613,7 +613,7 @@ function generateCollection(count = 100, startId = 0) {
 // ══════════════════════════════════════════════
 
 if (require.main === module) {
-  const count = parseInt(process.argv[2]) || 100;
+  const count = parseInt(process.argv[2]) || 1000;
   const startId = parseInt(process.argv[3]) || 0;
   generateCollection(count, startId);
 }

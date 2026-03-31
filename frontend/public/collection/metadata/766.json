@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #766",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/766.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human pale"
+    },
+    {
+      "trait_type": "Background",
+      "value": "midnight"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "tall black"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "laser"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "neutral"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "yellow hoodie"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "tattoo"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Rare"
+    }
+  ]
+}

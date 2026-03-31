@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #394",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/394.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "demon"
+    },
+    {
+      "trait_type": "Background",
+      "value": "navy"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "long black"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "blue"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "grin"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "purple tank"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "none"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Epic"
+    }
+  ]
+}

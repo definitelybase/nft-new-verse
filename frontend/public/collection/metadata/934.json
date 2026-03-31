@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #934",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/934.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "zombie"
+    },
+    {
+      "trait_type": "Background",
+      "value": "purple"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "short black"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "shades"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "open"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "white tee"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "chain"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Epic"
+    }
+  ]
+}

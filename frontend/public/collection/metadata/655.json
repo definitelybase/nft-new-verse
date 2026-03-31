@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #655",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/655.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "alien blue"
+    },
+    {
+      "trait_type": "Background",
+      "value": "midnight"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "short black"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "closed"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "frown"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "grey suit"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "earring gold"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Epic"
+    }
+  ]
+}

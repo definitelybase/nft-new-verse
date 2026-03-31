@@ -1,0 +1,39 @@
+{
+  "name": "OnChainPixel #501",
+  "description": "Fully on-chain pixel art. No IPFS. No servers. Forever.",
+  "image": "images/501.svg",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "human light"
+    },
+    {
+      "trait_type": "Background",
+      "value": "slate"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "flat brown"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "yellow"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "smile"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "orange tank"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "tattoo"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Common"
+    }
+  ]
+}

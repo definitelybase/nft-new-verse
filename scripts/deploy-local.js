@@ -43,7 +43,7 @@ async function main() {
   const marketFeeBps = Number(process.env.MARKETPLACE_FEE_BPS || "250");
   const defaultWidth = Number(process.env.DEFAULT_CANVAS_WIDTH || "16");
   const defaultHeight = Number(process.env.DEFAULT_CANVAS_HEIGHT || "16");
-  const maxSupply = Number(process.env.MAX_SUPPLY || "100");
+  const maxSupply = Number(process.env.MAX_SUPPLY || "1000");
 
   if (!isAddress(creatorAddress) || creatorAddress === ZeroAddress) {
     throw new Error("CREATOR_ADDRESS must be a non-zero address");

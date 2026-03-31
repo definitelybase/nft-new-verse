@@ -565,7 +565,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
                   max={COLLECTION_SUPPLY}
                   value={batchCount}
                   onChange={(e) => setBatchCount(e.target.value)}
-                  placeholder="Amount (e.g. 100)"
+                  placeholder="Amount (e.g. 25)"
                   style={{
                     flex: 1,
                     height: 44,
