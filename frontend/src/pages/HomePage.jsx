@@ -652,24 +652,24 @@ function LiquiditySystemOverview({ className = "", style }) {
   ];
   const faqRows = [
     [
-      "Can I always sell to the pool?",
-      "No. Sell-to-pool is reserve-gated and closes during expansion. The pool is a floor exit, not a permanent bid.",
+      "What makes Dwellers different from a normal NFT mint?",
+      "A normal mint usually ends at the primary sale. Dwellers starts a reserve-backed system on the same transaction: reserve, treasury, native market logic, and fee flow.",
     ],
     [
-      "Is this a guaranteed buyback?",
-      "No. Treasury buyback is a targeted cleanup action for stale inventory in weak demand, not a price guarantee.",
+      "Where does the mint money go?",
+      "Every mint routes 60% to pool reserve, 10% to treasury, and 30% to creator / team. The reserve starts from mint one instead of waiting for secondary demand.",
     ],
     [
-      "What if demand drops?",
-      "The protocol can enter weak-demand state. Pool quotes become more conservative, treasury cleanup may activate, and the floor decays under its rules instead of pretending demand is still strong.",
+      "What does the pool actually price?",
+      "The pool prices only the collection floor. Premiums, rarity, and above-floor discovery stay in the native marketplace.",
     ],
     [
-      "Where does staking yield come from?",
-      "From real trade fees only. No emissions token, no inflation. If nobody trades, stakers earn nothing.",
+      "What can I do after mint?",
+      "You can list on the marketplace, hold the NFT, stake it for fee flow, or sell into the pool when the sell gate is open.",
     ],
     [
-      "Can the owner drain the reserve?",
-      "There is no simple owner withdraw on pool reserve. Admin powers still exist, and launch ownership is intended to move to a Safe multisig.",
+      "What do stakers actually earn?",
+      "Stakers receive 10% of protocol trade fees, weighted by lock time. There is no emissions token and no fake APY layer.",
     ],
   ];
 
@@ -1203,7 +1203,7 @@ function LiquiditySystemOverview({ className = "", style }) {
         </InsightPanel>
       </div>
 
-      <InsightPanel title="Honest FAQ" tone="#E8853A" glyph="?" pixels={INFO_PANEL_PIXELS.faq}>
+      <InsightPanel title="Quick answers" tone="#E8853A" glyph="?" pixels={INFO_PANEL_PIXELS.faq}>
         <div style={{ display: "grid", gap: 12 }}>
           {faqRows.map(([question, answer], index) => (
             <div
