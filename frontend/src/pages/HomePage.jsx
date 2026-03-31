@@ -1014,6 +1014,39 @@ function LiquiditySystemOverview({ className = "", style }) {
               Floor only
             </div>
           </div>
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10 }}>
+            {[
+              ["Start", "60% mint anchor", "rgba(212,73,122,0.10)"],
+              ["Decay", "Net sells push lower", "rgba(212,73,122,0.07)"],
+              ["Floor", "Never below 15%", "rgba(212,73,122,0.12)"],
+            ].map(([title, body, bg], index) => (
+              <div
+                key={title}
+                style={{
+                  padding: 12,
+                  borderRadius: 16,
+                  border: `1px solid ${COLORS.border}`,
+                  background: bg,
+                  display: "grid",
+                  gap: 8,
+                  alignContent: "start",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                  <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 14, fontWeight: 600 }}>{title}</div>
+                  <div
+                    style={{
+                      width: 26,
+                      height: 8,
+                      borderRadius: 999,
+                      background: `rgba(212,73,122,${0.42 - index * 0.08})`,
+                    }}
+                  />
+                </div>
+                <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.6 }}>{body}</div>
+              </div>
+            ))}
+          </div>
         </InsightPanel>
 
         <InsightPanel title="Weighted staking" tone="#D4497A" glyph="›" pixels={INFO_PANEL_PIXELS.staking}>
@@ -1055,6 +1088,44 @@ function LiquiditySystemOverview({ className = "", style }) {
                     <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.5 }}>{lock}</div>
                   </div>
                 ))}
+              </div>
+              <div style={{ marginTop: 16, paddingTop: 14, borderTop: `1px dashed rgba(212,73,122,0.16)` }}>
+                <div style={{ display: "flex", alignItems: "flex-end", gap: 10, height: 34 }}>
+                  {[22, 34, 50, 68].map((height, index) => (
+                    <div key={height} style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+                      <div
+                        style={{
+                          width: "70%",
+                          height,
+                          borderRadius: 12,
+                          background: `linear-gradient(180deg, rgba(212,73,122,${0.08 + index * 0.04}), rgba(212,73,122,0.18))`,
+                          border: `1px solid rgba(212,73,122,${0.16 + index * 0.04})`,
+                          transform: "translateY(34px)",
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 8 }}>
+                  {["entry", "boost", "stronger", "max weight"].map((label, index) => (
+                    <div
+                      key={label}
+                      style={{
+                        padding: "7px 8px",
+                        borderRadius: 999,
+                        border: `1px solid rgba(212,73,122,0.14)`,
+                        background: index === 3 ? "rgba(212,73,122,0.12)" : "rgba(255,255,255,0.05)",
+                        color: index === 3 ? "#D4497A" : COLORS.textDim,
+                        fontFamily: fonts,
+                        fontSize: 10,
+                        textAlign: "center",
+                        letterSpacing: 0.3,
+                      }}
+                    >
+                      {label}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div
