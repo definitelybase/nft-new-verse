@@ -884,83 +884,53 @@ function LiquiditySystemOverview({ className = "", style }) {
         </InsightPanel>
 
         <InsightPanel title="Market states" tone="#E8853A" glyph="◆" pixels={INFO_PANEL_PIXELS.states}>
-          <div
-            style={{
-              padding: 14,
-              borderRadius: 24,
-              border: `1px solid ${COLORS.border}`,
-              background: "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
-            }}
-          >
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8, marginBottom: 14 }}>
-              {marketStateRows.map(([title], index) => (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
+            {marketStateRows.map(([title, chip, body], index) => {
+              const tone = marketStateTones[index];
+              return (
                 <div
                   key={title}
                   style={{
-                    padding: "10px 12px",
-                    borderRadius: 16,
-                    background: `${marketStateTones[index]}12`,
-                    border: `1px solid ${marketStateTones[index]}26`,
-                    color: marketStateTones[index],
-                    fontFamily: fontDisplay,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    textAlign: "center",
+                    padding: 18,
+                    borderRadius: 22,
+                    border: `1px solid ${COLORS.border}`,
+                    background: "rgba(255,255,255,0.06)",
+                    minHeight: 168,
+                    display: "grid",
+                    alignContent: "start",
+                    gap: 12,
                   }}
                 >
-                  {title}
-                </div>
-              ))}
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "0.94fr 1.12fr 0.94fr", gap: 12 }}>
-              {marketStateRows.map(([title, chip, body], index) => {
-                const tone = marketStateTones[index];
-                return (
-                  <div
-                    key={title}
-                    style={{
-                      padding: 16,
-                      borderRadius: 20,
-                      border: `1px solid ${COLORS.border}`,
-                      background: "rgba(255,255,255,0.08)",
-                      minHeight: 150,
-                      display: "grid",
-                      alignContent: "start",
-                      gap: 10,
-                    }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 12 }}>
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <div style={{ width: 9, height: 9, borderRadius: 999, background: tone }} />
-                          <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{title}</div>
-                        </div>
-                        <div style={{ marginTop: 10, width: 54, height: 6, borderRadius: 999, background: `${tone}40` }} />
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 12 }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 9, height: 9, borderRadius: 999, background: tone }} />
+                        <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 17, fontWeight: 600 }}>{title}</div>
                       </div>
-                      <div style={{ padding: "7px 11px", borderRadius: 999, border: `1px solid ${tone}30`, background: `${tone}14`, color: tone, fontFamily: fonts, fontSize: 10, letterSpacing: 0.5 }}>
-                        {chip}
-                      </div>
+                      <div style={{ marginTop: 10, width: 54, height: 6, borderRadius: 999, background: `${tone}40` }} />
                     </div>
-                    <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                      {body}
-                    </div>
-                    <div style={{ marginTop: "auto", display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 6 }}>
-                      {[0.46, 0.72, 0.32].map((opacity, chipIndex) => (
-                        <div
-                          key={chipIndex}
-                          style={{
-                            height: 8,
-                            borderRadius: 999,
-                            background: `${tone}${Math.round(opacity * 255).toString(16).padStart(2, "0")}`,
-                          }}
-                        />
-                      ))}
+                    <div style={{ padding: "7px 11px", borderRadius: 999, border: `1px solid ${tone}30`, background: `${tone}14`, color: tone, fontFamily: fonts, fontSize: 10, letterSpacing: 0.5 }}>
+                      {chip}
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                  <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.8 }}>
+                    {body}
+                  </div>
+                  <div style={{ marginTop: "auto", display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 6 }}>
+                    {[0.46, 0.72, 0.32].map((opacity, chipIndex) => (
+                      <div
+                        key={chipIndex}
+                        style={{
+                          height: 8,
+                          borderRadius: 999,
+                          background: `${tone}${Math.round(opacity * 255).toString(16).padStart(2, "0")}`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </InsightPanel>
       </div>
