@@ -188,28 +188,67 @@ function LiquiditySystemOverview({ className = "", style }) {
     { label: "Trade fee", value: "2.5%", sub: "Each trade routes fee into stakers, reserve, treasury, and protocol fees.", tone: COLORS.green },
   ];
 
-  const signalRows = [
-    ["Purchase rate", "sales in 24h / circulating supply", "Expansion wants >= 35 bps. Release wants >= 15 bps. Weak demand counts it as weak below 10 bps."],
-    ["Listing pressure", "active listings / circulating supply", "Expansion wants <= 800 bps. Release wants <= 1200 bps. Weak demand counts it as weak above 1500 bps."],
-    ["Floor ratio", "market floor / protocol floor", "Expansion and release both want >= 120%. Weak demand counts it as weak at or below 100%."],
+  const gateCards = [
+    {
+      title: "Sell to pool",
+      tone: COLORS.accent,
+      eyebrow: "Floor exit lane",
+      chips: ["launch > 6h", "not Expansion", "coverage ≥ 100%"],
+    },
+    {
+      title: "Release inventory",
+      tone: COLORS.purple,
+      eyebrow: "Protocol listing gate",
+      chips: ["Stabilization", "purchase ≥ 15 bps", "listings ≤ 1200 bps", "floor ≥ 120%"],
+    },
+    {
+      title: "Treasury buyback",
+      tone: COLORS.yellow,
+      eyebrow: "Weak-demand cleanup",
+      chips: ["weak / stale", "coverage ≥ 200%", "treasury 10%", "pool cap 5%"],
+    },
+    {
+      title: "Trade fee split",
+      tone: COLORS.green,
+      eyebrow: "Fee machine",
+      chips: ["10% stakers", "25% reserve", "25% treasury", "40% protocol"],
+    },
   ];
 
-  const ruleCards = [
-    ["Mint route", "Router mints the NFT, then routes 60% into reserve, 10% into treasury, and 30% into the creator / team wallet. The reserve is funded on day one instead of waiting for secondary demand."],
-    ["Sell-to-pool gate", "Sell-to-pool only opens after the 6h launch-protection window, only outside Expansion, and only while coverage stays at or above 100%."],
-    ["Release gate", "Protocol inventory only re-enters the market in Stabilization and only if purchase rate, listing pressure, and floor ratio all pass the release thresholds."],
-    ["Weak-demand cleanup", "Buyback activates only when weak demand or stale / excess inventory appears, and only when coverage is at least 200%."],
-    ["Fee routing", "Trade fee is 2.5%. Inside that fee: 10% goes to stakers, 25% back to reserve, 25% to treasury, and 40% to protocol fees."],
-    ["Settlement truth", "Protocol inventory only improves sell pressure after a real marketplace sale. Moving an NFT into a listing does not count as cleanup by itself."],
+  const signalCards = [
+    {
+      title: "Purchase rate",
+      tone: COLORS.accent,
+      formula: "sales / 24h",
+      weak: "< 10",
+      mid: "15+",
+      strong: "35+",
+    },
+    {
+      title: "Listing pressure",
+      tone: COLORS.purple,
+      formula: "listings / supply",
+      weak: "> 1500",
+      mid: "≤ 1200",
+      strong: "≤ 800",
+    },
+    {
+      title: "Floor ratio",
+      tone: "#2AABCF",
+      formula: "market / protocol",
+      weak: "≤ 100%",
+      mid: "120%",
+      strong: "120%+",
+    },
   ];
 
   const lifecycleCards = [
-    ["1. Mint seeds the machine", "The first mint does not wait for secondary demand. It seeds reserve, treasury, and the creator / team wallet immediately."],
-    ["2. Holders choose the route", "After mint, holders can hold, list in the native market, stake for fee flow, or sell into the pool if the sell lane is open."],
-    ["3. Pool only quotes the floor", "The pool does not value rare traits. It only quotes the collection floor and leaves premium discovery to the marketplace."],
-    ["4. Marketplace feeds the state machine", "Recent sales, active listings, and the market floor feed Weak Demand, Stabilization, and Expansion inside the pool."],
-    ["5. Treasury cleans weak markets", "If inventory gets stale or weak demand persists, treasury buyback can remove part of that inventory under strict coverage limits."],
-    ["6. Vault and relist stay gated", "Inventory can move into vault, burn, or relist only when the protocol gates say the market can actually absorb it."],
+    ["Mint", "art + payment"],
+    ["Reserve", "60% seeded"],
+    ["Market", "premium discovery"],
+    ["Signals", "sales / listings / floor"],
+    ["Buyback", "weak-demand cleanup"],
+    ["Vault", "relist or burn"],
   ];
 
   const comparisonColumns = [
@@ -450,35 +489,67 @@ function LiquiditySystemOverview({ className = "", style }) {
 
         <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 24, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <div style={{ color: "#1A9B67", fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
-            Protocol rules and gates
+            Protocol machine
           </div>
-          <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-            The pool does not make discretionary decisions. It reads marketplace signals and follows explicit gates.
+          <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.6 }}>
+            No discretionary magic. Just gates, thresholds, and fee routes.
           </div>
 
-          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
-            {ruleCards.map(([title, body]) => (
-              <div key={title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, minHeight: 124 }}>
-                <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
-                  {title}
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 12 }}>
+            {gateCards.map((card) => (
+              <div key={card.title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, minHeight: 174, display: "flex", flexDirection: "column", gap: 12 }}>
+                <div style={{ padding: "6px 10px", borderRadius: 999, alignSelf: "flex-start", background: `${card.tone}12`, color: card.tone, border: `1px solid ${card.tone}33`, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                  {card.eyebrow}
                 </div>
-                <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                  {body}
+                <div style={{ color: card.tone, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600, lineHeight: 1.05 }}>
+                  {card.title}
+                </div>
+                <div style={{ display: "grid", gap: 8, marginTop: "auto" }}>
+                  {card.chips.map((chip) => (
+                    <div key={chip} style={{ padding: "10px 12px", borderRadius: 12, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.05)", color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.4, textTransform: "uppercase", letterSpacing: 0.55 }}>
+                      {chip}
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
           </div>
 
           <div style={{ marginTop: 14, padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface }}>
-            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
-              Signal inputs
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
+                Signal dashboard
+              </div>
+              <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                thresholds that drive state
+              </div>
             </div>
-            <div style={{ marginTop: 8, display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
-              {signalRows.map(([title, formula, note]) => (
-                <div key={title} style={{ display: "grid", gridTemplateColumns: "150px 180px 1fr", gap: 10, alignItems: "start" }}>
-                  <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 13, fontWeight: 600 }}>{title}</div>
-                  <div style={{ color: "#7C56D8", fontFamily: fonts, fontSize: 10, letterSpacing: 0.4, lineHeight: 1.6, textTransform: "uppercase" }}>{formula}</div>
-                  <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>{note}</div>
+            <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
+              {signalCards.map((card) => (
+                <div key={card.title} style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.04)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
+                    <div style={{ color: card.tone, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{card.title}</div>
+                    <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>{card.formula}</div>
+                  </div>
+                  <div style={{ marginTop: 12, display: "flex", height: 14, borderRadius: 999, overflow: "hidden", border: `1px solid ${COLORS.border}` }}>
+                    <div style={{ width: "33.333%", background: `${card.tone}22` }} />
+                    <div style={{ width: "33.333%", background: `${card.tone}55` }} />
+                    <div style={{ width: "33.333%", background: `${card.tone}` }} />
+                  </div>
+                  <div style={{ marginTop: 10, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
+                    <div style={{ padding: "8px 6px", borderRadius: 10, background: "rgba(255,255,255,0.04)", textAlign: "center" }}>
+                      <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>Weak</div>
+                      <div style={{ marginTop: 2, color: COLORS.textMuted, fontFamily: fontDisplay, fontSize: 12 }}>{card.weak}</div>
+                    </div>
+                    <div style={{ padding: "8px 6px", borderRadius: 10, background: "rgba(255,255,255,0.04)", textAlign: "center" }}>
+                      <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>Release</div>
+                      <div style={{ marginTop: 2, color: COLORS.textMuted, fontFamily: fontDisplay, fontSize: 12 }}>{card.mid}</div>
+                    </div>
+                    <div style={{ padding: "8px 6px", borderRadius: 10, background: "rgba(255,255,255,0.04)", textAlign: "center" }}>
+                      <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>Expand</div>
+                      <div style={{ marginTop: 2, color: COLORS.textMuted, fontFamily: fontDisplay, fontSize: 12 }}>{card.strong}</div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -491,26 +562,33 @@ function LiquiditySystemOverview({ className = "", style }) {
           <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
             <div>
               <div style={{ color: "#2AABCF", fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
-                Full lifecycle on one page
+                End-to-end pipeline
               </div>
-              <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7, maxWidth: 920 }}>
-                This is the shortest honest explanation of the whole machine: mint funds reserve, holders choose between market / stake / pool, marketplace signals drive the state machine, and treasury only cleans inventory when demand weakens and coverage is strong enough.
+              <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.6, maxWidth: 920 }}>
+                What the system does after mint, in one visual pass.
               </div>
             </div>
             <Eyebrow tone="green">End-to-end</Eyebrow>
           </div>
 
-          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
-            {lifecycleCards.map(([title, body]) => (
-              <div key={title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, minHeight: 118 }}>
-                <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 15, fontWeight: 600 }}>
-                  {title}
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(6, minmax(0, 1fr))", gap: 10, alignItems: "stretch" }}>
+            {lifecycleCards.map(([title, body], index) => {
+              const tones = [COLORS.accent, COLORS.purple, COLORS.yellow, "#2AABCF", COLORS.green, "#D4497A"];
+              const tone = tones[index % tones.length];
+              return (
+                <div key={title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, minHeight: 120, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 999, background: `${tone}12`, border: `1px solid ${tone}33`, color: tone, fontFamily: fonts, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {index + 1}
+                  </div>
+                  <div style={{ marginTop: 8, color: tone, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600, lineHeight: 1.05 }}>
+                    {title}
+                  </div>
+                  <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.5, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                    {body}
+                  </div>
                 </div>
-                <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                  {body}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </FrostCard>
       </div>
