@@ -169,16 +169,27 @@ function NftMarquee({ ids, speed = 28, reverse = false }) {
 
 /* ── Animated liquidity loading bar ── */
 function LiquidityBar({ pool }) {
-  const fillPct = pool.ethBalance > 0 ? Math.min((pool.ethBalance / (pool.ethBalance + 5)) * 100, 95) : 35;
+  const minted = Math.max(Number(pool.totalMinted || 0), 0);
+  const reserveEth = Number(pool.ethBalance || 0);
+  const floorEth = Number(pool.floor || 0);
+  const coveragePct = pool.liqRatio > 0 ? Math.round(pool.liqRatio * 100) : 0;
+  const liveGrowthPct = minted > 0 ? Math.min((minted / COLLECTION_SUPPLY) * 100, 100) : 0;
+  const growthPct = liveGrowthPct > 0 ? Math.max(liveGrowthPct, 4) : 12;
+  const reserveMilestones = [1, 10, 100, COLLECTION_SUPPLY];
+  const growthSteps = [
+    ["User mints", "60% of that mint goes straight into reserve.", COLORS.accent],
+    ["Split executes", "10% goes to treasury and 30% to creator / team.", COLORS.purple],
+    ["Pool grows", "More mints deepen reserve and support the floor lane.", COLORS.green],
+  ];
   return (
     <FrostCard style={{ padding: 22, background: COLORS.surfaceStrong, borderRadius: 24, marginTop: 14 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
         <div>
           <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600, letterSpacing: -0.6 }}>
-            Reserve liquidity
+            How the reserve grows
           </div>
           <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, marginTop: 2 }}>
-            Every mint adds ETH to the reserve pool
+            Minting does not just sell an NFT. It seeds reserve on the same transaction and grows the pool over time.
           </div>
         </div>
         <div style={{
@@ -186,56 +197,147 @@ function LiquidityBar({ pool }) {
           background: COLORS.greenSoft, color: COLORS.green,
           fontFamily: fonts, fontSize: 11, fontWeight: 700,
         }}>
-          {pool.ethBalance > 0 ? `${Number(pool.ethBalance).toFixed(3)} ETH` : "Preview"}
+          {reserveEth > 0 ? `Live reserve ${reserveEth.toFixed(3)} ETH` : "Launch model"}
         </div>
       </div>
 
-      <div style={{ position: "relative", height: 36, borderRadius: 18, background: "rgba(255,255,255,0.04)", border: `1px solid ${COLORS.border}`, overflow: "hidden" }}>
-        <div style={{
-          position: "absolute", top: 0, left: 0, bottom: 0,
-          width: `${fillPct}%`,
-          borderRadius: 18,
-          background: "linear-gradient(90deg, #7CB7F6, #AE8BFF, #6EE7B7)",
-          transition: "width 1.5s cubic-bezier(0.22, 1, 0.36, 1)",
-        }}>
-          <div style={{
-            position: "absolute", inset: 0, borderRadius: 18,
-            background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)",
-            backgroundSize: "200% 100%",
-            animation: "shimmer 2.5s ease-in-out infinite",
-          }} />
-        </div>
-        <div style={{
-          position: "absolute", inset: 0,
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "0 14px",
-        }}>
-          <span style={{ color: "rgba(255,255,255,0.9)", fontFamily: fontDisplay, fontSize: 12, fontWeight: 600, zIndex: 1 }}>
-            Pool reserve
-          </span>
-          <span style={{ color: "rgba(255,255,255,0.7)", fontFamily: fonts, fontSize: 10, zIndex: 1 }}>
-            {pool.liqRatio > 0 ? `${(pool.liqRatio * 100).toFixed(0)}% coverage` : "Growing..."}
-          </span>
-        </div>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginTop: 12 }}>
-        {[
-          { label: "Floor bid", value: fmtEth(pool.floor), color: "#F4CF66", pct: pool.floor > 0 ? Math.min((pool.floor / 0.05) * 100, 100) : 20 },
-          { label: "Sell quote", value: fmtEth(pool.sellPrice), color: "#F48FB1", pct: pool.sellPrice > 0 ? Math.min((pool.sellPrice / 0.05) * 100, 100) : 15 },
-          { label: "Listing ref", value: fmtEth(pool.listingPrice), color: "#6EE7B7", pct: pool.listingPrice > 0 ? Math.min((pool.listingPrice / 0.1) * 100, 100) : 30 },
-        ].map((b) => (
-          <div key={b.label}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
-              <span style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>{b.label}</span>
-              <span style={{ color: b.color, fontFamily: fontDisplay, fontSize: 11, fontWeight: 600 }}>{b.value}</span>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
+        {growthSteps.map(([title, body, tone], index) => (
+          <div
+            key={title}
+            style={{
+              padding: 16,
+              borderRadius: 20,
+              border: `1px solid ${COLORS.border}`,
+              background: index === 1 ? "rgba(174,139,255,0.08)" : "rgba(255,255,255,0.05)",
+              position: "relative",
+              overflow: "hidden",
+              minHeight: 108,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{title}</div>
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 999,
+                  display: "grid",
+                  placeItems: "center",
+                  background: `${tone}16`,
+                  border: `1px solid ${tone}28`,
+                  color: tone,
+                  fontFamily: fontDisplay,
+                  fontSize: 12,
+                  fontWeight: 700,
+                }}
+              >
+                {index + 1}
+              </div>
             </div>
-            <div style={{ height: 5, borderRadius: 999, background: "rgba(255,255,255,0.04)", overflow: "hidden" }}>
-              <div style={{
-                width: `${b.pct}%`, height: "100%", borderRadius: 999,
-                background: b.color, opacity: 0.7,
-                transition: "width 1.2s ease",
-              }} />
+            <div style={{ marginTop: 10, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.75, maxWidth: 250 }}>
+              {body}
+            </div>
+            <div style={{ position: "absolute", left: 16, right: 16, bottom: 14, height: 6, borderRadius: 999, background: `${tone}24` }} />
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 14, padding: 16, borderRadius: 20, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.05)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", marginBottom: 12 }}>
+          <div>
+            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 15, fontWeight: 600 }}>Minted supply accumulates inside reserve</div>
+            <div style={{ marginTop: 3, color: COLORS.textMuted, fontFamily: fonts, fontSize: 10 }}>
+              The reserve does not appear later. It compounds from mint one to the full collection.
+            </div>
+          </div>
+          <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase", whiteSpace: "nowrap" }}>
+            {minted > 0 ? `${minted.toLocaleString()} / ${COLLECTION_SUPPLY.toLocaleString()} minted` : `${COLLECTION_SUPPLY.toLocaleString()} supply target`}
+          </div>
+        </div>
+
+        <div style={{ position: "relative", height: 18, borderRadius: 999, background: "rgba(255,255,255,0.04)", border: `1px solid ${COLORS.border}`, overflow: "hidden" }}>
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: `${growthPct}%`,
+              borderRadius: 999,
+              background: "linear-gradient(90deg, #7CB7F6, #AE8BFF, #6EE7B7)",
+              transition: "width 1.5s cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                borderRadius: 999,
+                background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.16) 50%, transparent 100%)",
+                backgroundSize: "200% 100%",
+                animation: "shimmer 2.5s ease-in-out infinite",
+              }}
+            />
+          </div>
+          {reserveMilestones.map((milestone, index) => {
+            const left = `${(index / (reserveMilestones.length - 1)) * 100}%`;
+            const isActive = milestone <= Math.max(minted, 1);
+            return (
+              <div
+                key={milestone}
+                style={{
+                  position: "absolute",
+                  left,
+                  top: "50%",
+                  transform: index === reserveMilestones.length - 1 ? "translate(-100%, -50%)" : "translate(-50%, -50%)",
+                  width: 8,
+                  height: 8,
+                  borderRadius: 999,
+                  background: isActive ? COLORS.text : "rgba(255,255,255,0.18)",
+                  boxShadow: "0 0 0 3px rgba(255,255,255,0.12)",
+                }}
+              />
+            );
+          })}
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10, marginTop: 10 }}>
+          {reserveMilestones.map((milestone) => (
+            <div key={milestone} style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, lineHeight: 1.5 }}>
+              <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 12, fontWeight: 600 }}>
+                {milestone.toLocaleString()} mint{milestone > 1 ? "s" : ""}
+              </div>
+              <div style={{ marginTop: 2 }}>
+                {milestone === 1 && "Reserve starts"}
+                {milestone === 10 && "Early pool base"}
+                {milestone === 100 && "Deeper floor support"}
+                {milestone === COLLECTION_SUPPLY && "Full collection reserve"}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10, marginTop: 12 }}>
+        {[
+          { label: "Pool reserve", value: fmtEth(reserveEth), color: COLORS.accent },
+          { label: "Minted", value: minted.toLocaleString(), color: COLORS.purple },
+          { label: "Floor bid", value: fmtEth(floorEth), color: "#F4CF66" },
+          { label: "Coverage", value: coveragePct > 0 ? `${coveragePct}%` : "Forming", color: COLORS.green },
+        ].map((b) => (
+          <div
+            key={b.label}
+            style={{
+              padding: 14,
+              borderRadius: 18,
+              border: `1px solid ${COLORS.border}`,
+              background: "rgba(255,255,255,0.04)",
+            }}
+          >
+            <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>{b.label}</div>
+            <div style={{ marginTop: 8, color: b.color, fontFamily: fontDisplay, fontSize: 17, fontWeight: 600, lineHeight: 1.1 }}>
+              {b.value}
             </div>
           </div>
         ))}
