@@ -4,6 +4,7 @@ import { COLORS, fonts, fontDisplay } from "../utils/constants";
 import { COLLECTION_SUPPLY, FEATURED_COLLECTION_IDS } from "../utils/generatedCollection";
 import { fmtEth, revealStyle } from "../utils/helpers";
 import { DataBadge, Eyebrow, FrostCard } from "../components/ui";
+import { useThemeMode } from "../ThemeModeContext";
 
 const MARQUEE_ROW_SIZE = 25;
 
@@ -1253,6 +1254,7 @@ function LiquiditySystemOverview({ className = "", style }) {
 }
 
 export default function HomePage({ setPage, pool, isLive, poolError }) {
+  const themeMode = useThemeMode();
   return (
     <div
       style={{
@@ -1262,6 +1264,12 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
         padding: "118px 12px 64px",
         boxSizing: "border-box",
         overflow: "hidden",
+        ...(themeMode === "light"
+          ? {
+              "--ocp-text-muted": "#485062",
+              "--ocp-text-dim": "#626B7D",
+            }
+          : {}),
       }}
     >
       <MarqueeStyles />
