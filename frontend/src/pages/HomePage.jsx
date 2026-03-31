@@ -2,16 +2,112 @@ import React, { useMemo } from "react";
 import { MetalButton } from "../MetalButton";
 import { useThemeMode } from "../ThemeModeContext";
 import { COLORS, fonts, fontDisplay } from "../utils/constants";
-import { COLLECTION_SUPPLY, FEATURED_COLLECTION_IDS } from "../utils/generatedCollection";
+import { COLLECTION_SUPPLY } from "../utils/generatedCollection";
 import { driftStyle, fmtEth, fmtPct, revealStyle } from "../utils/helpers";
 import { DataBadge, Eyebrow, FrostCard } from "../components/ui";
 
+const BACKDROP_PIXEL_PATTERNS = [
+  [[0, 0], [1, 0], [0, 1], [1, 1]],
+  [[0, 0], [1, 0], [2, 0], [1, 1]],
+  [[0, 0], [0, 1], [1, 1], [1, 2]],
+  [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]],
+  [[0, 0], [1, 0], [2, 0], [0, 1], [2, 1]],
+];
+
+function createSeededRandom(seed) {
+  let state = seed >>> 0;
+  return () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
+function buildBackdropPixels(count, seed = 1337) {
+  const random = createSeededRandom(seed);
+  const palette = [
+    "rgba(124, 86, 216, 0.34)",
+    "rgba(42, 171, 207, 0.32)",
+    "rgba(26, 155, 103, 0.3)",
+    "rgba(232, 133, 58, 0.32)",
+    "rgba(212, 73, 122, 0.28)",
+    "rgba(183, 138, 31, 0.3)",
+  ];
+
+  return Array.from({ length: count }, (_, index) => {
+    const pattern = BACKDROP_PIXEL_PATTERNS[Math.floor(random() * BACKDROP_PIXEL_PATTERNS.length)];
+    return {
+      id: index,
+      left: `${6 + random() * 88}%`,
+      top: `${3 + random() * 94}%`,
+      size: 10 + Math.floor(random() * 12),
+      opacity: 0.58 + random() * 0.28,
+      color: palette[Math.floor(random() * palette.length)],
+      pattern,
+      glow: 8 + Math.floor(random() * 12),
+    };
+  });
+}
+
+const HOME_BACKDROP_PIXELS = buildBackdropPixels(78, 20260331);
+
+function HomePixelBackdrop() {
+  return (
+    <div
+      aria-hidden
+      style={{
+        position: "absolute",
+        inset: 0,
+        overflow: "hidden",
+        pointerEvents: "none",
+        zIndex: 0,
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(circle at 12% 18%, rgba(124, 86, 216, 0.16), transparent 24%), radial-gradient(circle at 86% 12%, rgba(42, 171, 207, 0.14), transparent 22%), radial-gradient(circle at 14% 78%, rgba(232, 133, 58, 0.12), transparent 22%), radial-gradient(circle at 82% 74%, rgba(26, 155, 103, 0.12), transparent 24%)",
+        }}
+      />
+      {HOME_BACKDROP_PIXELS.map((cluster) => (
+        <div
+          key={cluster.id}
+          style={{
+            position: "absolute",
+            left: cluster.left,
+            top: cluster.top,
+            width: cluster.size * 4,
+            height: cluster.size * 4,
+            opacity: cluster.opacity,
+            filter: `drop-shadow(0 0 ${cluster.glow}px ${cluster.color})`,
+          }}
+        >
+          {cluster.pattern.map(([x, y], pixelIndex) => (
+            <div
+              key={pixelIndex}
+              style={{
+                position: "absolute",
+                left: x * cluster.size,
+                top: y * cluster.size,
+                width: cluster.size,
+                height: cluster.size,
+                borderRadius: 3,
+                background: cluster.color,
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.18) inset, 0 2px 10px rgba(0,0,0,0.06)",
+              }}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ── pixel mosaic grid (right side of hero) ── */
 function PixelMosaic() {
-  // Build a 10x10 grid of collection images, shuffled
   const ids = useMemo(() => {
     const all = Array.from({ length: Math.min(100, COLLECTION_SUPPLY) }, (_, i) => i);
-    // Deterministic shuffle
     for (let i = all.length - 1; i > 0; i--) {
       const j = (i * 7 + 13) % (i + 1);
       [all[i], all[j]] = [all[j], all[i]];
@@ -205,19 +301,22 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
   const isLight = themeMode === "light";
 
   return (
-    <div style={{ width: "100%", margin: 0, padding: 0 }}>
-      {/* ════════ HERO SECTION ════════ */}
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          alignItems: "center",
-          padding: "120px 48px 60px",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
+    <div style={{ width: "100%", margin: 0, padding: 0, position: "relative", overflow: "hidden" }}>
+      <HomePixelBackdrop />
+
+      <div style={{ position: "relative", zIndex: 1 }}>
+        {/* ════════ HERO SECTION ════════ */}
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            alignItems: "center",
+            padding: "120px 48px 60px",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
         {/* Background glow */}
         <div
           style={{
@@ -418,10 +517,10 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
             <MetricPill label="Staked" value={pool.totalStaked ?? "—"} tone="#D4497A" pct={pool.totalMinted > 0 ? (pool.totalStaked / pool.totalMinted) * 100 : 0} />
           </div>
         </div>
-      </div>
+        </div>
 
-      {/* ════════ PROTOCOL OVERVIEW ════════ */}
-      <div style={{ padding: "64px 48px 80px" }}>
+        {/* ════════ PROTOCOL OVERVIEW ════════ */}
+        <div style={{ padding: "64px 48px 80px" }}>
         {/* Section header */}
         <div
           className="site-reveal"
@@ -810,6 +909,7 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
               Explore market &nbsp;&#x2192;
             </MetalButton>
           </FrostCard>
+        </div>
         </div>
       </div>
     </div>
