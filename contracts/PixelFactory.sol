@@ -12,6 +12,10 @@ interface ISetup {
     function transferOwnership(address newOwner) external;
 }
 
+interface ISetupNFT is ISetup {
+    function lockPalette() external;
+}
+
 /// @title PixelFactory
 /// @notice Deploy an entire OnChainPixel collection in one transaction
 /// @dev Stores creation bytecodes separately via setCode(). 
@@ -24,6 +28,7 @@ contract PixelFactory is Ownable {
     error MissingBytecode();
     error DeployFailed();
     error TransferFailed();
+    error ZeroAddress();
 
     event CollectionCreated(
         address indexed creator,
@@ -45,6 +50,21 @@ contract PixelFactory is Ownable {
         address market;
         address creator;
         uint64 createdAt;
+    }
+
+    struct CreateParams {
+        string name;
+        string symbol;
+        uint8 bitDepth;
+        uint8 defaultWidth;
+        uint8 defaultHeight;
+        uint256 maxSupply;
+        uint256 mintPrice;
+        uint256 poolSeedBps;
+        uint256 treasuryBps;
+        bytes paletteRGB;
+        address finalOwner;
+        bool lockPalette;
     }
 
     address[] public collections;
@@ -102,12 +122,65 @@ contract PixelFactory is Ownable {
         uint256 treasuryBps_,
         bytes calldata paletteRGB
     ) external payable returns (address nftAddr, address poolAddr, address routerAddr, address marketAddr) {
+        CreateParams memory params = CreateParams({
+            name: name_,
+            symbol: symbol_,
+            bitDepth: bitDepth_,
+            defaultWidth: defaultWidth_,
+            defaultHeight: defaultHeight_,
+            maxSupply: maxSupply_,
+            mintPrice: mintPrice_,
+            poolSeedBps: poolSeedBps_,
+            treasuryBps: treasuryBps_,
+            paletteRGB: paletteRGB,
+            finalOwner: msg.sender,
+            lockPalette: false
+        });
+        return _createCollection(params);
+    }
+
+    function createCollectionSafe(
+        string calldata name_,
+        string calldata symbol_,
+        uint8 bitDepth_,
+        uint8 defaultWidth_,
+        uint8 defaultHeight_,
+        uint256 maxSupply_,
+        uint256 mintPrice_,
+        uint256 poolSeedBps_,
+        uint256 treasuryBps_,
+        bytes calldata paletteRGB,
+        address finalOwner_,
+        bool lockPalette_
+    ) external payable returns (address nftAddr, address poolAddr, address routerAddr, address marketAddr) {
+        CreateParams memory params = CreateParams({
+            name: name_,
+            symbol: symbol_,
+            bitDepth: bitDepth_,
+            defaultWidth: defaultWidth_,
+            defaultHeight: defaultHeight_,
+            maxSupply: maxSupply_,
+            mintPrice: mintPrice_,
+            poolSeedBps: poolSeedBps_,
+            treasuryBps: treasuryBps_,
+            paletteRGB: paletteRGB,
+            finalOwner: finalOwner_,
+            lockPalette: lockPalette_
+        });
+        return _createCollection(params);
+    }
+
+    function _createCollection(CreateParams memory params)
+        private
+        returns (address nftAddr, address poolAddr, address routerAddr, address marketAddr)
+    {
         if (nftCode.length == 0 || poolCode.length == 0 || routerCode.length == 0 || marketCode.length == 0) {
             revert MissingBytecode();
         }
-        if (mintPrice_ == 0) revert InvalidAmount();
+        if (params.mintPrice == 0) revert InvalidAmount();
         if (msg.value < factoryFee) revert InsufficientFee();
-        if (poolSeedBps_ + treasuryBps_ > 10000) revert InvalidBps();
+        if (params.poolSeedBps + params.treasuryBps > 10000) revert InvalidBps();
+        if (params.finalOwner == address(0)) revert ZeroAddress();
 
         uint256 salt = uint256(keccak256(abi.encodePacked(msg.sender, collections.length)));
 
@@ -115,19 +188,35 @@ contract PixelFactory is Ownable {
         // Public mint remains owner-gated at the NFT layer, but the price stays coherent.
         nftAddr = _deploy(abi.encodePacked(
             nftCode,
-            abi.encode(name_, symbol_, bitDepth_, defaultWidth_, defaultHeight_, maxSupply_, mintPrice_, paletteRGB)
+            abi.encode(
+                params.name,
+                params.symbol,
+                params.bitDepth,
+                params.defaultWidth,
+                params.defaultHeight,
+                params.maxSupply,
+                params.mintPrice,
+                params.paletteRGB
+            )
         ), salt);
 
         // 2. Deploy Pool
         poolAddr = _deploy(abi.encodePacked(
             poolCode,
-            abi.encode(nftAddr, mintPrice_)
+            abi.encode(nftAddr, params.mintPrice)
         ), salt + 1);
 
         // 3. Deploy Router
         routerAddr = _deploy(abi.encodePacked(
             routerCode,
-            abi.encode(nftAddr, poolAddr, msg.sender, mintPrice_, poolSeedBps_, treasuryBps_)
+            abi.encode(
+                nftAddr,
+                poolAddr,
+                msg.sender,
+                params.mintPrice,
+                params.poolSeedBps,
+                params.treasuryBps
+            )
         ), salt + 2);
 
         // 4. Deploy Marketplace
@@ -137,16 +226,19 @@ contract PixelFactory is Ownable {
         ), salt + 3);
 
         // 5. Wire permissions
-        ISetup(nftAddr).setMinter(routerAddr, true);
-        ISetup(nftAddr).setBurner(poolAddr, true);
+        ISetupNFT(nftAddr).setMinter(routerAddr, true);
+        ISetupNFT(nftAddr).setBurner(poolAddr, true);
         ISetup(poolAddr).setRouter(routerAddr);
         ISetup(poolAddr).setListingVault(marketAddr);
+        if (params.lockPalette) {
+            ISetupNFT(nftAddr).lockPalette();
+        }
 
-        // 6. Transfer ownership to creator
-        ISetup(nftAddr).transferOwnership(msg.sender);
-        ISetup(poolAddr).transferOwnership(msg.sender);
-        ISetup(routerAddr).transferOwnership(msg.sender);
-        ISetup(marketAddr).transferOwnership(msg.sender);
+        // 6. Transfer ownership to final owner
+        ISetupNFT(nftAddr).transferOwnership(params.finalOwner);
+        ISetup(poolAddr).transferOwnership(params.finalOwner);
+        ISetup(routerAddr).transferOwnership(params.finalOwner);
+        ISetup(marketAddr).transferOwnership(params.finalOwner);
 
         // 7. Store
         collectionInfo[nftAddr] = Collection(poolAddr, routerAddr, marketAddr, msg.sender, uint64(block.timestamp));

@@ -69,6 +69,58 @@ async function seedPoolReserve(pool, owner, routerAddress, amount) {
 }
 
 describe("PixelMarketplace", function () {
+  it("lets owner pause trading while still allowing listing cancellation", async function () {
+    const { owner, creator, user, buyer, other, nft, pool, router, market, mintPrice } = await deployStack();
+
+    await (await router.connect(user)["mint(bytes)"](onePixel(2), { value: mintPrice })).wait();
+    await (await nft.connect(user).approve(market.address, 0)).wait();
+
+    const listingPrice = ethers.utils.parseEther("0.015");
+    await (await market.connect(user).createListing(0, listingPrice)).wait();
+
+    await (await market.connect(owner).pause()).wait();
+
+    await assert.rejects(
+      market.connect(user).updateListingPrice(1, listingPrice.add(1)),
+      /paused/
+    );
+    await assert.rejects(
+      market.connect(buyer).buyListing(1, { value: listingPrice }),
+      /paused/
+    );
+    await assert.rejects(
+      market.connect(other).createListing(999, listingPrice),
+      /paused/
+    );
+
+    await (await market.connect(user).cancelListing(1)).wait();
+    assert.strictEqual(await nft.ownerOf(0), user.address);
+
+    await (await router.connect(user)["mint(bytes)"](onePixel(3), { value: mintPrice })).wait();
+    await (await router.connect(buyer)["mint(bytes)"](onePixel(4), { value: mintPrice })).wait();
+    await (await router.connect(other)["mint(bytes)"](onePixel(5), { value: mintPrice })).wait();
+    await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("6"));
+    await increaseTime(LAUNCH_PROTECTION + 1);
+
+    await (await nft.connect(user).approve(router.address, 1)).wait();
+    await (await router.connect(user).sellNFT(1, 0)).wait();
+
+    const userListingPrice = addBps(await pool.getFloorPrice(), STABILIZATION_SPREAD_BPS);
+    await (await nft.connect(buyer).approve(market.address, 2)).wait();
+    await (await nft.connect(other).approve(market.address, 3)).wait();
+    await (await market.connect(owner).unpause()).wait();
+    await (await market.connect(buyer).createListing(2, userListingPrice)).wait();
+    await (await market.connect(other).createListing(3, userListingPrice)).wait();
+    await (await market.connect(creator).buyListing(2, { value: userListingPrice })).wait();
+    await (await market.connect(creator).buyListing(3, { value: userListingPrice })).wait();
+
+    await (await market.connect(owner).pause()).wait();
+    await assert.rejects(
+      pool.connect(owner).releasePoolInventoryForListing(1),
+      /paused/
+    );
+  });
+
   it("supports user listings, market snapshots, and fee routing", async function () {
     const { user, buyer, nft, pool, router, market, mintPrice } = await deployStack();
 

@@ -566,6 +566,13 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     function setListingVault(address vault) external onlyOwner {
         if (vault == address(0)) revert ZeroAddress();
         if (vault.code.length == 0) revert InvalidDependency();
+        try IMarketSignalFeed(vault).getMarketSnapshot() returns (
+            uint256,
+            uint256,
+            uint256
+        ) {} catch {
+            revert InvalidDependency();
+        }
         emit ListingVaultUpdated(listingVault, vault);
         listingVault = vault;
     }

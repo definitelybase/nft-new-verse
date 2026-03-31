@@ -80,6 +80,34 @@ async function createCollection(env) {
   return { nft, pool, router, market, event };
 }
 
+async function createCollectionSafe(env, finalOwner, lockPalette = true) {
+  const { creator, factory, NFT, Pool, Router, Market, mintPrice } = env;
+
+  const tx = await factory.connect(creator).createCollectionSafe(
+    "FactoryPixels",
+    "FPXL",
+    4,
+    1,
+    1,
+    1000,
+    mintPrice,
+    POOL_SEED_BPS,
+    TREASURY_BPS,
+    palette16(),
+    finalOwner,
+    lockPalette
+  );
+  const receipt = await tx.wait();
+  const event = receipt.events.find((entry) => entry.event === "CollectionCreated");
+
+  const nft = NFT.attach(event.args.nft);
+  const pool = Pool.attach(event.args.pool);
+  const router = Router.attach(event.args.router);
+  const market = Market.attach(event.args.market);
+
+  return { nft, pool, router, market, event };
+}
+
 async function seedPoolReserve(pool, creator, routerAddress, amount) {
   await (await pool.connect(creator).setRouter(creator.address)).wait();
   await (await pool.connect(creator).seedLiquidity({ value: amount })).wait();
@@ -155,5 +183,26 @@ describe("PixelFactory end-to-end", function () {
     assert.strictEqual((await pool.availableNFTs()).toString(), "0");
     const snapshot = await market.getMarketSnapshot();
     assert.strictEqual(snapshot.listedCount.toString(), "1");
+  });
+
+  it("can lock palette and hand ownership directly to a final owner via factory", async function () {
+    const env = await deployFactoryStack();
+    const { creator, buyer, nextBuyer, mintPrice } = env;
+    const { nft, pool, router, market } = await createCollectionSafe(env, nextBuyer.address, true);
+
+    assert.strictEqual(await nft.owner(), nextBuyer.address);
+    assert.strictEqual(await pool.owner(), nextBuyer.address);
+    assert.strictEqual(await router.owner(), nextBuyer.address);
+    assert.strictEqual(await market.owner(), nextBuyer.address);
+    assert.strictEqual(await router.creator(), creator.address);
+    assert.strictEqual(await nft.paletteLocked(), true);
+
+    await assert.rejects(
+      nft.connect(creator).setMintPrice(ethers.utils.parseEther("0.02")),
+      /Ownable: caller is not the owner/
+    );
+
+    await (await router.connect(buyer)["mint(bytes)"](onePixel(2), { value: mintPrice })).wait();
+    assert.strictEqual(await nft.ownerOf(0), buyer.address);
   });
 });

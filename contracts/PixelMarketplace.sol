@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 
 interface IPixelPoolMarket {
     function recordMarketplaceFee() external payable;
@@ -15,7 +16,7 @@ interface IPixelPoolMarket {
 /// @title PixelMarketplace
 /// @notice Native marketplace for user listings and protocol inventory listings.
 /// @dev Protocol inventory is transferred in from PixelPool and auto-listed on receipt.
-contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard {
+contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     error InvalidAmount();
     error InvalidDependency();
     error ZeroAddress();
@@ -87,7 +88,12 @@ contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard {
         marketFeeBps = marketFeeBps_;
     }
 
-    function createListing(uint256 tokenId, uint256 price) external nonReentrant returns (uint256 listingId) {
+    function createListing(uint256 tokenId, uint256 price)
+        external
+        nonReentrant
+        whenNotPaused
+        returns (uint256 listingId)
+    {
         if (price == 0) revert InvalidAmount();
         if (listingIdByToken[tokenId] != 0) revert TokenAlreadyListed();
         if (nftContract.ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
@@ -96,7 +102,7 @@ contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard {
         listingId = _createListing(msg.sender, tokenId, price, false, false);
     }
 
-    function updateListingPrice(uint256 listingId, uint256 newPrice) external {
+    function updateListingPrice(uint256 listingId, uint256 newPrice) external whenNotPaused {
         if (newPrice == 0) revert InvalidAmount();
         Listing storage listing = listings[listingId];
         if (!listing.active) revert ListingNotActive();
@@ -138,7 +144,7 @@ contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard {
         emit ListingCancelled(listingId, listing.tokenId, listing.protocolOwned);
     }
 
-    function buyListing(uint256 listingId) external payable nonReentrant {
+    function buyListing(uint256 listingId) external payable nonReentrant whenNotPaused {
         Listing memory listing = _takeListing(listingId);
         if (msg.value < listing.price) revert IncorrectPayment();
 
@@ -183,12 +189,20 @@ contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard {
         return _activeListingIds;
     }
 
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
+    }
+
     function onERC721Received(
         address operator,
         address from,
         uint256 tokenId,
         bytes calldata data
-    ) external override nonReentrant returns (bytes4) {
+    ) external override nonReentrant whenNotPaused returns (bytes4) {
         if (msg.sender != address(nftContract)) revert UnknownProtocolTransfer();
         if (from != address(pool) || operator != address(pool) || data.length == 0) {
             revert UnknownProtocolTransfer();

@@ -179,9 +179,10 @@ async function main() {
   console.log("Step 3/4: Creating collection...");
   const { name, symbol, bitDepth, defaultWidth, defaultHeight, maxSupply, mintPrice, poolSeedBps, treasuryBps, palette } = COLLECTION;
 
-  tx = await factory.createCollection(
+  tx = await factory.createCollectionSafe(
     name, symbol, bitDepth, defaultWidth, defaultHeight,
     maxSupply, mintPrice, poolSeedBps, treasuryBps, palette,
+    ownerAddress, shouldLockPalette,
     { gasLimit: 8_000_000 }
   );
   receipt = await tx.wait();
@@ -224,25 +225,15 @@ async function main() {
   }
 
   if (shouldLockPalette) {
-    tx = await nftContract.lockPalette();
-    await tx.wait();
-    console.log("   OK Palette locked");
+    console.log("   OK Palette locked in factory flow");
   } else {
     console.log("   WARN Palette left unlocked (SKIP_PALETTE_LOCK=YES)");
   }
 
   if (ownerAddress.toLowerCase() !== wallet.address.toLowerCase()) {
-    tx = await nftContract.transferOwnership(ownerAddress);
-    await tx.wait();
-    tx = await poolContract.transferOwnership(ownerAddress);
-    await tx.wait();
-    tx = await routerContract.transferOwnership(ownerAddress);
-    await tx.wait();
-    tx = await marketContract.transferOwnership(ownerAddress);
-    await tx.wait();
     tx = await factory.transferOwnership(ownerAddress);
     await tx.wait();
-    console.log(`   OK Ownership transferred to ${ownerAddress}`);
+    console.log(`   OK Factory ownership transferred to ${ownerAddress}`);
   } else {
     console.log("   OK Ownership retained by deployer");
   }
