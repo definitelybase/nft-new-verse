@@ -35,12 +35,12 @@ function createSeededRandom(seed) {
 function buildBackdropPixels(count, seed = 1337) {
   const random = createSeededRandom(seed);
   const palette = [
-    "rgba(124, 86, 216, 0.18)",
-    "rgba(42, 171, 207, 0.16)",
-    "rgba(26, 155, 103, 0.16)",
-    "rgba(232, 133, 58, 0.16)",
-    "rgba(212, 73, 122, 0.15)",
-    "rgba(183, 138, 31, 0.15)",
+    "rgba(124, 86, 216, 0.34)",
+    "rgba(42, 171, 207, 0.32)",
+    "rgba(26, 155, 103, 0.30)",
+    "rgba(232, 133, 58, 0.32)",
+    "rgba(212, 73, 122, 0.28)",
+    "rgba(183, 138, 31, 0.30)",
   ];
 
   return Array.from({ length: count }, (_, index) => {
@@ -49,15 +49,16 @@ function buildBackdropPixels(count, seed = 1337) {
       id: index,
       left: `${6 + random() * 88}%`,
       top: `${3 + random() * 94}%`,
-      size: 8 + Math.floor(random() * 8),
-      opacity: 0.42 + random() * 0.34,
+      size: 10 + Math.floor(random() * 12),
+      opacity: 0.58 + random() * 0.28,
       color: palette[Math.floor(random() * palette.length)],
       pattern,
+      glow: 8 + Math.floor(random() * 12),
     };
   });
 }
 
-const HOME_BACKDROP_PIXELS = buildBackdropPixels(56, 20260331);
+const HOME_BACKDROP_PIXELS = buildBackdropPixels(78, 20260331);
 
 /* ── Marquee keyframes (injected once) ── */
 function MarqueeStyles() {
@@ -92,7 +93,7 @@ function HomePixelBackdrop() {
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(circle at 12% 18%, rgba(124, 86, 216, 0.08), transparent 24%), radial-gradient(circle at 86% 12%, rgba(42, 171, 207, 0.08), transparent 22%), radial-gradient(circle at 14% 78%, rgba(232, 133, 58, 0.06), transparent 22%), radial-gradient(circle at 82% 74%, rgba(26, 155, 103, 0.06), transparent 24%)",
+            "radial-gradient(circle at 12% 18%, rgba(124, 86, 216, 0.16), transparent 24%), radial-gradient(circle at 86% 12%, rgba(42, 171, 207, 0.14), transparent 22%), radial-gradient(circle at 14% 78%, rgba(232, 133, 58, 0.12), transparent 22%), radial-gradient(circle at 82% 74%, rgba(26, 155, 103, 0.12), transparent 24%)",
         }}
       />
       {HOME_BACKDROP_PIXELS.map((cluster) => (
@@ -102,9 +103,10 @@ function HomePixelBackdrop() {
             position: "absolute",
             left: cluster.left,
             top: cluster.top,
-            width: cluster.size * 3,
-            height: cluster.size * 3,
+            width: cluster.size * 4,
+            height: cluster.size * 4,
             opacity: cluster.opacity,
+            filter: `drop-shadow(0 0 ${cluster.glow}px ${cluster.color})`,
           }}
         >
           {cluster.pattern.map(([x, y], pixelIndex) => (
@@ -116,9 +118,9 @@ function HomePixelBackdrop() {
                 top: y * cluster.size,
                 width: cluster.size,
                 height: cluster.size,
-                borderRadius: 2,
+                borderRadius: 3,
                 background: cluster.color,
-                boxShadow: "0 0 0 1px rgba(255,255,255,0.08) inset",
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.18) inset, 0 2px 10px rgba(0,0,0,0.06)",
               }}
             />
           ))}
