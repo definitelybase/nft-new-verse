@@ -1089,10 +1089,18 @@ function LiquiditySystemOverview({ className = "", style }) {
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop: 16, paddingTop: 14, borderTop: `1px dashed rgba(212,73,122,0.16)` }}>
-                <div style={{ display: "flex", alignItems: "flex-end", gap: 10, height: 34 }}>
+              <div
+                style={{
+                  marginTop: 16,
+                  paddingTop: 14,
+                  borderTop: `1px dashed rgba(212,73,122,0.16)`,
+                  display: "grid",
+                  gap: 18,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "flex-end", gap: 10, height: 88 }}>
                   {[22, 34, 50, 68].map((height, index) => (
-                    <div key={height} style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+                    <div key={height} style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "flex-end", height: "100%" }}>
                       <div
                         style={{
                           width: "70%",
@@ -1100,13 +1108,12 @@ function LiquiditySystemOverview({ className = "", style }) {
                           borderRadius: 12,
                           background: `linear-gradient(180deg, rgba(212,73,122,${0.08 + index * 0.04}), rgba(212,73,122,0.18))`,
                           border: `1px solid rgba(212,73,122,${0.16 + index * 0.04})`,
-                          transform: "translateY(34px)",
                         }}
                       />
                     </div>
                   ))}
                 </div>
-                <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 8 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 8, alignSelf: "end" }}>
                   {["entry", "boost", "stronger", "max weight"].map((label, index) => (
                     <div
                       key={label}
