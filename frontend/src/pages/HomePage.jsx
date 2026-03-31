@@ -1,93 +1,503 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { MetalButton } from "../MetalButton";
-import { useThemeMode } from "../ThemeModeContext";
 import { COLORS, fonts, fontDisplay } from "../utils/constants";
 import { COLLECTION_SUPPLY, FEATURED_COLLECTION_IDS } from "../utils/generatedCollection";
-import { driftStyle, fmtEth, fmtPct, revealStyle } from "../utils/helpers";
+import { fmtEth, revealStyle } from "../utils/helpers";
 import { DataBadge, Eyebrow, FrostCard } from "../components/ui";
 
-/* ── pixel mosaic grid (right side of hero) ── */
-function PixelMosaic() {
-  // Build a 10x10 grid of collection images, shuffled
-  const ids = useMemo(() => {
-    const all = Array.from({ length: Math.min(100, COLLECTION_SUPPLY) }, (_, i) => i);
-    // Deterministic shuffle
-    for (let i = all.length - 1; i > 0; i--) {
-      const j = (i * 7 + 13) % (i + 1);
-      [all[i], all[j]] = [all[j], all[i]];
-    }
-    return all;
-  }, []);
+const MARQUEE_ROW_SIZE = 25;
 
+function buildMarqueeRow(startIndex) {
+  return Array.from({ length: MARQUEE_ROW_SIZE }, (_, index) => (startIndex + index) % COLLECTION_SUPPLY);
+}
+
+const ROW1_IDS = buildMarqueeRow(0);
+const ROW2_IDS = buildMarqueeRow(25);
+const ROW3_IDS = buildMarqueeRow(50);
+const ROW4_IDS = buildMarqueeRow(75);
+
+const BACKDROP_PIXEL_PATTERNS = [
+  [[0, 0], [1, 0], [0, 1], [1, 1]],
+  [[0, 0], [1, 0], [2, 0], [1, 1]],
+  [[0, 0], [0, 1], [1, 1], [1, 2]],
+  [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]],
+  [[0, 0], [1, 0], [2, 0], [0, 1], [2, 1]],
+];
+
+function createSeededRandom(seed) {
+  let state = seed >>> 0;
+  return () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
+function buildBackdropPixels(count, seed = 1337) {
+  const random = createSeededRandom(seed);
+  const palette = [
+    "rgba(124, 86, 216, 0.34)",
+    "rgba(42, 171, 207, 0.32)",
+    "rgba(26, 155, 103, 0.30)",
+    "rgba(232, 133, 58, 0.32)",
+    "rgba(212, 73, 122, 0.28)",
+    "rgba(183, 138, 31, 0.30)",
+  ];
+
+  return Array.from({ length: count }, (_, index) => {
+    const pattern = BACKDROP_PIXEL_PATTERNS[Math.floor(random() * BACKDROP_PIXEL_PATTERNS.length)];
+    return {
+      id: index,
+      left: `${6 + random() * 88}%`,
+      top: `${3 + random() * 94}%`,
+      size: 10 + Math.floor(random() * 12),
+      opacity: 0.58 + random() * 0.28,
+      color: palette[Math.floor(random() * palette.length)],
+      pattern,
+      glow: 8 + Math.floor(random() * 12),
+    };
+  });
+}
+
+const HOME_BACKDROP_PIXELS = buildBackdropPixels(78, 20260331);
+
+function MarqueeStyles() {
+  return (
+    <style>{`
+      @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      @keyframes marqueeRev {
+        0% { transform: translateX(-50%); }
+        100% { transform: translateX(0); }
+      }
+    `}</style>
+  );
+}
+
+function HomePixelBackdrop() {
   return (
     <div
+      aria-hidden
       style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(10, 1fr)",
-        gap: 3,
-        width: "100%",
-        maxWidth: 600,
-        aspectRatio: "1 / 1",
-        maskImage: "radial-gradient(ellipse 80% 80% at 60% 50%, black 40%, transparent 100%)",
-        WebkitMaskImage: "radial-gradient(ellipse 80% 80% at 60% 50%, black 40%, transparent 100%)",
-        opacity: 0.85,
+        position: "absolute",
+        inset: 0,
+        overflow: "hidden",
+        pointerEvents: "none",
+        zIndex: 0,
       }}
     >
-      {ids.map((id, i) => (
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(circle at 12% 18%, rgba(124, 86, 216, 0.16), transparent 24%), radial-gradient(circle at 86% 12%, rgba(42, 171, 207, 0.14), transparent 22%), radial-gradient(circle at 14% 78%, rgba(232, 133, 58, 0.12), transparent 22%), radial-gradient(circle at 82% 74%, rgba(26, 155, 103, 0.12), transparent 24%)",
+        }}
+      />
+      {HOME_BACKDROP_PIXELS.map((cluster) => (
         <div
-          key={i}
-          className="site-reveal-soft"
+          key={cluster.id}
           style={{
-            borderRadius: 4,
-            overflow: "hidden",
-            aspectRatio: "1",
-            ...revealStyle(200 + i * 15),
+            position: "absolute",
+            left: cluster.left,
+            top: cluster.top,
+            width: cluster.size * 4,
+            height: cluster.size * 4,
+            opacity: cluster.opacity,
+            filter: `drop-shadow(0 0 ${cluster.glow}px ${cluster.color})`,
           }}
         >
-          <img
-            src={`/collection/images/${id}.svg`}
-            alt=""
-            loading="lazy"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              imageRendering: "pixelated",
-              display: "block",
-            }}
-          />
+          {cluster.pattern.map(([x, y], pixelIndex) => (
+            <div
+              key={pixelIndex}
+              style={{
+                position: "absolute",
+                left: x * cluster.size,
+                top: y * cluster.size,
+                width: cluster.size,
+                height: cluster.size,
+                borderRadius: 3,
+                background: cluster.color,
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.18) inset, 0 2px 10px rgba(0,0,0,0.06)",
+              }}
+            />
+          ))}
         </div>
       ))}
     </div>
   );
 }
 
-/* ── bottom metric pill with mini spark bar ── */
-function MetricPill({ label, value, tone, pct }) {
+function NftMarquee({ ids, speed = 28, reverse = false }) {
+  const items = [...ids, ...ids];
+  const totalWidth = ids.length * (80 + 8);
+  const duration = totalWidth / speed;
   return (
-    <div style={{
-      padding: "14px 20px",
-      borderRadius: 20,
-      border: `1px solid ${COLORS.border}`,
-      background: "rgba(255,255,255,0.03)",
-      display: "flex",
-      flexDirection: "column",
-      gap: 6,
-      minWidth: 140,
-      flex: "1 1 0",
-    }}>
-      <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1.2, textTransform: "uppercase" }}>
-        {label}
+    <div style={{ overflow: "hidden", width: "100%" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          width: "max-content",
+          animation: `marquee${reverse ? "Rev" : ""} ${duration}s linear infinite`,
+        }}
+      >
+        {items.map((id, i) => (
+          <div
+            key={i}
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 16,
+              border: `1px solid ${COLORS.border}`,
+              background: "rgba(255,255,255,0.04)",
+              overflow: "hidden",
+              flexShrink: 0,
+            }}
+          >
+            <img
+              src={`/collection/images/${id}.svg`}
+              alt={`NFT #${id}`}
+              style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated", display: "block" }}
+            />
+          </div>
+        ))}
       </div>
-      <div style={{ color: tone || COLORS.text, fontFamily: fontDisplay, fontSize: 22, fontWeight: 600 }}>
-        {value}
-      </div>
-      {pct != null && (
-        <div style={{ height: 3, borderRadius: 999, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-          <div style={{ width: `${Math.min(pct, 100)}%`, height: "100%", borderRadius: 999, background: tone || COLORS.accent, opacity: 0.7 }} />
-        </div>
-      )}
     </div>
+  );
+}
+
+function LiquidityBar({ pool }) {
+  const fillPct = pool.ethBalance > 0 ? Math.min((pool.ethBalance / (pool.ethBalance + 5)) * 100, 95) : 35;
+  return (
+    <FrostCard style={{ padding: 22, background: COLORS.surfaceStrong, borderRadius: 24, marginTop: 14 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+        <div>
+          <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600, letterSpacing: -0.6 }}>
+            Reserve liquidity
+          </div>
+          <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, marginTop: 2 }}>
+            Every mint adds ETH to the reserve pool
+          </div>
+        </div>
+        <div style={{
+          padding: "5px 12px", borderRadius: 999,
+          background: COLORS.greenSoft, color: COLORS.green,
+          fontFamily: fonts, fontSize: 11, fontWeight: 700,
+        }}>
+          {pool.ethBalance > 0 ? `${Number(pool.ethBalance).toFixed(3)} ETH` : "Preview"}
+        </div>
+      </div>
+
+      <div style={{ position: "relative", height: 36, borderRadius: 18, background: "rgba(255,255,255,0.04)", border: `1px solid ${COLORS.border}`, overflow: "hidden" }}>
+        <div style={{
+          position: "absolute", top: 0, left: 0, bottom: 0,
+          width: `${fillPct}%`,
+          borderRadius: 18,
+          background: "linear-gradient(90deg, #7CB7F6, #AE8BFF, #6EE7B7)",
+          transition: "width 1.5s cubic-bezier(0.22, 1, 0.36, 1)",
+        }}>
+          <div style={{
+            position: "absolute", inset: 0, borderRadius: 18,
+            background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)",
+            backgroundSize: "200% 100%",
+            animation: "shimmer 2.5s ease-in-out infinite",
+          }} />
+        </div>
+        <div style={{
+          position: "absolute", inset: 0,
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "0 14px",
+        }}>
+          <span style={{ color: "rgba(255,255,255,0.9)", fontFamily: fontDisplay, fontSize: 12, fontWeight: 600, zIndex: 1 }}>
+            Pool reserve
+          </span>
+          <span style={{ color: "rgba(255,255,255,0.7)", fontFamily: fonts, fontSize: 10, zIndex: 1 }}>
+            {pool.liqRatio > 0 ? `${(pool.liqRatio * 100).toFixed(0)}% coverage` : "Growing..."}
+          </span>
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginTop: 12 }}>
+        {[
+          { label: "Floor bid", value: fmtEth(pool.floor), color: "#F4CF66", pct: pool.floor > 0 ? Math.min((pool.floor / 0.05) * 100, 100) : 20 },
+          { label: "Sell quote", value: fmtEth(pool.sellPrice), color: "#F48FB1", pct: pool.sellPrice > 0 ? Math.min((pool.sellPrice / 0.05) * 100, 100) : 15 },
+          { label: "Listing ref", value: fmtEth(pool.listingPrice), color: "#6EE7B7", pct: pool.listingPrice > 0 ? Math.min((pool.listingPrice / 0.1) * 100, 100) : 30 },
+        ].map((b) => (
+          <div key={b.label}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+              <span style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>{b.label}</span>
+              <span style={{ color: b.color, fontFamily: fontDisplay, fontSize: 11, fontWeight: 600 }}>{b.value}</span>
+            </div>
+            <div style={{ height: 5, borderRadius: 999, background: "rgba(255,255,255,0.04)", overflow: "hidden" }}>
+              <div style={{
+                width: `${b.pct}%`, height: "100%", borderRadius: 999,
+                background: b.color, opacity: 0.7,
+                transition: "width 1.2s ease",
+              }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </FrostCard>
+  );
+}
+
+function HeroGallery({ pool, setPage }) {
+  const heroStripIds = Array.from(new Set([...FEATURED_COLLECTION_IDS, 7, 8, 14, 21, 33])).slice(0, 8);
+  const heroPanelIds = [7, 0, 3];
+  const currentState = pool?.marketState || "Stabilization";
+
+  return (
+    <FrostCard
+      className="site-reveal"
+      style={{
+        padding: 28,
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        position: "relative",
+        gap: 24,
+        ...revealStyle(80),
+      }}
+    >
+      <div
+        className="site-pulse-glow"
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(circle at top right, rgba(255,255,255,0.06), transparent 28%), radial-gradient(circle at bottom left, rgba(255,255,255,0.04), transparent 30%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div style={{ position: "relative", zIndex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
+        <div>
+          <Eyebrow>Protocol overview</Eyebrow>
+          <div
+            style={{
+              marginTop: 24,
+              fontFamily: fontDisplay,
+              fontSize: "clamp(40px, 7vw, 78px)",
+              lineHeight: 0.94,
+              fontWeight: 600,
+              letterSpacing: -2.6,
+            }}
+          >
+            {"Pixel art".split("").map((ch, i) => {
+              const clrs = ["#B39DDB", "#F48FB1", "#FFCC80", "#A5D6A7", "#90CAF9", "#CE93D8", "#80DEEA", "#FFAB91"];
+              return <span key={i} style={{ color: ch === " " ? "transparent" : clrs[i % clrs.length] }}>{ch === " " ? "\u00A0" : ch}</span>;
+            })}
+            <span style={{ color: "#F48FB1" }}>.</span>
+            <br />
+            {"Liquidity engine".split("").map((ch, i) => {
+              const clrs = ["#A5D6A7", "#90CAF9", "#FFCC80", "#FFAB91", "#F48FB1", "#B39DDB", "#80DEEA", "#CE93D8"];
+              return <span key={i} style={{ color: ch === " " ? "transparent" : clrs[i % clrs.length] }}>{ch === " " ? "\u00A0" : ch}</span>;
+            })}
+            <span style={{ color: "#90CAF9" }}>.</span>
+          </div>
+
+          <div style={{ display: "flex", gap: 10, marginTop: 22, overflowX: "auto", paddingBottom: 6 }}>
+            {heroStripIds.map((id, index) => (
+              <div
+                key={id}
+                className="site-reveal-soft"
+                style={{
+                  width: 76,
+                  height: 76,
+                  borderRadius: 18,
+                  border: `1px solid ${COLORS.border}`,
+                  background: "rgba(255,255,255,0.06)",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                  boxShadow: "0 12px 24px rgba(0,0,0,0.08)",
+                  ...revealStyle(220 + index * 40),
+                }}
+              >
+                <img
+                  src={`/collection/images/${id}.svg`}
+                  alt={`NFT #${id}`}
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "block",
+                    objectFit: "cover",
+                    imageRendering: "pixelated",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          <p
+            style={{
+              margin: "18px 0 0",
+              maxWidth: 500,
+              color: COLORS.textMuted,
+              fontFamily: fonts,
+              fontSize: 13,
+              lineHeight: 1.75,
+            }}
+          >
+            Fully on-chain pixel collection with a native market and a reserve-backed floor lane.
+            Premium pricing stays in the market. The pool only handles the floor side when
+            reserve coverage and market-state rules allow it.
+          </p>
+
+          <div
+            className="site-reveal-soft"
+            style={{
+              display: "flex",
+              gap: 12,
+              alignItems: "center",
+              marginTop: 28,
+              flexWrap: "wrap",
+              ...revealStyle(360),
+            }}
+          >
+            <MetalButton onClick={() => setPage("mint")} tone="accent" active size="lg" style={{ padding: "16px 32px", fontSize: 15, borderRadius: 999, cursor: "pointer" }}>
+              Mint NFT &nbsp;&#x2197;
+            </MetalButton>
+            <MetalButton onClick={() => setPage("market")} tone="ghost" size="lg" style={{ padding: "16px 24px", fontSize: 14, cursor: "pointer" }}>
+              Explore collection &nbsp;&#x25B6;
+            </MetalButton>
+          </div>
+        </div>
+
+        <div
+          style={{
+            borderRadius: 26,
+            border: `1px solid ${COLORS.border}`,
+            background: "linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
+            padding: 18,
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+            minHeight: 446,
+            boxShadow: "0 16px 32px rgba(0,0,0,0.08)",
+          }}
+        >
+          <div style={{ display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 14 }}>
+            <div
+              style={{
+                position: "relative",
+                minHeight: 246,
+                borderRadius: 22,
+                border: `1px solid ${COLORS.border}`,
+                background: "linear-gradient(180deg, rgba(124,86,216,0.12) 0%, rgba(255,255,255,0.03) 100%)",
+                overflow: "hidden",
+                padding: 16,
+              }}
+            >
+              <div style={{ display: "inline-flex", padding: "7px 12px", borderRadius: 999, background: "rgba(124,86,216,0.12)", color: COLORS.purple, border: `1px solid ${COLORS.purple}33`, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                Protocol board
+              </div>
+
+              <div style={{ position: "absolute", left: 18, bottom: 18, width: 184, height: 184, borderRadius: 28, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.07)", overflow: "hidden", boxShadow: "0 18px 30px rgba(0,0,0,0.14)" }}>
+                <img
+                  src={`/collection/images/${heroPanelIds[0]}.svg`}
+                  alt={`NFT #${heroPanelIds[0]}`}
+                  loading="lazy"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated", display: "block" }}
+                />
+              </div>
+
+              <div style={{ position: "absolute", right: 18, top: 60, display: "flex", flexDirection: "column", gap: 10 }}>
+                {heroPanelIds.slice(1).map((id) => (
+                  <div key={id} style={{ width: 74, height: 74, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.06)", overflow: "hidden", boxShadow: "0 10px 20px rgba(0,0,0,0.1)" }}>
+                    <img
+                      src={`/collection/images/${id}.svg`}
+                      alt={`NFT #${id}`}
+                      loading="lazy"
+                      style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated", display: "block" }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gap: 12 }}>
+              <div style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.05)" }}>
+                <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                  Mint split
+                </div>
+                <div style={{ display: "flex", height: 18, borderRadius: 999, overflow: "hidden", marginTop: 12, border: `1px solid ${COLORS.border}` }}>
+                  <div style={{ width: "60%", background: COLORS.accent }} />
+                  <div style={{ width: "10%", background: COLORS.purple }} />
+                  <div style={{ width: "30%", background: COLORS.yellow }} />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8, marginTop: 12 }}>
+                  {[
+                    ["60%", "reserve", COLORS.accent],
+                    ["10%", "treasury", COLORS.purple],
+                    ["30%", "creator", COLORS.yellow],
+                  ].map(([value, label, color]) => (
+                    <div key={label} style={{ padding: "10px 8px", borderRadius: 14, background: `${color}12`, border: `1px solid ${color}33`, textAlign: "center" }}>
+                      <div style={{ color, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{value}</div>
+                      <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 9, letterSpacing: 0.8, textTransform: "uppercase" }}>{label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.05)", display: "grid", gap: 10 }}>
+                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
+                  <div>
+                    <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                      Current state
+                    </div>
+                    <div style={{ marginTop: 4, color: COLORS.green, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
+                      {currentState}
+                    </div>
+                  </div>
+                  <div style={{ padding: "7px 10px", borderRadius: 999, background: "rgba(110,231,183,0.14)", color: COLORS.green, border: `1px solid ${COLORS.green}33`, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                    Live
+                  </div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 }}>
+                  {[
+                    { label: "Collection", value: `${COLLECTION_SUPPLY}`, tone: COLORS.purple },
+                    { label: "Trade fee", value: "2.5%", tone: COLORS.green },
+                    { label: "Floor", value: fmtEth(pool.floor), tone: COLORS.yellow },
+                    { label: "Reserve", value: fmtEth(pool.ethBalance, 2), tone: "#2AABCF" },
+                  ].map((item) => (
+                    <div key={item.label} style={{ padding: "10px 10px 12px", borderRadius: 14, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.04)" }}>
+                      <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>{item.label}</div>
+                      <div style={{ marginTop: 6, color: item.tone, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{item.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10 }}>
+            {[
+              { label: "Floor lane", tone: COLORS.accent },
+              { label: "Native market", tone: "#2AABCF" },
+              { label: "Selective buyback", tone: "#E8853A" },
+              { label: "Fee flow", tone: "#D4497A" },
+            ].map((item) => (
+              <div key={item.label} style={{ padding: "14px 12px", borderRadius: 16, border: `1px solid ${item.tone}33`, background: `${item.tone}10`, color: item.tone, fontFamily: fontDisplay, fontSize: 15, fontWeight: 600, lineHeight: 1.15, minHeight: 72, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+                {item.label}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
+        <NftMarquee ids={ROW1_IDS} speed={20} />
+        <NftMarquee ids={ROW2_IDS} speed={15} reverse />
+        <NftMarquee ids={ROW3_IDS} speed={18} />
+        <NftMarquee ids={ROW4_IDS} speed={12} reverse />
+      </div>
+
+      <LiquidityBar pool={pool} />
+    </FrostCard>
   );
 }
 
@@ -201,227 +611,24 @@ function FeatureCard({ icon, title, desc, tone, delay = 0 }) {
 }
 
 export default function HomePage({ setPage, pool, isLive, poolError }) {
-  const themeMode = useThemeMode();
-  const isLight = themeMode === "light";
-
   return (
-    <div style={{ width: "100%", margin: 0, padding: 0 }}>
-      {/* ════════ HERO SECTION ════════ */}
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          alignItems: "center",
-          padding: "120px 48px 60px",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        {/* Background glow */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "radial-gradient(ellipse 60% 60% at 70% 40%, rgba(124,86,216,0.08), transparent 70%), radial-gradient(ellipse 40% 50% at 20% 80%, rgba(29,179,122,0.05), transparent 60%)",
-            pointerEvents: "none",
-          }}
-        />
+    <div
+      style={{
+        position: "relative",
+        width: "calc(100vw - 24px)",
+        margin: "0 auto",
+        padding: "118px 12px 64px",
+        overflow: "hidden",
+      }}
+    >
+      <MarqueeStyles />
+      <HomePixelBackdrop />
 
-        {/* Floating particles */}
-        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-          {[
-            { top: "15%", left: "30%", size: 3, delay: 0, dur: 12 },
-            { top: "25%", left: "45%", size: 2, delay: 2, dur: 10 },
-            { top: "60%", left: "20%", size: 2.5, delay: 4, dur: 14 },
-            { top: "70%", left: "55%", size: 2, delay: 1, dur: 11 },
-            { top: "40%", left: "80%", size: 3, delay: 3, dur: 13 },
-          ].map((p, i) => (
-            <div
-              key={i}
-              className="site-drift"
-              style={{
-                position: "absolute",
-                top: p.top,
-                left: p.left,
-                width: p.size,
-                height: p.size,
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.35)",
-                ...driftStyle(p.delay * 1000, p.dur),
-              }}
-            />
-          ))}
-        </div>
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <HeroGallery pool={pool} setPage={setPage} />
 
-        {/* Left: text content */}
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 620 }}>
-          {/* "New" badge */}
-          <div
-            className="site-reveal-soft"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 10,
-              padding: "8px 18px 8px 10px",
-              borderRadius: 999,
-              border: `1px solid ${COLORS.border}`,
-              background: "rgba(255,255,255,0.04)",
-              marginBottom: 32,
-              ...revealStyle(100),
-            }}
-          >
-            <span style={{
-              padding: "3px 10px",
-              borderRadius: 999,
-              background: COLORS.green,
-              color: "#000",
-              fontFamily: fonts,
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: 1,
-              textTransform: "uppercase",
-            }}>
-              Live
-            </span>
-            <span style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12 }}>
-              Genesis collection minting on Ethereum
-            </span>
-          </div>
-
-          {/* Hero headline */}
-          <h1
-            className="site-reveal"
-            style={{
-              fontFamily: fontDisplay,
-              fontSize: "clamp(42px, 6.5vw, 82px)",
-              lineHeight: 0.95,
-              fontWeight: 600,
-              letterSpacing: -3,
-              margin: 0,
-              color: COLORS.text,
-              ...revealStyle(180),
-            }}
-          >
-            On-Chain Pixels<br />
-            <span style={{ color: COLORS.textMuted }}>With Built-In</span><br />
-            <span style={{
-              background: "linear-gradient(135deg, #B39DDB, #F48FB1, #FFCC80, #A5D6A7, #90CAF9)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}>
-              Liquidity
-            </span>
-          </h1>
-
-          {/* Subheading */}
-          <p
-            className="site-reveal-soft"
-            style={{
-              margin: "24px 0 0",
-              maxWidth: 480,
-              color: COLORS.textMuted,
-              fontFamily: fonts,
-              fontSize: 14,
-              lineHeight: 1.8,
-              ...revealStyle(280),
-            }}
-          >
-            Fully on-chain pixel art backed by a reserve pool. Every mint seeds floor liquidity.
-            Premium pricing stays in the native marketplace while the protocol handles the floor lane.
-          </p>
-
-          {/* CTAs */}
-          <div
-            className="site-reveal-soft"
-            style={{
-              display: "flex",
-              gap: 16,
-              alignItems: "center",
-              marginTop: 36,
-              ...revealStyle(360),
-            }}
-          >
-            <MetalButton
-              onClick={() => setPage("mint")}
-              tone="accent"
-              active
-              size="lg"
-              style={{
-                padding: "16px 32px",
-                fontSize: 15,
-                borderRadius: 999,
-                cursor: "pointer",
-              }}
-            >
-              Mint NFT &nbsp;&#x2197;
-            </MetalButton>
-            <MetalButton
-              onClick={() => setPage("market")}
-              tone="ghost"
-              size="lg"
-              style={{
-                padding: "16px 24px",
-                fontSize: 14,
-                cursor: "pointer",
-              }}
-            >
-              Explore collection &nbsp;&#x25B6;
-            </MetalButton>
-          </div>
-        </div>
-
-        {/* Right: pixel mosaic */}
-        <div
-          className="site-reveal"
-          style={{
-            position: "relative",
-            zIndex: 1,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            ...revealStyle(200),
-          }}
-        >
-          <PixelMosaic />
-        </div>
-
-        {/* Bottom metrics bar */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            padding: "20px 48px",
-            borderTop: `1px solid ${COLORS.border}`,
-            background: "rgba(0,0,0,0.3)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
-          }}
-        >
-          <div
-            className="site-reveal-soft"
-            style={{
-              display: "flex",
-              gap: 16,
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              ...revealStyle(500),
-            }}
-          >
-            <MetricPill label="Floor price" value={fmtEth(pool.floor)} tone={COLORS.yellow} />
-            <MetricPill label="Total minted" value={pool.totalMinted ?? "—"} tone={COLORS.accent} pct={pool.totalMinted ? Math.min((pool.totalMinted / 1000) * 100, 100) : 0} />
-            <MetricPill label="Pool reserve" value={fmtEth(pool.ethBalance, 2)} tone={COLORS.green} pct={pool.ethBalance ? Math.min(pool.ethBalance * 10, 100) : 0} />
-            <MetricPill label="Market state" value={pool.marketState || "—"} tone={COLORS.purple} />
-            <MetricPill label="Staked" value={pool.totalStaked ?? "—"} tone="#D4497A" pct={pool.totalMinted > 0 ? (pool.totalStaked / pool.totalMinted) * 100 : 0} />
-          </div>
-        </div>
-      </div>
-
-      {/* ════════ PROTOCOL OVERVIEW ════════ */}
-      <div style={{ padding: "64px 48px 80px" }}>
+        {/* ════════ PROTOCOL OVERVIEW ════════ */}
+        <div style={{ padding: "64px 48px 80px" }}>
         {/* Section header */}
         <div
           className="site-reveal"
@@ -812,6 +1019,7 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
           </FrostCard>
         </div>
       </div>
+    </div>
     </div>
   );
 }
