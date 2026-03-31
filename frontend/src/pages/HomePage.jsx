@@ -370,441 +370,344 @@ function HeroGallery({ pool }) {
   );
 }
 
-function LiquiditySystemOverview({ className = "", style }) {
-  const splitCards = [
-    { label: "Pool reserve", value: "60%", sub: "Every mint seeds floor liquidity.", tone: COLORS.accent },
-    { label: "Treasury lane", value: "10%", sub: "Buyback and stale-inventory cleanup.", tone: COLORS.purple },
-    { label: "Creator / team", value: "30%", sub: "Funds rollout, maintenance, and operating support.", tone: COLORS.yellow },
-    { label: "Trade fee", value: "2.5%", sub: "Each trade routes fee into stakers, reserve, treasury, and protocol fees.", tone: COLORS.green },
-  ];
+const INFO_PANEL_PIXELS = {
+  problem: buildBackdropPixels(20, 701),
+  split: buildBackdropPixels(18, 702),
+  afterMint: buildBackdropPixels(18, 703),
+  states: buildBackdropPixels(18, 704),
+  curve: buildBackdropPixels(16, 705),
+  staking: buildBackdropPixels(16, 706),
+  market: buildBackdropPixels(16, 707),
+};
 
-  const gateCards = [
-    {
-      title: "Sell to pool",
-      tone: COLORS.accent,
-      eyebrow: "Floor exit lane",
-      chips: ["launch > 6h", "not Expansion", "coverage \u2265 100%"],
-    },
-    {
-      title: "Release inventory",
-      tone: COLORS.purple,
-      eyebrow: "Protocol listing gate",
-      chips: ["Stabilization", "purchase \u2265 15 bps", "listings \u2264 1200 bps", "floor \u2265 120%"],
-    },
-    {
-      title: "Treasury buyback",
-      tone: COLORS.yellow,
-      eyebrow: "Weak-demand cleanup",
-      chips: ["weak / stale", "coverage \u2265 200%", "treasury 10%", "pool cap 5%"],
-    },
-    {
-      title: "Trade fee split",
-      tone: COLORS.green,
-      eyebrow: "Fee machine",
-      chips: ["10% stakers", "25% reserve", "25% treasury", "40% protocol"],
-    },
-  ];
-
-  const signalCards = [
-    {
-      title: "Purchase rate",
-      tone: COLORS.accent,
-      formula: "sales / 24h",
-      weak: "< 10",
-      mid: "15+",
-      strong: "35+",
-    },
-    {
-      title: "Listing pressure",
-      tone: COLORS.purple,
-      formula: "listings / supply",
-      weak: "> 1500",
-      mid: "\u2264 1200",
-      strong: "\u2264 800",
-    },
-    {
-      title: "Floor ratio",
-      tone: "#2AABCF",
-      formula: "market / protocol",
-      weak: "\u2264 100%",
-      mid: "120%",
-      strong: "120%+",
-    },
-  ];
-
-  const lifecycleCards = [
-    ["Mint", "art + payment"],
-    ["Reserve", "60% seeded"],
-    ["Market", "premium discovery"],
-    ["Signals", "sales / listings / floor"],
-    ["Buyback", "weak-demand cleanup"],
-    ["Vault", "relist or burn"],
-  ];
-
-  const comparisonColumns = [
-    {
-      kind: "standard",
-      label: "Standard NFT mint",
-      tone: "#E8853A",
-      summary: "Primary sale ends here.",
-      rails: [
-        ["Mint", "user pays once"],
-        ["Creator wallet", "value exits early"],
-        ["Secondary market", "everything starts later"],
-      ],
-      outcomes: [
-        "No reserve",
-        "No buyback",
-        "No protocol inventory",
-        "No fee flow",
-      ],
-    },
-    {
-      kind: "protocol",
-      label: "OnChainPixel mint",
-      tone: "#7C56D8",
-      summary: "The protocol starts on mint.",
-      rails: [
-        ["Mint", "user pays once"],
-        ["Split", "60 / 10 / 30"],
-        ["Protocol live", "market + reserve active"],
-      ],
-      outcomes: [
-        "Floor lane",
-        "Buyback",
-        "Native market",
-        "Fee flow",
-      ],
-    },
-  ];
-
-  function renderComparisonVisual(column) {
-    if (column.kind === "standard") {
-      return (
+function PanelConfetti({ pixels }) {
+  return (
+    <div
+      aria-hidden
+      style={{
+        position: "absolute",
+        inset: 0,
+        overflow: "hidden",
+        pointerEvents: "none",
+        opacity: 0.9,
+      }}
+    >
+      {pixels.map((cluster) => (
         <div
-          style={{
-            position: "relative",
-            minHeight: 220,
-            borderRadius: 20,
-            border: `1px solid ${column.tone}33`,
-            background: `linear-gradient(180deg, ${column.tone}14 0%, rgba(255,255,255,0.03) 72%)`,
-            overflow: "hidden",
-            padding: 16,
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              right: -18,
-              top: -18,
-              width: 96,
-              height: 96,
-              borderRadius: "50%",
-              background: `${column.tone}16`,
-              filter: "blur(10px)",
-            }}
-          />
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <div style={{ padding: "7px 12px", borderRadius: 999, background: `${column.tone}12`, color: column.tone, border: `1px solid ${column.tone}33`, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-              Primary sale only
-            </div>
-            <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-              {"mint -> wallet -> market"}
-            </div>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr auto 1fr", gap: 12, alignItems: "center" }}>
-            {column.rails.map(([title, sub], index) => (
-              <React.Fragment key={title}>
-                <div style={{ padding: "16px 10px", borderRadius: 18, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.06)", minHeight: 102, display: "flex", flexDirection: "column", justifyContent: "space-between", textAlign: "center" }}>
-                  <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 15, fontWeight: 600 }}>{title}</div>
-                  <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.5, textTransform: "uppercase", letterSpacing: 0.6 }}>{sub}</div>
-                </div>
-                {index < 2 ? (
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <div style={{ width: 38, height: 2, background: `linear-gradient(90deg, ${column.tone}, ${column.tone}00)`, borderRadius: 999, opacity: 0.7 }} />
-                  </div>
-                ) : null}
-              </React.Fragment>
-            ))}
-          </div>
-
-          <div style={{ marginTop: 14, padding: "12px", borderRadius: 16, border: `1px dashed ${column.tone}55`, background: `${column.tone}0D` }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 8 }}>
-              {column.outcomes.map((row) => (
-                <div key={row} style={{ padding: "12px 10px", borderRadius: 12, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.05)", color: column.tone, fontFamily: fontDisplay, fontSize: 12, fontWeight: 600, lineHeight: 1.3, textAlign: "center", minHeight: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {row}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div
-        style={{
-          position: "relative",
-          minHeight: 220,
-          borderRadius: 20,
-          border: `1px solid ${column.tone}33`,
-          background: `linear-gradient(180deg, ${column.tone}14 0%, rgba(255,255,255,0.03) 72%)`,
-          overflow: "hidden",
-          padding: 16,
-        }}
-      >
-        <div
+          key={cluster.id}
           style={{
             position: "absolute",
-            left: -22,
-            bottom: -26,
-            width: 120,
-            height: 120,
-            borderRadius: "50%",
-            background: `${column.tone}14`,
-            filter: "blur(12px)",
+            left: cluster.left,
+            top: cluster.top,
+            width: cluster.size * 3,
+            height: cluster.size * 3,
+            opacity: cluster.opacity * 0.55,
           }}
-        />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 14 }}>
-          <div style={{ padding: "7px 12px", borderRadius: 999, background: `${column.tone}12`, color: column.tone, border: `1px solid ${column.tone}33`, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-            Protocol machine starts
-          </div>
-          <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-            {"mint -> split -> protocol live"}
+        >
+          {cluster.pattern.map(([x, y], pixelIndex) => (
+            <div
+              key={pixelIndex}
+              style={{
+                position: "absolute",
+                left: x * cluster.size,
+                top: y * cluster.size,
+                width: cluster.size,
+                height: cluster.size,
+                borderRadius: 2,
+                background: cluster.color,
+              }}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PanelBadge({ tone, glyph }) {
+  return (
+    <div
+      style={{
+        width: 44,
+        height: 44,
+        borderRadius: 16,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: tone,
+        border: `1px solid ${tone}30`,
+        background: `${tone}10`,
+        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.45), 0 12px 30px ${tone}10`,
+        fontFamily: fontDisplay,
+        fontSize: 22,
+        fontWeight: 600,
+      }}
+    >
+      {glyph}
+    </div>
+  );
+}
+
+function InsightPanel({ title, tone, glyph, pixels, children, style }) {
+  return (
+    <FrostCard
+      style={{
+        position: "relative",
+        padding: 18,
+        borderRadius: 30,
+        overflow: "hidden",
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.07) 100%)",
+        ...style,
+      }}
+    >
+      <PanelConfetti pixels={pixels} />
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+          <PanelBadge tone={tone} glyph={glyph} />
+          <div style={{ color: tone, fontFamily: fontDisplay, fontSize: 21, fontWeight: 600, letterSpacing: -0.6 }}>
+            {title}
           </div>
         </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "1.05fr 0.95fr", gap: 12, alignItems: "stretch" }}>
-          <div style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.06)" }}>
-            <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-              Mint split on the same tx
-            </div>
-            <div style={{ marginTop: 12, display: "flex", height: 22, borderRadius: 999, overflow: "hidden", border: `1px solid ${COLORS.border}` }}>
-              <div style={{ width: "60%", background: COLORS.accent }} />
-              <div style={{ width: "10%", background: COLORS.purple }} />
-              <div style={{ width: "30%", background: COLORS.yellow }} />
-            </div>
-            <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
-              {[
-                ["60%", "reserve", COLORS.accent],
-                ["10%", "treasury", COLORS.purple],
-                ["30%", "creator", COLORS.yellow],
-              ].map(([value, label, color]) => (
-                <div key={label} style={{ padding: "12px 8px", borderRadius: 14, background: `${color}12`, border: `1px solid ${color}33`, textAlign: "center" }}>
-                  <div style={{ color, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600 }}>{value}</div>
-                  <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.5, textTransform: "uppercase", letterSpacing: 0.8 }}>{label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.06)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, alignContent: "start" }}>
-            {column.outcomes.map((label, index) => {
-              const colors = [COLORS.accent, COLORS.purple, "#2AABCF", COLORS.green];
-              const color = colors[index % colors.length];
-              return (
-                <div key={label} style={{ padding: "14px 10px", borderRadius: 14, background: `${color}12`, border: `1px solid ${color}33`, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", color, fontFamily: fontDisplay, fontSize: 14, fontWeight: 600, minHeight: 64 }}>
-                  {label}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        {children}
       </div>
-    );
-  }
+    </FrostCard>
+  );
+}
+
+function LiquiditySystemOverview({ className = "", style }) {
+  const problemColumns = [
+    {
+      label: "Standard NFT",
+      tone: "#D96A5C",
+      rows: [
+        "Art on external server",
+        "No floor liquidity",
+        "Marketplace is third-party",
+        "No treasury logic",
+      ],
+    },
+    {
+      label: "OnChainPixel",
+      tone: COLORS.green,
+      rows: [
+        "Art fully on-chain",
+        "Reserve-backed floor bid",
+        "Native marketplace",
+        "Treasury cleanup path",
+      ],
+    },
+  ];
+
+  const mintSplitRows = [
+    ["Pool reserve", "Seeds floor liquidity from first mint", COLORS.accent],
+    ["Treasury", "Buyback and stale-inventory cleanup fund", COLORS.purple],
+    ["Creator / team", "Rollout, maintenance, operating support", COLORS.yellow],
+  ];
+
+  const afterMintCards = [
+    ["List on marketplace", "Sell peer-to-peer at any price. Premium and rarity pricing stay here.", "rgba(110,231,183,0.18)"],
+    ["Sell into pool", "Exit at the floor bid when pool buying is enabled. Reserve-gated, not always open.", "rgba(244,207,102,0.18)"],
+    ["Protocol resale", "Pool inventory can re-enter the marketplace. Sell pressure clears only after actual sale.", "rgba(174,139,255,0.16)"],
+  ];
+
+  const marketStateRows = [
+    ["Expansion", "Sell-to-pool closed", "Strong demand. Market floor sits above protocol floor, so the pool stays conservative."],
+    ["Stabilization", "Sell-to-pool open", "Normal operation. Market is active and protocol inventory can be released in a controlled way."],
+    ["Weak demand", "Buyback eligible", "Purchase rate weakens, listing pressure rises, and treasury cleanup may activate."],
+  ];
+
+  const curveBars = [60, 52, 46, 40, 35, 31, 27, 23, 19, 15];
+  const stakeWeights = [
+    ["1x", "No lock"],
+    ["1.25x", "7 days"],
+    ["1.5x", "30 days"],
+    ["2x", "90 days"],
+  ];
+  const marketTiles = [
+    ["Listings", "User and protocol inventory"],
+    ["Token offers", "Bid on specific pieces"],
+    ["Collection offers", "Bid on any piece in collection"],
+    ["Activity log", "Full on-chain trade history"],
+  ];
 
   return (
-    <FrostCard className={className} style={{ padding: 20, ...style }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 18 }}>
-        <div>
-          <div style={{ color: "#7C56D8", fontFamily: fontDisplay, fontSize: 28, fontWeight: 600, letterSpacing: -0.9 }}>
-            How the protocol works
+    <div className={className} style={{ display: "grid", gap: 14, ...style }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 14, alignItems: "stretch" }}>
+        <InsightPanel title="The problem we solve" tone={COLORS.purple} glyph="◎" pixels={INFO_PANEL_PIXELS.problem}>
+          <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600, lineHeight: 1.25 }}>
+            Most NFTs have no native exit lane at all.
           </div>
-          <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, marginTop: 6, lineHeight: 1.7, maxWidth: 980 }}>
-            This is the full on-site summary. Mint seeds reserve and treasury on day one, the pool handles only the floor side, the marketplace handles premium pricing, and treasury cleans weak-demand inventory only when the rules allow it.
-          </div>
-        </div>
-        <Eyebrow tone="purple">Protocol flow</Eyebrow>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, alignItems: "stretch" }}>
-        {splitCards.map((item) => (
-          <FrostCard key={item.label} style={{ padding: 16, background: COLORS.surfaceStrong, borderRadius: 24, minHeight: 136, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-            <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-              {item.label}
-            </div>
-            <div style={{ marginTop: 10, color: item.tone, fontFamily: fontDisplay, fontSize: 28, fontWeight: 600 }}>
-              {item.value}
-            </div>
-            <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.6 }}>
-              {item.sub}
-            </div>
-          </FrostCard>
-        ))}
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14, marginTop: 14, alignItems: "stretch" }}>
-        <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 24, display: "flex", flexDirection: "column", minHeight: 100 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <div style={{ color: "#E8853A", fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
-              Why this mint is different
-            </div>
-            <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-              Standard mint vs OnChainPixel
-            </div>
-          </div>
-          <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7, marginBottom: 12 }}>
-            Same user action. Completely different outcome.
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12, flex: 1 }}>
-            {comparisonColumns.map((column) => (
-              <div key={column.label} style={{ padding: 16, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, display: "flex", flexDirection: "column", gap: 12, minWidth: 0 }}>
-                <div style={{ minHeight: 88 }}>
-                  <div style={{ color: column.tone, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600 }}>
-                    {column.label}
-                  </div>
-                  <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.6 }}>
-                    {column.summary}
-                  </div>
+          <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
+            {problemColumns.map((column) => (
+              <div key={column.label} style={{ padding: 16, borderRadius: 20, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.07)" }}>
+                <div style={{ color: column.tone, fontFamily: fonts, fontSize: 11, letterSpacing: 1, textTransform: "uppercase", fontWeight: 700 }}>
+                  {column.label}
                 </div>
-
-                {renderComparisonVisual(column)}
-              </div>
-            ))}
-          </div>
-        </FrostCard>
-
-        <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 24, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-          <div style={{ color: "#1A9B67", fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
-            Protocol rules
-          </div>
-          <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.6 }}>
-            No discretionary magic. Just gates, thresholds, and fee routes that decide when the pool can act.
-          </div>
-
-          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 12 }}>
-            {gateCards.map((card) => (
-              <div key={card.title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, minHeight: 174, display: "flex", flexDirection: "column", gap: 12 }}>
-                <div style={{ padding: "6px 10px", borderRadius: 999, alignSelf: "flex-start", background: `${card.tone}12`, color: card.tone, border: `1px solid ${card.tone}33`, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-                  {card.eyebrow}
-                </div>
-                <div style={{ color: card.tone, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600, lineHeight: 1.05 }}>
-                  {card.title}
-                </div>
-                <div style={{ display: "grid", gap: 8, marginTop: "auto" }}>
-                  {card.chips.map((chip) => (
-                    <div key={chip} style={{ padding: "10px 12px", borderRadius: 12, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.05)", color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.4, textTransform: "uppercase", letterSpacing: 0.55 }}>
-                      {chip}
+                <div style={{ marginTop: 12, display: "grid", gap: 8 }}>
+                  {column.rows.map((row, index) => (
+                    <div key={row} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ color: column.tone, fontFamily: fontDisplay, fontSize: 14, fontWeight: 600 }}>
+                        {index < 4 && column.label === "Standard NFT" ? "x" : "+"}
+                      </div>
+                      <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.55 }}>
+                        {row}
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             ))}
           </div>
+        </InsightPanel>
 
-          <div style={{ marginTop: 14, padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-              <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
-                Signal dashboard
-              </div>
-              <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-                thresholds that drive behavior
-              </div>
+        <InsightPanel title="Mint split" tone="#7CB7F6" glyph="⬡" pixels={INFO_PANEL_PIXELS.split}>
+          <div style={{ position: "relative", paddingTop: 28 }}>
+            <div style={{ display: "flex", height: 34, borderRadius: 18, overflow: "hidden", border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.06)" }}>
+              <div style={{ width: "60%", background: "rgba(124,183,246,0.24)" }} />
+              <div style={{ width: "10%", background: "rgba(174,139,255,0.22)" }} />
+              <div style={{ width: "30%", background: "rgba(244,207,102,0.22)" }} />
             </div>
-            <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
-              {signalCards.map((card) => (
-                <div key={card.title} style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.04)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
-                    <div style={{ color: card.tone, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{card.title}</div>
-                    <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>{card.formula}</div>
-                  </div>
-                  <div style={{ marginTop: 12, display: "flex", height: 14, borderRadius: 999, overflow: "hidden", border: `1px solid ${COLORS.border}` }}>
-                    <div style={{ width: "33.333%", background: `${card.tone}22` }} />
-                    <div style={{ width: "33.333%", background: `${card.tone}55` }} />
-                    <div style={{ width: "33.333%", background: `${card.tone}` }} />
-                  </div>
-                  <div style={{ marginTop: 10, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
-                    <div style={{ padding: "8px 6px", borderRadius: 10, background: "rgba(255,255,255,0.04)", textAlign: "center" }}>
-                      <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>Weak</div>
-                      <div style={{ marginTop: 2, color: COLORS.textMuted, fontFamily: fontDisplay, fontSize: 12 }}>{card.weak}</div>
-                    </div>
-                    <div style={{ padding: "8px 6px", borderRadius: 10, background: "rgba(255,255,255,0.04)", textAlign: "center" }}>
-                      <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>Release</div>
-                      <div style={{ marginTop: 2, color: COLORS.textMuted, fontFamily: fontDisplay, fontSize: 12 }}>{card.mid}</div>
-                    </div>
-                    <div style={{ padding: "8px 6px", borderRadius: 10, background: "rgba(255,255,255,0.04)", textAlign: "center" }}>
-                      <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>Expand</div>
-                      <div style={{ marginTop: 2, color: COLORS.textMuted, fontFamily: fontDisplay, fontSize: 12 }}>{card.strong}</div>
-                    </div>
-                  </div>
+            <div style={{ position: "absolute", inset: "0 0 auto 0", display: "grid", gridTemplateColumns: "60% 10% 30%" }}>
+              {["60%", "10%", "30%"].map((value) => (
+                <div key={value} style={{ textAlign: "center", color: COLORS.textDim, fontFamily: fontDisplay, fontSize: 14, fontWeight: 600 }}>
+                  {value}
                 </div>
               ))}
             </div>
           </div>
-        </FrostCard>
+
+          <div style={{ marginTop: 18, display: "grid", gap: 12 }}>
+            {mintSplitRows.map(([title, body, tone]) => (
+              <div key={title} style={{ display: "grid", gridTemplateColumns: "auto auto 1fr", alignItems: "start", gap: 10 }}>
+                <div style={{ width: 10, height: 10, borderRadius: 999, background: tone, marginTop: 6 }} />
+                <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 17, fontWeight: 600 }}>{title}</div>
+                <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.65 }}>{body}</div>
+              </div>
+            ))}
+          </div>
+        </InsightPanel>
       </div>
 
-      <div style={{ marginTop: 14 }}>
-        <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 24 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-            <div>
-              <div style={{ color: "#2AABCF", fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
-                End-to-end pipeline
-              </div>
-              <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.6, maxWidth: 920 }}>
-                What happens after mint, from reserve seeding to market behavior and cleanup.
-              </div>
-            </div>
-            <Eyebrow tone="green">End-to-end</Eyebrow>
-          </div>
-
-          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(6, minmax(0, 1fr))", gap: 10, alignItems: "stretch" }}>
-            {lifecycleCards.map(([title, body], index) => {
-              const tones = [COLORS.accent, COLORS.purple, COLORS.yellow, "#2AABCF", COLORS.green, "#D4497A"];
-              const tone = tones[index % tones.length];
-              return (
-                <div key={title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, minHeight: 120, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                  <div style={{ width: 28, height: 28, borderRadius: 999, background: `${tone}12`, border: `1px solid ${tone}33`, color: tone, fontFamily: fonts, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {index + 1}
-                  </div>
-                  <div style={{ marginTop: 8, color: tone, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600, lineHeight: 1.05 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, alignItems: "stretch" }}>
+        <InsightPanel title="After you mint" tone={COLORS.green} glyph="↗" pixels={INFO_PANEL_PIXELS.afterMint}>
+          <div style={{ display: "grid", gap: 12 }}>
+            {afterMintCards.map(([title, body, background]) => (
+              <div key={title} style={{ padding: 16, borderRadius: 20, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.08)", display: "grid", gridTemplateColumns: "42px 1fr", gap: 14, alignItems: "start" }}>
+                <div style={{ width: 42, height: 42, borderRadius: 14, background, border: `1px solid ${COLORS.border}` }} />
+                <div>
+                  <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
                     {title}
                   </div>
-                  <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.5, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
+                    {body}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </InsightPanel>
+
+        <InsightPanel title="Market states" tone="#E8853A" glyph="◆" pixels={INFO_PANEL_PIXELS.states}>
+          <div style={{ display: "grid", gap: 12 }}>
+            {marketStateRows.map(([title, chip, body], index) => {
+              const tones = [COLORS.accent, COLORS.purple, COLORS.yellow];
+              const tone = tones[index];
+              return (
+                <div key={title} style={{ padding: 16, borderRadius: 20, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.08)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 9, height: 9, borderRadius: 999, background: tone }} />
+                      <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{title}</div>
+                    </div>
+                    <div style={{ padding: "7px 11px", borderRadius: 999, border: `1px solid ${tone}30`, background: `${tone}14`, color: tone, fontFamily: fonts, fontSize: 10, letterSpacing: 0.5 }}>
+                      {chip}
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
                     {body}
                   </div>
                 </div>
               );
             })}
           </div>
-        </FrostCard>
+        </InsightPanel>
       </div>
-    </FrostCard>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1.05fr 1fr 0.95fr", gap: 14, alignItems: "stretch" }}>
+        <InsightPanel title="Floor bid curve" tone="#D4497A" glyph="↕" pixels={INFO_PANEL_PIXELS.curve}>
+          <div style={{ padding: 14, borderRadius: 20, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.08)" }}>
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 72 }}>
+              {curveBars.map((value, index) => (
+                <div
+                  key={index}
+                  style={{
+                    flex: 1,
+                    height: `${Math.max(18, value)}%`,
+                    borderRadius: 8,
+                    background: `rgba(212,73,122,${0.38 - index * 0.02})`,
+                    minWidth: 20,
+                  }}
+                />
+              ))}
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
+              <div style={{ color: COLORS.textMuted, fontFamily: fontDisplay, fontSize: 12, fontWeight: 600 }}>60% mint price</div>
+              <div style={{ color: COLORS.textMuted, fontFamily: fontDisplay, fontSize: 12, fontWeight: 600 }}>15% floor</div>
+            </div>
+          </div>
+          <div style={{ marginTop: 14, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.8 }}>
+            The floor starts at 60% of mint price and decays toward 15% as net pool sells accumulate. EMA guardrails stop abrupt collapse.
+          </div>
+        </InsightPanel>
+
+        <InsightPanel title="Weighted staking" tone="#D4497A" glyph="›" pixels={INFO_PANEL_PIXELS.staking}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10 }}>
+            {stakeWeights.map(([weight, lock]) => (
+              <div key={weight} style={{ textAlign: "center" }}>
+                <div style={{ height: 42, borderRadius: 14, border: `1px solid rgba(212,73,122,0.18)`, background: "rgba(212,73,122,0.08)" }} />
+                <div style={{ marginTop: 10, color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{weight}</div>
+                <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.5 }}>{lock}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 18, color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, lineHeight: 1.85 }}>
+            Stakers earn 10% of all trade fees from real trading. No emissions token, no fixed APY. Lock longer for higher weight.
+          </div>
+        </InsightPanel>
+
+        <InsightPanel title="Native marketplace" tone={COLORS.green} glyph="≣" pixels={INFO_PANEL_PIXELS.market}>
+          <div style={{ padding: 16, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.08)", color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, lineHeight: 1.45, fontWeight: 600 }}>
+            The protocol does not need OpenSea to understand its own market. V1 is designed around native trading.
+          </div>
+
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
+            {marketTiles.map(([title, body]) => (
+              <div key={title} style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.08)" }}>
+                <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{title}</div>
+                <div style={{ marginTop: 5, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.65 }}>{body}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10 }}>
+            {[
+              "Rolling 24h sales count",
+              "Active listing count",
+              "Market floor signal",
+            ].map((label) => (
+              <div key={label} style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 11, lineHeight: 1.55 }}>
+                {label}
+              </div>
+            ))}
+          </div>
+        </InsightPanel>
+      </div>
+    </div>
   );
 }
 
 export default function HomePage({ setPage, pool, isLive, poolError }) {
-  const features = [
-    {
-      title: "Mint seeds reserve",
-      desc: "A normal NFT mint ends at the primary sale. Here, every mint immediately capitalizes reserve and treasury.",
-      tone: "accent",
-    },
-    {
-      title: "Pool quotes floor only",
-      desc: "The protocol does not try to price rare traits. Premium discovery stays in the native marketplace.",
-      tone: "green",
-    },
-    {
-      title: "Utility comes from fees",
-      desc: "Staking is tied to real trade fees. No reward token, no fake APR layer, no emissions story.",
-      tone: "purple",
-    },
-  ];
-
   return (
     <div
       style={{
@@ -833,35 +736,7 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
           </MetalButton>
         </div>
 
-        <FrostCard className="site-reveal" style={{ padding: 18, marginTop: 22, ...revealStyle(620) }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            <div>
-              <div style={{ color: "#D4497A", fontFamily: fontDisplay, fontSize: 24, fontWeight: 600, letterSpacing: -0.8 }}>
-                Why this is stronger than a standard mint
-              </div>
-              <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                Three direct reasons the protocol has more utility than a normal NFT drop.
-              </div>
-            </div>
-            <Eyebrow tone="purple">Main thesis</Eyebrow>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10, marginTop: 14, alignItems: "stretch" }}>
-            {features.map((feature, index) => (
-              <FrostCard key={feature.title} className="site-reveal" style={{ padding: 16, background: COLORS.surfaceStrong, minHeight: 144, display: "flex", flexDirection: "column", justifyContent: "space-between", ...revealStyle(680 + index * 70) }}>
-                <Eyebrow tone={feature.tone}>Protocol note</Eyebrow>
-                <div style={{ marginTop: 12, color: COLORS.text, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600, letterSpacing: -0.7 }}>
-                  {feature.title}
-                </div>
-                <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.75 }}>
-                  {feature.desc}
-                </div>
-              </FrostCard>
-            ))}
-          </div>
-        </FrostCard>
-
-        <LiquiditySystemOverview className="site-reveal" style={{ marginTop: 14, ...revealStyle(760) }} />
+        <LiquiditySystemOverview className="site-reveal" style={{ marginTop: 22, ...revealStyle(620) }} />
       </div>
     </div>
   );
