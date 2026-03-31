@@ -247,11 +247,9 @@ function LiquidityBar({ pool }) {
 }
 
 function HeroGallery({ pool }) {
-  const heroStats = [
-    { label: "Mint split", value: "60% / 10% / 30%", sub: "reserve / treasury / creator", tone: COLORS.accent },
-    { label: "Market lane", value: "Native market", sub: "premium discovery stays outside the pool", tone: COLORS.purple },
-    { label: "Trade fee", value: "2.5% fee", sub: "stakers / pool / treasury / protocol", tone: COLORS.green },
-  ];
+  const heroStripIds = Array.from(new Set([...FEATURED_COLLECTION_IDS, 7, 8, 14, 21, 33])).slice(0, 8);
+  const heroPanelIds = [7, 0, 3];
+  const currentState = pool?.marketState || "Stabilization";
 
   return (
     <FrostCard
@@ -302,6 +300,40 @@ function HeroGallery({ pool }) {
             })}
             <span style={{ color: "#90CAF9" }}>.</span>
           </div>
+
+          <div style={{ display: "flex", gap: 10, marginTop: 22, overflowX: "auto", paddingBottom: 6 }}>
+            {heroStripIds.map((id, index) => (
+              <div
+                key={id}
+                className="site-reveal-soft"
+                style={{
+                  width: 76,
+                  height: 76,
+                  borderRadius: 18,
+                  border: `1px solid ${COLORS.border}`,
+                  background: "rgba(255,255,255,0.06)",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                  boxShadow: "0 12px 24px rgba(0,0,0,0.08)",
+                  ...revealStyle(220 + index * 40),
+                }}
+              >
+                <img
+                  src={`/collection/images/${id}.svg`}
+                  alt={`NFT #${id}`}
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "block",
+                    objectFit: "cover",
+                    imageRendering: "pixelated",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
           <p
             style={{
               margin: "18px 0 0",
@@ -316,45 +348,127 @@ function HeroGallery({ pool }) {
             Premium pricing stays in the market. The pool only handles the floor side when
             reserve coverage and market-state rules allow it.
           </p>
+        </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10, marginTop: 22 }}>
-            {heroStats.map((item) => (
-              <div
-                key={item.label}
-                style={{
-                  padding: "14px 14px 12px",
-                  borderRadius: 18,
-                  border: `1px solid ${COLORS.border}`,
-                  background: "rgba(255,255,255,0.04)",
-                  minHeight: 88,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>{item.label}</div>
-                <div style={{ marginTop: 8, color: item.tone, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600, lineHeight: 1.05 }}>{item.value}</div>
-                {item.sub && <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, letterSpacing: 0.5 }}>{item.sub}</div>}
+        <div
+          style={{
+            borderRadius: 26,
+            border: `1px solid ${COLORS.border}`,
+            background: "linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
+            padding: 18,
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+            minHeight: 446,
+            boxShadow: "0 16px 32px rgba(0,0,0,0.08)",
+          }}
+        >
+          <div style={{ display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 14 }}>
+            <div
+              style={{
+                position: "relative",
+                minHeight: 246,
+                borderRadius: 22,
+                border: `1px solid ${COLORS.border}`,
+                background: "linear-gradient(180deg, rgba(124,86,216,0.12) 0%, rgba(255,255,255,0.03) 100%)",
+                overflow: "hidden",
+                padding: 16,
+              }}
+            >
+              <div style={{ display: "inline-flex", padding: "7px 12px", borderRadius: 999, background: "rgba(124,86,216,0.12)", color: COLORS.purple, border: `1px solid ${COLORS.purple}33`, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                Protocol board
+              </div>
+
+              <div style={{ position: "absolute", left: 18, bottom: 18, width: 184, height: 184, borderRadius: 28, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.07)", overflow: "hidden", boxShadow: "0 18px 30px rgba(0,0,0,0.14)" }}>
+                <img
+                  src={`/collection/images/${heroPanelIds[0]}.svg`}
+                  alt={`NFT #${heroPanelIds[0]}`}
+                  loading="lazy"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated", display: "block" }}
+                />
+              </div>
+
+              <div style={{ position: "absolute", right: 18, top: 60, display: "flex", flexDirection: "column", gap: 10 }}>
+                {heroPanelIds.slice(1).map((id) => (
+                  <div key={id} style={{ width: 74, height: 74, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.06)", overflow: "hidden", boxShadow: "0 10px 20px rgba(0,0,0,0.1)" }}>
+                    <img
+                      src={`/collection/images/${id}.svg`}
+                      alt={`NFT #${id}`}
+                      loading="lazy"
+                      style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated", display: "block" }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gap: 12 }}>
+              <div style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.05)" }}>
+                <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                  Mint split
+                </div>
+                <div style={{ display: "flex", height: 18, borderRadius: 999, overflow: "hidden", marginTop: 12, border: `1px solid ${COLORS.border}` }}>
+                  <div style={{ width: "60%", background: COLORS.accent }} />
+                  <div style={{ width: "10%", background: COLORS.purple }} />
+                  <div style={{ width: "30%", background: COLORS.yellow }} />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8, marginTop: 12 }}>
+                  {[
+                    ["60%", "reserve", COLORS.accent],
+                    ["10%", "treasury", COLORS.purple],
+                    ["30%", "creator", COLORS.yellow],
+                  ].map(([value, label, color]) => (
+                    <div key={label} style={{ padding: "10px 8px", borderRadius: 14, background: `${color}12`, border: `1px solid ${color}33`, textAlign: "center" }}>
+                      <div style={{ color, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{value}</div>
+                      <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 9, letterSpacing: 0.8, textTransform: "uppercase" }}>{label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.05)", display: "grid", gap: 10 }}>
+                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
+                  <div>
+                    <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                      Current state
+                    </div>
+                    <div style={{ marginTop: 4, color: COLORS.green, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
+                      {currentState}
+                    </div>
+                  </div>
+                  <div style={{ padding: "7px 10px", borderRadius: 999, background: "rgba(110,231,183,0.14)", color: COLORS.green, border: `1px solid ${COLORS.green}33`, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                    Live
+                  </div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 }}>
+                  {[
+                    { label: "Collection", value: `${COLLECTION_SUPPLY}`, tone: COLORS.purple },
+                    { label: "Trade fee", value: "2.5%", tone: COLORS.green },
+                    { label: "Floor", value: fmtEth(pool.floor), tone: COLORS.yellow },
+                    { label: "Reserve", value: fmtEth(pool.ethBalance, 2), tone: "#2AABCF" },
+                  ].map((item) => (
+                    <div key={item.label} style={{ padding: "10px 10px 12px", borderRadius: 14, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.04)" }}>
+                      <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>{item.label}</div>
+                      <div style={{ marginTop: 6, color: item.tone, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{item.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10 }}>
+            {[
+              { label: "Floor lane", tone: COLORS.accent },
+              { label: "Native market", tone: "#2AABCF" },
+              { label: "Selective buyback", tone: "#E8853A" },
+              { label: "Fee flow", tone: "#D4497A" },
+            ].map((item) => (
+              <div key={item.label} style={{ padding: "14px 12px", borderRadius: 16, border: `1px solid ${item.tone}33`, background: `${item.tone}10`, color: item.tone, fontFamily: fontDisplay, fontSize: 15, fontWeight: 600, lineHeight: 1.15, minHeight: 72, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+                {item.label}
               </div>
             ))}
           </div>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, alignItems: "stretch" }}>
-          {[
-            { label: "Collection", value: `${COLLECTION_SUPPLY.toLocaleString()} genesis`, tone: "#7C56D8", desc: "Every piece is stored and rendered on-chain, without external image hosting." },
-            { label: "Floor lane", value: "Reserve-gated", tone: "#1DB37A", desc: "The pool opens only after launch protection and only while reserve coverage and market-state rules stay inside range." },
-            { label: "Buyback policy", value: "Selective", tone: "#E8853A", desc: "Treasury removes stale inventory only in weak demand and only with strong coverage. It is cleanup logic, not a support switch." },
-            { label: "Staking", value: "Fee flow", tone: "#D4497A", desc: "Stakers receive 10% of protocol trade fees from real trading activity. No emissions and no fixed yield." },
-            { label: "Pool pricing", value: "Rule-based", tone: "#2AABCF", desc: "The floor quote follows reserve, sell pressure, and EMA guardrails. It does not price rare traits." },
-            { label: "On-chain art", value: "Chain-rendered", tone: "#C9A800", desc: "Pixel data is packed into Ethereum storage and rendered directly from the chain." },
-          ].map((item) => (
-            <div key={item.label} style={{ padding: "20px 22px", borderRadius: 20, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.03)", display: "flex", flexDirection: "column", gap: 8 }}>
-              <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>{item.label}</div>
-              <div style={{ color: item.tone, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>{item.value}</div>
-              <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, lineHeight: 1.7 }}>{item.desc}</div>
-            </div>
-          ))}
         </div>
       </div>
 
