@@ -359,7 +359,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
               Mint OnChainPixel
             </div>
             <div style={{ marginTop: 12, color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, lineHeight: 1.8 }}>
-              Every mint stores the artwork on-chain, routes 60% into reserve, 10% into treasury, and 30% into ops.
+              Every mint stores the artwork on-chain, routes 60% into reserve, 10% into treasury, and 30% into the creator / team wallet.
             </div>
 
             <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 22, marginTop: 18 }}>
@@ -583,7 +583,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
               {[
                 ["Reserve seed", "60% of each mint goes to the pool reserve and seeds the reserve-backed floor lane of the protocol."],
                 ["Treasury lane", "10% is routed to treasury for buyback, stale inventory cleanup, and weak-demand inventory management."],
-                ["Protocol ops", "30% sustains rollout, collection maintenance and the operating layer around the protocol."],
+                ["Creator / team", "30% goes to the creator / team wallet for rollout, collection maintenance, and operating support."],
               ].map(([title, body]) => (
                 <div key={title} style={{ padding: 14, borderRadius: 18, background: COLORS.surfaceStrong, border: `1px solid ${COLORS.border}` }}>
                   <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>

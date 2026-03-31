@@ -57,7 +57,7 @@ function NftMarquee({ ids, speed = 28, reverse = false }) {
 
 function HeroGallery({ pool }) {
   const heroStats = [
-    { label: "Mint split", value: "60% / 10% / 30%", sub: "reserve / treasury / ops", tone: COLORS.accent },
+    { label: "Mint split", value: "60% / 10% / 30%", sub: "reserve / treasury / creator", tone: COLORS.accent },
     { label: "Market lane", value: "Native market", sub: "premium discovery stays outside the pool", tone: COLORS.purple },
     { label: "Trade fee", value: "2.5% fee", sub: "stakers / pool / treasury / protocol", tone: COLORS.green },
   ];
@@ -184,7 +184,7 @@ function LiquiditySystemOverview({ className = "", style }) {
   const splitCards = [
     { label: "Pool reserve", value: "60%", sub: "Every mint seeds floor liquidity.", tone: COLORS.accent },
     { label: "Treasury lane", value: "10%", sub: "Buyback and stale-inventory cleanup.", tone: COLORS.purple },
-    { label: "Protocol ops", value: "30%", sub: "Funds rollout, maintenance, and operating support.", tone: COLORS.yellow },
+    { label: "Creator / team", value: "30%", sub: "Funds rollout, maintenance, and operating support.", tone: COLORS.yellow },
     { label: "Trade fee", value: "2.5%", sub: "Each trade routes fee into stakers, reserve, treasury, and protocol fees.", tone: COLORS.green },
   ];
 
@@ -195,7 +195,7 @@ function LiquiditySystemOverview({ className = "", style }) {
   ];
 
   const ruleCards = [
-    ["Mint route", "Router mints the NFT, then routes 60% into reserve, 10% into treasury, and 30% into ops. The reserve is funded on day one instead of waiting for secondary demand."],
+    ["Mint route", "Router mints the NFT, then routes 60% into reserve, 10% into treasury, and 30% into the creator / team wallet. The reserve is funded on day one instead of waiting for secondary demand."],
     ["Sell-to-pool gate", "Sell-to-pool only opens after the 6h launch-protection window, only outside Expansion, and only while coverage stays at or above 100%."],
     ["Release gate", "Protocol inventory only re-enters the market in Stabilization and only if purchase rate, listing pressure, and floor ratio all pass the release thresholds."],
     ["Weak-demand cleanup", "Buyback activates only when weak demand or stale / excess inventory appears, and only when coverage is at least 200%."],
@@ -204,7 +204,7 @@ function LiquiditySystemOverview({ className = "", style }) {
   ];
 
   const lifecycleCards = [
-    ["1. Mint seeds the machine", "The first mint does not wait for secondary demand. It seeds reserve, treasury, and ops immediately."],
+    ["1. Mint seeds the machine", "The first mint does not wait for secondary demand. It seeds reserve, treasury, and the creator / team wallet immediately."],
     ["2. Holders choose the route", "After mint, holders can hold, list in the native market, stake for fee flow, or sell into the pool if the sell lane is open."],
     ["3. Pool only quotes the floor", "The pool does not value rare traits. It only quotes the collection floor and leaves premium discovery to the marketplace."],
     ["4. Marketplace feeds the state machine", "Recent sales, active listings, and the market floor feed Weak Demand, Stabilization, and Expansion inside the pool."],
@@ -237,7 +237,7 @@ function LiquiditySystemOverview({ className = "", style }) {
       summary: "The mint is not only a sale. It seeds a full machine: reserve, treasury, native market behavior, and fee routing.",
       rails: [
         ["User mints", "Pays mint price and receives the NFT."],
-        ["Mint split executes", "60% reserve, 10% treasury, 30% ops on the same mint."],
+        ["Mint split executes", "60% reserve, 10% treasury, 30% creator / team on the same mint."],
         ["Protocol starts live", "Reserve can quote the floor, treasury can clean weak demand, and the market feeds the state machine."],
       ],
       outcomes: [
@@ -358,7 +358,7 @@ function LiquiditySystemOverview({ className = "", style }) {
               {[
                 ["60%", "reserve", COLORS.accent],
                 ["10%", "treasury", COLORS.purple],
-                ["30%", "ops", COLORS.yellow],
+                ["30%", "creator", COLORS.yellow],
               ].map(([value, label, color]) => (
                 <div key={label} style={{ padding: "10px 8px", borderRadius: 12, background: `${color}12`, border: `1px solid ${color}33` }}>
                   <div style={{ color, fontFamily: fontDisplay, fontSize: 14, fontWeight: 600 }}>{value}</div>

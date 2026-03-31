@@ -56,7 +56,7 @@ The mint path is intentionally simple:
 4. The mint payment is split into:
    - pool reserve
    - treasury reserve
-   - creator / protocol operations
+   - creator / team wallet
 5. The pool updates total minted supply.
 
 Baseline economic intent:

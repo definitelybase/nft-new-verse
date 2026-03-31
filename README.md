@@ -70,14 +70,14 @@ The normal mint path is:
 4. The mint payment is split between:
    - pool reserve
    - treasury reserve
-   - creator / protocol operations
+   - creator / team wallet
 5. The pool updates `totalMinted`.
 
 Default economic intent:
 
 - `60%` to pool reserve
 - `10%` to treasury reserve
-- `30%` to creator / protocol operations
+- `30%` to the creator / team wallet
 
 The exact split is configurable in the router.
 

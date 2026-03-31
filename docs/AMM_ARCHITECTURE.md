@@ -52,14 +52,14 @@ Responsibilities:
 - splits mint revenue
 - seeds pool reserve
 - seeds treasury reserve
-- forwards creator / ops share
+- forwards creator / team share
 - provides a convenience `sellNFT(...)` path into the pool
 
 Baseline split intent:
 
 - `poolSeedBps = 6000`
 - `treasuryBps = 1000`
-- remainder goes to creator / protocol operations
+- remainder goes to the creator / team wallet
 
 ### PixelPool
 
@@ -138,7 +138,7 @@ Why this matters:
 
 - floor liquidity is seeded immediately
 - treasury is not mixed into user-facing exit liquidity
-- creator / ops funding is explicit
+- creator / team funding is explicit
 
 ## Floor Price Model
 
