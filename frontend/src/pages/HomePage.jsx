@@ -1019,7 +1019,7 @@ function LiquiditySystemOverview({ className = "", style }) {
               Floor only
             </div>
           </div>
-          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10 }}>
+          <div style={{ marginTop: 24, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10 }}>
             {[
               ["Start", "60% mint anchor", "rgba(212,73,122,0.10)"],
               ["Decay", "Net sells push lower", "rgba(212,73,122,0.07)"],
@@ -1123,15 +1123,19 @@ function LiquiditySystemOverview({ className = "", style }) {
                     <div
                       key={label}
                       style={{
-                        padding: "7px 8px",
+                        minHeight: 54,
+                        padding: "8px 10px",
                         borderRadius: 999,
                         border: `1px solid rgba(212,73,122,0.14)`,
                         background: index === 3 ? "rgba(212,73,122,0.12)" : "rgba(255,255,255,0.05)",
                         color: index === 3 ? "#D4497A" : COLORS.textDim,
                         fontFamily: fonts,
-                        fontSize: 10,
+                        fontSize: 9,
+                        lineHeight: 1.15,
+                        letterSpacing: 0.2,
+                        display: "grid",
+                        placeItems: "center",
                         textAlign: "center",
-                        letterSpacing: 0.3,
                       }}
                     >
                       {label}
