@@ -378,6 +378,7 @@ const INFO_PANEL_PIXELS = {
   curve: buildBackdropPixels(16, 705),
   staking: buildBackdropPixels(16, 706),
   market: buildBackdropPixels(16, 707),
+  faq: buildBackdropPixels(22, 708),
 };
 
 function PanelConfetti({ pixels }) {
@@ -529,6 +530,28 @@ function LiquiditySystemOverview({ className = "", style }) {
     ["Token offers", "Bid on specific pieces"],
     ["Collection offers", "Bid on any piece in collection"],
     ["Activity log", "Full on-chain trade history"],
+  ];
+  const faqRows = [
+    [
+      "Can I always sell to the pool?",
+      "No. Sell-to-pool is reserve-gated and closes during expansion. The pool is a floor exit, not a permanent bid.",
+    ],
+    [
+      "Is this a guaranteed buyback?",
+      "No. Treasury buyback is a targeted cleanup action for stale inventory in weak demand, not a price guarantee.",
+    ],
+    [
+      "What if demand drops?",
+      "The protocol can enter weak-demand state. Pool quotes become more conservative, treasury cleanup may activate, and the floor decays under its rules instead of pretending demand is still strong.",
+    ],
+    [
+      "Where does staking yield come from?",
+      "From real trade fees only. No emissions token, no inflation. If nobody trades, stakers earn nothing.",
+    ],
+    [
+      "Can the owner drain the reserve?",
+      "There is no simple owner withdraw on pool reserve. Admin powers still exist, and launch ownership is intended to move to a Safe multisig.",
+    ],
   ];
 
   const marketStateTones = [COLORS.accent, COLORS.purple, COLORS.yellow];
@@ -995,6 +1018,32 @@ function LiquiditySystemOverview({ className = "", style }) {
           </div>
         </InsightPanel>
       </div>
+
+      <InsightPanel title="Honest FAQ" tone="#E8853A" glyph="?" pixels={INFO_PANEL_PIXELS.faq}>
+        <div style={{ display: "grid", gap: 12 }}>
+          {faqRows.map(([question, answer], index) => (
+            <div
+              key={question}
+              style={{
+                padding: "16px 18px 18px",
+                borderRadius: 22,
+                border: `1px solid ${COLORS.border}`,
+                background: index === 0 ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.08)",
+                display: "grid",
+                gap: 8,
+                boxShadow: index === 0 ? "0 14px 28px rgba(0,0,0,0.03)" : "none",
+              }}
+            >
+              <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600, lineHeight: 1.3 }}>
+                {question}
+              </div>
+              <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.8 }}>
+                {answer}
+              </div>
+            </div>
+          ))}
+        </div>
+      </InsightPanel>
     </div>
   );
 }
