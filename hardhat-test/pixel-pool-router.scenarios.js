@@ -73,12 +73,16 @@ async function deployStack() {
   );
   await router.deployed();
 
+  const Market = await ethers.getContractFactory("PixelMarketplace");
+  const market = await Market.deploy(nft.address, pool.address, TRADE_FEE_BPS);
+  await market.deployed();
+
   await (await nft.connect(owner).setMinter(router.address, true)).wait();
   await (await nft.connect(owner).setBurner(pool.address, true)).wait();
   await (await pool.connect(owner).setRouter(router.address)).wait();
-  await (await pool.connect(owner).setListingVault(owner.address)).wait();
+  await (await pool.connect(owner).setListingVault(market.address)).wait();
 
-  return { owner, creator, user, buyer, nft, pool, router, mintPrice };
+  return { owner, creator, user, buyer, nft, pool, router, market, mintPrice };
 }
 
 async function withTemporaryRouter(pool, owner, tempRouter, fn) {
@@ -170,12 +174,12 @@ async function setUintVar(contract, getterName, value, probeValue = 987654321) {
 
 async function setStabilizationSnapshot(pool, owner) {
   const floor = await pool.getFloorPrice();
-  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, STABILIZATION_SPREAD_BPS))).wait();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, 2500))).wait();
 }
 
 describe("PixelPool longer scenarios", function () {
   it("tracks sell pressure until external sales are confirmed", async function () {
-    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, user, buyer, nft, pool, router, market, mintPrice } = await deployStack();
 
     await mintMany(router, user, mintPrice, 3);
     await seedReserves(pool, owner, ethers.utils.parseEther("10"), ethers.constants.Zero);
@@ -192,17 +196,20 @@ describe("PixelPool longer scenarios", function () {
 
     await setStabilizationSnapshot(pool, owner);
 
-    await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
-    await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
+    await (await pool.connect(owner).releasePoolInventoryForListing(2)).wait();
 
     const floorAfterReleases = await pool.getFloorPrice();
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "3");
     assert.strictEqual((await pool.availableNFTs()).toString(), "1");
-    assert.strictEqual(await nft.ownerOf(2), owner.address);
-    assert.strictEqual(await nft.ownerOf(1), owner.address);
+    assert.strictEqual(await nft.ownerOf(2), market.address);
+    assert.strictEqual(await nft.ownerOf(1), market.address);
 
-    await (await pool.connect(owner).confirmExternalSale(2, addBps(floorAfterSells, STABILIZATION_SPREAD_BPS))).wait();
-    await (await pool.connect(owner).confirmExternalSale(1, addBps(floorAfterSells, STABILIZATION_SPREAD_BPS))).wait();
+    const listingIdTwo = await market.listingIdByToken(2);
+    const listingIdOne = await market.listingIdByToken(1);
+    const listingTwo = await market.listings(listingIdTwo);
+    const listingOne = await market.listings(listingIdOne);
+    await (await market.connect(buyer).buyListing(listingIdTwo, { value: listingTwo.price })).wait();
+    await (await market.connect(buyer).buyListing(listingIdOne, { value: listingOne.price })).wait();
 
     const floorAfterSales = await pool.getFloorPrice();
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
@@ -211,7 +218,7 @@ describe("PixelPool longer scenarios", function () {
   });
 
   it("restores the floor path after a confirmed external sale reduces sell pressure", async function () {
-    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, user, buyer, nft, pool, router, market, mintPrice } = await deployStack();
 
     await (await router.connect(user)["mint(bytes)"](onePixel(4), { value: mintPrice })).wait();
     await seedReserves(pool, owner, ethers.utils.parseEther("6"), ethers.constants.Zero);
@@ -231,10 +238,12 @@ describe("PixelPool longer scenarios", function () {
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
     const floorAfterRelease = await pool.getFloorPrice();
-    assert.strictEqual(await nft.ownerOf(0), owner.address);
+    assert.strictEqual(await nft.ownerOf(0), market.address);
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
 
-    await (await pool.connect(owner).confirmExternalSale(0, addBps(floorAfterSell, STABILIZATION_SPREAD_BPS))).wait();
+    const listingId = await market.listingIdByToken(0);
+    const listing = await market.listings(listingId);
+    await (await market.connect(buyer).buyListing(listingId, { value: listing.price })).wait();
 
     const floorAfterConfirm = await pool.getFloorPrice();
     assert(floorAfterRelease.lte(floorAfterConfirm));

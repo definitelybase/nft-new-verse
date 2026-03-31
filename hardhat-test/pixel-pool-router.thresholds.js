@@ -73,12 +73,16 @@ async function deployStack() {
   );
   await router.deployed();
 
+  const Market = await ethers.getContractFactory("PixelMarketplace");
+  const market = await Market.deploy(nft.address, pool.address, 250);
+  await market.deployed();
+
   await (await nft.connect(owner).setMinter(router.address, true)).wait();
   await (await nft.connect(owner).setBurner(pool.address, true)).wait();
   await (await pool.connect(owner).setRouter(router.address)).wait();
-  await (await pool.connect(owner).setListingVault(owner.address)).wait();
+  await (await pool.connect(owner).setListingVault(market.address)).wait();
 
-  return { owner, creator, user, buyer, nft, pool, router, mintPrice };
+  return { owner, creator, user, buyer, nft, pool, router, market, mintPrice };
 }
 
 async function withTemporaryRouter(pool, owner, tempRouter, fn) {

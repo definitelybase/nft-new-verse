@@ -8,8 +8,9 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 interface IPixelNFT {
     function mint(bytes calldata pixelData) external payable;
     function mintCustom(bytes calldata pixelData, uint8 width, uint8 height) external payable;
-    function mintTo(address to, bytes calldata pixelData) external;
-    function mintToCustom(address to, bytes calldata pixelData, uint8 width, uint8 height) external;
+    function mintTo(address to, bytes calldata pixelData) external returns (uint256 tokenId);
+    function mintToCustom(address to, bytes calldata pixelData, uint8 width, uint8 height)
+        external returns (uint256 tokenId);
     function totalSupply() external view returns (uint256);
     function ownerOf(uint256 tokenId) external view returns (address);
     function approve(address to, uint256 tokenId) external;
@@ -131,11 +132,8 @@ contract PixelRouter is Ownable, ReentrancyGuard {
         uint256 treasuryShare = (msg.value * treasuryBps) / 10000;
         uint256 creatorShare = msg.value - poolShare - treasuryShare;
 
-        // Get next token ID
-        uint256 tokenId = nftContract.totalSupply();
-
-        // Mint NFT directly to user
-        nftContract.mintTo(msg.sender, pixelData);
+        // Mint NFT directly to user and capture the real token ID.
+        uint256 tokenId = nftContract.mintTo(msg.sender, pixelData);
 
         // Seed pool (60%)
         pool.seedLiquidity{value: poolShare}();
@@ -164,8 +162,7 @@ contract PixelRouter is Ownable, ReentrancyGuard {
         uint256 treasuryShare = (msg.value * treasuryBps) / 10000;
         uint256 creatorShare = msg.value - poolShare - treasuryShare;
 
-        uint256 tokenId = nftContract.totalSupply();
-        nftContract.mintToCustom(msg.sender, pixelData, width, height);
+        uint256 tokenId = nftContract.mintToCustom(msg.sender, pixelData, width, height);
 
         pool.seedLiquidity{value: poolShare}();
         totalSeeded += poolShare;

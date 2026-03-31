@@ -121,16 +121,14 @@ async function maybeSendDirect(provider, ownerAddress, poolAddress, data) {
 
 async function main() {
   const action = process.argv[2];
-  if (!action || !["snapshot", "confirm-sale"].includes(action)) {
+  if (!action || action !== "snapshot") {
     throw new Error(
       [
         "Usage:",
         '  node scripts/market-keeper.js snapshot <deployment.json|networkOrChainId> <sales24h> <activeListings> <externalFloorEthOrWei>',
-        '  node scripts/market-keeper.js confirm-sale <deployment.json|networkOrChainId> <tokenId> <salePriceEthOrWei>',
         "",
         "Examples:",
         "  RPC_URL=https://1rpc.io/sepolia node scripts/market-keeper.js snapshot deployment-11155111.json 35 800 0.012",
-        "  RPC_URL=https://1rpc.io/sepolia node scripts/market-keeper.js confirm-sale deployment-11155111.json 42 0.0135",
       ].join("\n")
     );
   }
@@ -240,47 +238,6 @@ async function main() {
     return;
   }
 
-  const tokenIdRaw = process.argv[firstArgIndex];
-  const salePriceRaw = process.argv[firstArgIndex + 1];
-  if (!tokenIdRaw || !salePriceRaw) {
-    throw new Error("confirm-sale requires <tokenId> <salePriceEthOrWei>");
-  }
-
-  const tokenId = BigInt(tokenIdRaw);
-  const salePrice = parsePriceInput(salePriceRaw);
-  const pending = await pool.pendingExternalSale(tokenId);
-  const fromPoolInventory = pending ? await pool.pendingExternalSaleFromPool(tokenId) : false;
-
-  console.log("");
-  console.log("Manual sale confirmation preview");
-  console.log(`- Token ID:         ${tokenId.toString()}`);
-  console.log(`- Sale price:       ${fmtEth(salePrice)}`);
-  console.log(`- Pending tracked:  ${pending}`);
-  console.log(`- From pool entry:  ${pending ? String(fromPoolInventory) : "n/a"}`);
-
-  const data = pool.interface.encodeFunctionData("confirmExternalSale", [
-    tokenId,
-    salePrice,
-  ]);
-
-  console.log("");
-  console.log("Safe transaction payload");
-  console.log(JSON.stringify(
-    toSafeTx(
-      poolAddress,
-      data,
-      `Confirm manual sale settlement for token ${tokenId.toString()} at ${salePrice.toString()}`
-    ),
-    null,
-    2
-  ));
-
-  if (!pending) {
-    console.log("");
-    console.log("Warning: token is not currently marked as pendingExternalSale on-chain.");
-  }
-
-  await maybeSendDirect(provider, ownerAddress, poolAddress, data);
 }
 
 main().catch((err) => {

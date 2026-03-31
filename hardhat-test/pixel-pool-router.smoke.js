@@ -58,12 +58,16 @@ async function deployStack() {
   );
   await router.deployed();
 
+  const Market = await ethers.getContractFactory("PixelMarketplace");
+  const market = await Market.deploy(nft.address, pool.address, TRADE_FEE_BPS);
+  await market.deployed();
+
   await (await nft.connect(owner).setMinter(router.address, true)).wait();
   await (await nft.connect(owner).setBurner(pool.address, true)).wait();
   await (await pool.connect(owner).setRouter(router.address)).wait();
-  await (await pool.connect(owner).setListingVault(owner.address)).wait();
+  await (await pool.connect(owner).setListingVault(market.address)).wait();
 
-  return { owner, creator, user, buyer, nft, pool, router, mintPrice };
+  return { owner, creator, user, buyer, nft, pool, router, market, mintPrice };
 }
 
 async function seedPoolReserve(pool, owner, routerAddress, amount) {
@@ -284,7 +288,7 @@ describe("PixelPool + PixelRouter smoke suite", function () {
   });
 
   it("supports sell into pool and later confirms external sale after listing release", async function () {
-    const { owner, user, buyer, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, user, buyer, nft, pool, router, market, mintPrice } = await deployStack();
 
     await (await router.connect(user)["mint(bytes)"](onePixel(2), { value: mintPrice })).wait();
     await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("5"));
@@ -306,17 +310,19 @@ describe("PixelPool + PixelRouter smoke suite", function () {
 
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
-    assert.strictEqual(await nft.ownerOf(0), owner.address);
+    assert.strictEqual(await nft.ownerOf(0), market.address);
     assert.strictEqual((await pool.availableNFTs()).toString(), "0");
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
     assert.strictEqual(await pool.canReleaseInventoryForListing(), false);
 
-    await (await pool.connect(owner).confirmExternalSale(0, ask)).wait();
+    const listingId = await market.listingIdByToken(0);
+    await (await market.connect(buyer).buyListing(listingId, { value: ask })).wait();
+    assert.strictEqual(await nft.ownerOf(0), buyer.address);
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "0");
   });
 
   it("releases inventory without trapping ETH in the router", async function () {
-    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, user, nft, pool, router, market, mintPrice } = await deployStack();
 
     await (await router.connect(user)["mint(bytes)"](onePixel(2), { value: mintPrice })).wait();
     await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("5"));
@@ -329,7 +335,7 @@ describe("PixelPool + PixelRouter smoke suite", function () {
     await setStabilizationSnapshot(pool, owner);
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
-    assert.strictEqual(await nft.ownerOf(0), owner.address);
+    assert.strictEqual(await nft.ownerOf(0), market.address);
     assert.strictEqual((await ethers.provider.getBalance(router.address)).toString(), "0");
   });
 });

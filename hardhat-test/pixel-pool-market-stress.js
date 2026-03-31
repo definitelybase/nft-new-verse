@@ -47,12 +47,16 @@ async function deployStack() {
   const router = await Router.deploy(nft.address, pool.address, creator.address, mintPrice, POOL_SEED_BPS, TREASURY_BPS);
   await router.deployed();
 
+  const Market = await ethers.getContractFactory("PixelMarketplace");
+  const market = await Market.deploy(nft.address, pool.address, TRADE_FEE_BPS);
+  await market.deployed();
+
   await (await nft.connect(owner).setMinter(router.address, true)).wait();
   await (await nft.connect(owner).setBurner(pool.address, true)).wait();
   await (await pool.connect(owner).setRouter(router.address)).wait();
-  await (await pool.connect(owner).setListingVault(owner.address)).wait();
+  await (await pool.connect(owner).setListingVault(market.address)).wait();
 
-  return { owner, creator, alice, bob, charlie, nft, pool, router, mintPrice };
+  return { owner, creator, alice, bob, charlie, nft, pool, router, market, mintPrice };
 }
 
 async function seedPoolReserve(pool, owner, routerAddress, amount) {
@@ -72,7 +76,7 @@ async function getState(pool) {
 
 async function setStabilizationSnapshot(pool, owner) {
   const floor = await pool.getFloorPrice();
-  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor.add(floor.mul(2000).div(10000)))).wait();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor.add(floor.mul(2500).div(10000)))).wait();
 }
 
 describe("Market-state stress tests", function () {
@@ -88,7 +92,7 @@ describe("Market-state stress tests", function () {
   });
 
   it("transitions from Expansion to Stabilization after first sell post-launch", async function () {
-    const { owner, alice, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, alice, nft, pool, router, market, mintPrice } = await deployStack();
 
     await mintOne(router, alice, mintPrice);
     await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("5"));
@@ -102,7 +106,7 @@ describe("Market-state stress tests", function () {
   });
 
   it("recovers from WeakDemand enough to release inventory externally after a healthy market snapshot", async function () {
-    const { owner, alice, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, alice, nft, pool, router, market, mintPrice } = await deployStack();
 
     // Setup: mint, seed, pass launch
     await mintOne(router, alice, mintPrice, 1);
@@ -131,7 +135,7 @@ describe("Market-state stress tests", function () {
       state === "Stabilization" || state === "Expansion",
       `Expected Stabilization or Expansion after release, got ${state}`
     );
-    assert.strictEqual(await nft.ownerOf(1), owner.address);
+    assert.strictEqual(await nft.ownerOf(1), market.address);
   });
 
   it("ethBalance never goes negative through many sell cycles", async function () {

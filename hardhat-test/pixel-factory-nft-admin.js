@@ -104,7 +104,7 @@ describe("Factory and NFT admin paths", function () {
     assert.strictEqual((await ethers.provider.getBalance(factory.address)).toString(), "0");
   });
 
-  it("restricts NFT admin setters to owner and supports owner withdrawal of mint proceeds", async function () {
+  it("restricts NFT admin setters, keeps direct public mint disabled, and only lets owner withdraw accidental ETH", async function () {
     const [owner, user, helper] = await ethers.getSigners();
     const mintPrice = ethers.utils.parseEther("0.01");
     const newMintPrice = ethers.utils.parseEther("0.02");
@@ -154,14 +154,25 @@ describe("Factory and NFT admin paths", function () {
     await (await nft.connect(owner).setMinter(helper.address, true)).wait();
     await (await nft.connect(owner).setBurner(helper.address, true)).wait();
     await (await nft.connect(owner).setMintPrice(newMintPrice)).wait();
-    await (await nft.connect(owner).setPublicMintEnabled(true)).wait();
 
     assert.strictEqual(await nft.isMinter(helper.address), true);
     assert.strictEqual(await nft.isBurner(helper.address), true);
     assert.strictEqual((await nft.mintPrice()).toString(), newMintPrice.toString());
-    assert.strictEqual(await nft.publicMintEnabled(), true);
+    assert.strictEqual(await nft.publicMintEnabled(), false);
 
-    await (await nft.connect(user)["mint(bytes)"](onePixel(), { value: newMintPrice })).wait();
+    await expectCustomError(
+      nft.connect(owner).setPublicMintEnabled(true),
+      "PublicMintDisabled"
+    );
+    await expectCustomError(
+      nft.connect(user)["mint(bytes)"](onePixel(), { value: newMintPrice }),
+      "PublicMintDisabled"
+    );
+
+    await ethers.provider.send("hardhat_setBalance", [
+      nft.address,
+      newMintPrice.toHexString()
+    ]);
     assert.strictEqual((await ethers.provider.getBalance(nft.address)).toString(), newMintPrice.toString());
 
     const balanceBefore = await ethers.provider.getBalance(owner.address);

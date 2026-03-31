@@ -227,9 +227,11 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
                 uint256 activeListings,
                 uint256 floorPrice
             ) {
-                observedSales24h = sales24h;
-                observedListings = activeListings;
-                observedFloor = floorPrice;
+                if (sales24h > 0 || activeListings > 0 || floorPrice > 0) {
+                    observedSales24h = sales24h;
+                    observedListings = activeListings;
+                    observedFloor = floorPrice;
+                }
             } catch {
                 // Keep the last manual snapshot as fallback
             }
@@ -401,7 +403,9 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
                 uint256,
                 uint256 floorPrice
             ) {
-                observedFloor = floorPrice;
+                if (floorPrice > 0) {
+                    observedFloor = floorPrice;
+                }
             } catch {
                 // keep fallback snapshot
             }
@@ -457,17 +461,6 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         externalSnapshotAt = block.timestamp;
         _refreshMarketState();
         emit ExternalMarketSnapshotUpdated(sales24h, activeListings, floor, externalSnapshotAt);
-    }
-
-    function confirmExternalSale(uint256 tokenId, uint256 salePrice) external onlyOwner nonReentrant {
-        if (!pendingExternalSale[tokenId]) revert ExternalListingNotTracked();
-        bool fromPoolInventory = pendingExternalSaleFromPool[tokenId];
-        delete pendingExternalSale[tokenId];
-        delete pendingExternalSaleFromPool[tokenId];
-        if (fromPoolInventory && totalSoldIntoPool > 0) totalSoldIntoPool -= 1;
-        _updateFloorEma();
-        _refreshMarketState();
-        emit ExternalSaleConfirmed(tokenId, salePrice, fromPoolInventory);
     }
 
     function recordMarketplaceFee() external payable nonReentrant {
@@ -572,6 +565,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     }
     function setListingVault(address vault) external onlyOwner {
         if (vault == address(0)) revert ZeroAddress();
+        if (vault.code.length == 0) revert InvalidDependency();
         emit ListingVaultUpdated(listingVault, vault);
         listingVault = vault;
     }

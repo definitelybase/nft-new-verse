@@ -66,12 +66,16 @@ async function deployStack() {
   const router = await Router.deploy(nft.address, pool.address, creator.address, mintPrice, POOL_SEED_BPS, TREASURY_BPS);
   await router.deployed();
 
+  const Market = await ethers.getContractFactory("PixelMarketplace");
+  const market = await Market.deploy(nft.address, pool.address, TRADE_FEE_BPS);
+  await market.deployed();
+
   await (await nft.connect(owner).setMinter(router.address, true)).wait();
   await (await nft.connect(owner).setBurner(pool.address, true)).wait();
   await (await pool.connect(owner).setRouter(router.address)).wait();
-  await (await pool.connect(owner).setListingVault(owner.address)).wait();
+  await (await pool.connect(owner).setListingVault(market.address)).wait();
 
-  return { owner, creator, user, buyer, nft, pool, router, mintPrice };
+  return { owner, creator, user, buyer, nft, pool, router, market, mintPrice };
 }
 
 async function mintOne(router, user, mintPrice, colorIndex = 1) {
@@ -167,7 +171,7 @@ async function deployFactoryStack() {
 
 describe("Protocol fee and admin invariants", function () {
   it("lets only the owner claim protocol fees and drains the exact accrued amount", async function () {
-    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, user, nft, pool, router, market, mintPrice } = await deployStack();
 
     await mintOne(router, user, mintPrice);
     await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("5"));
@@ -203,7 +207,7 @@ describe("Protocol fee and admin invariants", function () {
   });
 
   it("pause blocks trade and listing-release paths, then unpause restores them", async function () {
-    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, user, nft, pool, router, market, mintPrice } = await deployStack();
 
     await mintOne(router, user, mintPrice, 1);
     await seedPoolReserve(pool, owner, router.address, ethers.utils.parseEther("5"));
@@ -237,7 +241,7 @@ describe("Protocol fee and admin invariants", function () {
 
     await (await pool.connect(owner).unpause()).wait();
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
-    assert.strictEqual(await nft.ownerOf(0), owner.address);
+    assert.strictEqual(await nft.ownerOf(0), market.address);
   });
 
   it("enforces factory fees and lets only owner withdraw them", async function () {

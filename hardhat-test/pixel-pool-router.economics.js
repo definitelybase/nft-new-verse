@@ -71,12 +71,16 @@ async function deployStack() {
   );
   await router.deployed();
 
+  const Market = await ethers.getContractFactory("PixelMarketplace");
+  const market = await Market.deploy(nft.address, pool.address, 250);
+  await market.deployed();
+
   await (await nft.connect(owner).setMinter(router.address, true)).wait();
   await (await nft.connect(owner).setBurner(pool.address, true)).wait();
   await (await pool.connect(owner).setRouter(router.address)).wait();
-  await (await pool.connect(owner).setListingVault(owner.address)).wait();
+  await (await pool.connect(owner).setListingVault(market.address)).wait();
 
-  return { owner, creator, user, buyer, nft, pool, router, mintPrice };
+  return { owner, creator, user, buyer, nft, pool, router, market, mintPrice };
 }
 
 async function withTemporaryRouter(pool, owner, tempRouter, fn) {
@@ -133,7 +137,7 @@ async function setStabilizationSnapshot(pool, owner, floorOverride) {
 
 describe("PixelPool + PixelRouter economics flows", function () {
   it("buyback vaults stale inventory and recapitalizes pool reserve", async function () {
-    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, user, nft, pool, router, market, mintPrice } = await deployStack();
 
     await mintMany(router, user, mintPrice, 2);
     await seedReserves(
@@ -232,7 +236,7 @@ describe("PixelPool + PixelRouter economics flows", function () {
   });
 
   it("relist releases vault inventory to the listing vault without increasing sell pressure", async function () {
-    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, user, nft, pool, router, market, mintPrice } = await deployStack();
 
     await mintMany(router, user, mintPrice, 2);
     await seedReserves(
@@ -253,7 +257,7 @@ describe("PixelPool + PixelRouter economics flows", function () {
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
 
     const targetPrice = await pool.getVaultListingTarget(1);
-    const releaseReadyFloor = addBps(await pool.getFloorPrice(), 2000);
+    const releaseReadyFloor = addBps(await pool.getFloorPrice(), 2500);
     const observedFloor = targetPrice.gt(releaseReadyFloor)
       ? targetPrice
       : releaseReadyFloor;
@@ -262,7 +266,7 @@ describe("PixelPool + PixelRouter economics flows", function () {
 
     await (await pool.connect(owner).relistFromVault(1)).wait();
 
-    assert.strictEqual(await nft.ownerOf(1), owner.address);
+    assert.strictEqual(await nft.ownerOf(1), market.address);
     assert.strictEqual((await pool.availableNFTs()).toString(), "1");
     assert.strictEqual((await pool.vaultSize()).toString(), "0");
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");

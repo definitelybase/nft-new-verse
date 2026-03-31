@@ -23,7 +23,6 @@ contract OnChainPixelNFT is ERC721, Ownable, IOnChainPixel {
     error InvalidBitDepth();
     error PaletteNotSet();
     error PaletteAlreadyLocked();
-    error MintPriceNotMet();
     error MaxSupplyReached();
     error TokenDoesNotExist();
     error WithdrawFailed();
@@ -90,29 +89,31 @@ contract OnChainPixelNFT is ERC721, Ownable, IOnChainPixel {
         }
     }
 
-    function mint(bytes calldata pixelData_) external payable {
-        if (!publicMintEnabled) revert PublicMintDisabled();
-        if (msg.value < mintPrice) revert MintPriceNotMet();
-        _mintPixelTo(msg.sender, pixelData_, _defaultWidth, _defaultHeight);
+    /// @notice Legacy selector retained for ABI compatibility; direct public mint is disabled.
+    function mint(bytes calldata) external payable {
+        revert PublicMintDisabled();
     }
 
-    function mintCustom(bytes calldata pixelData_, uint8 width, uint8 height) external payable {
-        if (!publicMintEnabled) revert PublicMintDisabled();
-        if (msg.value < mintPrice) revert MintPriceNotMet();
-        _mintPixelTo(msg.sender, pixelData_, width, height);
+    /// @notice Legacy selector retained for ABI compatibility; direct public mint is disabled.
+    function mintCustom(bytes calldata, uint8, uint8) external payable {
+        revert PublicMintDisabled();
     }
 
-    function mintTo(address to, bytes calldata pixelData_) external {
+    function mintTo(address to, bytes calldata pixelData_) external returns (uint256 tokenId) {
         if (!isMinter[msg.sender]) revert NotMinter();
-        _mintPixelTo(to, pixelData_, _defaultWidth, _defaultHeight);
+        return _mintPixelTo(to, pixelData_, _defaultWidth, _defaultHeight);
     }
 
-    function mintToCustom(address to, bytes calldata pixelData_, uint8 width, uint8 height) external {
+    function mintToCustom(address to, bytes calldata pixelData_, uint8 width, uint8 height)
+        external returns (uint256 tokenId)
+    {
         if (!isMinter[msg.sender]) revert NotMinter();
-        _mintPixelTo(to, pixelData_, width, height);
+        return _mintPixelTo(to, pixelData_, width, height);
     }
 
-    function _mintPixelTo(address to, bytes calldata pixelData_, uint8 width, uint8 height) private {
+    function _mintPixelTo(address to, bytes calldata pixelData_, uint8 width, uint8 height)
+        private returns (uint256 tokenId)
+    {
         if (_maxSupply > 0 && _nextTokenId >= _maxSupply) revert MaxSupplyReached();
         if (_palettePointer == address(0)) revert PaletteNotSet();
         if (
@@ -128,7 +129,7 @@ contract OnChainPixelNFT is ERC721, Ownable, IOnChainPixel {
         uint256 expectedSize = PixelDecoder.expectedDataSize(width, height, _bitDepth);
         if (pixelData_.length != expectedSize) revert InvalidPixelData();
 
-        uint256 tokenId = _nextTokenId++;
+        tokenId = _nextTokenId++;
         _pixelPointers[tokenId] = SSTORE2.write(pixelData_);
         _tokenDimensions[tokenId] = (uint16(width) << 8) | uint16(height);
 
@@ -254,7 +255,8 @@ contract OnChainPixelNFT is ERC721, Ownable, IOnChainPixel {
     }
 
     function setPublicMintEnabled(bool enabled) external onlyOwner {
-        publicMintEnabled = enabled;
+        if (enabled) revert PublicMintDisabled();
+        publicMintEnabled = false;
     }
 
     function withdraw() external onlyOwner {
