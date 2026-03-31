@@ -9,6 +9,7 @@ const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
 const INVENTORY_STALE_AGE = 7 * 24 * 60 * 60;
 const MARKET_STATE_SLOT = 24;
+const MANUAL_MODE_WINDOW = 60 * 60;
 const slotCache = {};
 
 function palette16() {
@@ -175,9 +176,12 @@ async function setUintVar(contract, getterName, value, probeValue = 987654321) {
 async function setStabilizationSnapshot(pool, market, owner) {
   const floor = await pool.getFloorPrice();
   await setUintVar(pool, "totalMinted", 10);
+  await (await pool.connect(owner).pause()).wait();
   await (await market.connect(owner).pause()).wait();
+  await (await pool.connect(owner).enableManualSnapshotMode(MANUAL_MODE_WINDOW)).wait();
   await (await pool.connect(owner).setExternalMarketSnapshot(2, 1, addBps(floor, 2500))).wait();
   await (await market.connect(owner).unpause()).wait();
+  await (await pool.connect(owner).unpause()).wait();
 }
 
 describe("PixelPool longer scenarios", function () {

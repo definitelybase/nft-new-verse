@@ -7,6 +7,7 @@ const TREASURY_BPS = 1000;
 const TRADE_FEE_BPS = 250;
 const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
+const MANUAL_MODE_WINDOW = 60 * 60;
 const slotCache = {};
 
 function palette16() {
@@ -130,9 +131,12 @@ async function seedPoolReserve(pool, owner, routerAddress, amount) {
 async function setStabilizationSnapshot(pool, market, owner) {
   const floor = await pool.getFloorPrice();
   await setUintVar(pool, "totalMinted", 10);
+  await (await pool.connect(owner).pause()).wait();
   await (await market.connect(owner).pause()).wait();
+  await (await pool.connect(owner).enableManualSnapshotMode(MANUAL_MODE_WINDOW)).wait();
   await (await pool.connect(owner).setExternalMarketSnapshot(2, 1, addBps(floor, STABILIZATION_SPREAD_BPS))).wait();
   await (await market.connect(owner).unpause()).wait();
+  await (await pool.connect(owner).unpause()).wait();
 }
 
 function addBps(value, bps) {

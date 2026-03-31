@@ -53,6 +53,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     error ExternalListingNotTracked();
     error NotListingVenue();
     error ManualSnapshotDisabled();
+    error ManualSnapshotModeInactive();
 
     event NFTSold(address indexed seller, uint256 indexed tokenId, uint256 price, uint256 fee);
     event LiquidityAdded(uint256 ethAmount);
@@ -76,6 +77,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         uint256 externalFloor,
         uint256 updatedAt
     );
+    event ManualSnapshotModeUpdated(bool enabled, uint256 expiresAt);
     event ExternalSaleConfirmed(
         uint256 indexed tokenId,
         uint256 salePrice,
@@ -113,7 +115,8 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     uint256 public constant VAULT_BURN_AGE = 14 days;
     uint256 public constant RELIST_PROFIT_BPS = 2000;
     uint256 public constant ROUTER_CHANGE_DELAY = 48 hours;
-    uint256 public constant MANUAL_SNAPSHOT_TTL = 6 hours;
+    uint256 public constant MANUAL_SNAPSHOT_TTL = 30 minutes;
+    uint256 public constant MANUAL_MODE_MAX_DURATION = 1 hours;
     uint256 public constant EXPANSION_PURCHASE_RATE_BPS = 35;
     uint256 public constant EXPANSION_LISTING_PRESSURE_BPS = 800;
     uint256 public constant EXPANSION_FLOOR_RATIO_BPS = 12000;
@@ -159,6 +162,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     uint256 public externalListings;
     uint256 public externalFloor;
     uint256 public externalSnapshotAt;
+    uint256 public manualSnapshotExpiresAt;
 
     uint256 public oldestPoolListedAt;
 
@@ -234,7 +238,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
             observedFloor = externalFloor;
         }
 
-        if (listingVault != address(0) && listingVault.code.length > 0) {
+        if (!manualActive && listingVault != address(0) && listingVault.code.length > 0) {
             try IListingVenueSignals(listingVault).paused() returns (bool isPaused) {
                 venuePaused = isPaused;
                 venuePauseKnown = true;
@@ -468,12 +472,27 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         return (buybackPrice[tokenId] * (BPS + RELIST_PROFIT_BPS)) / BPS;
     }
 
+    function enableManualSnapshotMode(uint256 duration) external onlyOwner whenPaused {
+        if (!_manualSnapshotVenueReady()) revert ManualSnapshotDisabled();
+        if (duration == 0 || duration > MANUAL_MODE_MAX_DURATION) revert InvalidAmount();
+        manualSnapshotExpiresAt = block.timestamp + duration;
+        externalSnapshotAt = 0;
+        emit ManualSnapshotModeUpdated(true, manualSnapshotExpiresAt);
+    }
+
+    function disableManualSnapshotMode() external onlyOwner {
+        delete manualSnapshotExpiresAt;
+        delete externalSnapshotAt;
+        emit ManualSnapshotModeUpdated(false, 0);
+    }
+
     function setExternalMarketSnapshot(
         uint256 sales24h,
         uint256 activeListings,
         uint256 floor
-    ) external onlyOwner {
-        if (!_manualSnapshotAllowed()) revert ManualSnapshotDisabled();
+    ) external onlyOwner whenPaused {
+        if (!_manualSnapshotModeActive()) revert ManualSnapshotModeInactive();
+        if (!_manualSnapshotVenueReady()) revert ManualSnapshotDisabled();
         externalSales24h = sales24h;
         externalListings = activeListings;
         externalFloor = floor;
@@ -750,11 +769,18 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     }
 
     function _manualSnapshotActive() private view returns (bool) {
-        return externalSnapshotAt != 0 && block.timestamp <= externalSnapshotAt + MANUAL_SNAPSHOT_TTL;
+        return
+            _manualSnapshotModeActive() &&
+            externalSnapshotAt != 0 &&
+            block.timestamp <= externalSnapshotAt + MANUAL_SNAPSHOT_TTL;
     }
 
-    function _manualSnapshotAllowed() private view returns (bool) {
-        if (listingVault == address(0)) return true;
+    function _manualSnapshotModeActive() private view returns (bool) {
+        return manualSnapshotExpiresAt != 0 && block.timestamp <= manualSnapshotExpiresAt;
+    }
+
+    function _manualSnapshotVenueReady() private view returns (bool) {
+        if (listingVault == address(0)) return false;
         if (listingVault.code.length == 0) return false;
         try IListingVenueSignals(listingVault).paused() returns (bool isPaused) {
             return isPaused;

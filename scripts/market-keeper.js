@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { Contract, JsonRpcProvider, Wallet, formatEther, getAddress, parseEther } = require("ethers-v6");
+const { Contract, JsonRpcProvider, Wallet, ZeroAddress, formatEther, getAddress, parseEther } = require("ethers-v6");
 
 const MARKET_STATES = ["Expansion", "Stabilization", "WeakDemand"];
 
@@ -121,13 +121,17 @@ async function maybeSendDirect(provider, ownerAddress, poolAddress, data) {
 
 async function main() {
   const action = process.argv[2];
-  if (!action || action !== "snapshot") {
+  if (!action || !["snapshot", "manual-on", "manual-off"].includes(action)) {
     throw new Error(
       [
         "Usage:",
+        "  node scripts/market-keeper.js manual-on <deployment.json|networkOrChainId> <durationSeconds>",
+        "  node scripts/market-keeper.js manual-off <deployment.json|networkOrChainId>",
         '  node scripts/market-keeper.js snapshot <deployment.json|networkOrChainId> <sales24h> <activeListings> <externalFloorEthOrWei>',
         "",
         "Examples:",
+        "  RPC_URL=https://1rpc.io/sepolia node scripts/market-keeper.js manual-on deployment-11155111.json 3600",
+        "  RPC_URL=https://1rpc.io/sepolia node scripts/market-keeper.js manual-off deployment-11155111.json",
         "  RPC_URL=https://1rpc.io/sepolia node scripts/market-keeper.js snapshot deployment-11155111.json 35 800 0.012",
       ].join("\n")
     );
@@ -167,6 +171,17 @@ async function main() {
   const nowBlock = await provider.getBlock("latest");
   const launchTimestamp = await pool.launchTimestamp();
   const launchProtection = await pool.LAUNCH_PROTECTION();
+  const poolPaused = await pool.paused();
+  const manualSnapshotExpiresAt = await pool.manualSnapshotExpiresAt();
+  let listingVaultAddress = "";
+  let listingVenuePaused = false;
+  try {
+    listingVaultAddress = await pool.listingVault();
+    if (listingVaultAddress && listingVaultAddress !== ZeroAddress) {
+      const market = new Contract(listingVaultAddress, loadArtifact("PixelMarketplace"), provider);
+      listingVenuePaused = await market.paused();
+    }
+  } catch {}
 
   console.log(`Keeper action: ${action}`);
   console.log(`Deployment:    ${filename}`);
@@ -175,6 +190,52 @@ async function main() {
   console.log(`Protocol floor:${fmtEth(protocolFloor)}`);
   console.log(`Reference supply: ${referenceSupply.toString()}`);
   console.log(`Current state: ${currentState}`);
+  console.log(`Pool paused:   ${poolPaused}`);
+  console.log(`Venue paused:  ${listingVenuePaused}`);
+  console.log(`Manual mode:   ${manualSnapshotExpiresAt > 0n ? `until ${manualSnapshotExpiresAt.toString()}` : "off"}`);
+
+  if (action === "manual-on") {
+    const durationRaw = process.argv[firstArgIndex];
+    if (!durationRaw) {
+      throw new Error("manual-on requires <durationSeconds>");
+    }
+    const durationSeconds = BigInt(durationRaw);
+    const data = pool.interface.encodeFunctionData("enableManualSnapshotMode", [durationSeconds]);
+
+    console.log("");
+    console.log("Safe transaction payload");
+    console.log(JSON.stringify(
+      toSafeTx(
+        poolAddress,
+        data,
+        `Enable manual market snapshot mode for ${durationSeconds.toString()} seconds`
+      ),
+      null,
+      2
+    ));
+
+    await maybeSendDirect(provider, ownerAddress, poolAddress, data);
+    return;
+  }
+
+  if (action === "manual-off") {
+    const data = pool.interface.encodeFunctionData("disableManualSnapshotMode", []);
+
+    console.log("");
+    console.log("Safe transaction payload");
+    console.log(JSON.stringify(
+      toSafeTx(
+        poolAddress,
+        data,
+        "Disable manual market snapshot mode"
+      ),
+      null,
+      2
+    ));
+
+    await maybeSendDirect(provider, ownerAddress, poolAddress, data);
+    return;
+  }
 
   if (action === "snapshot") {
     const sales24hRaw = process.argv[firstArgIndex];

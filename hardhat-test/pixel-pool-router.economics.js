@@ -8,6 +8,7 @@ const LAUNCH_PROTECTION = 6 * 60 * 60;
 const INVENTORY_STALE_AGE = 7 * 24 * 60 * 60;
 const VAULT_BURN_AGE = 14 * 24 * 60 * 60;
 const MARKET_STATE_SLOT = 24;
+const MANUAL_MODE_WINDOW = 60 * 60;
 const slotCache = {};
 
 function palette16() {
@@ -176,9 +177,12 @@ async function forceMarketState(pool, desiredState) {
 async function setStabilizationSnapshot(pool, market, owner, floorOverride) {
   const floor = floorOverride || addBps(await pool.getFloorPrice(), 2000);
   await setUintVar(pool, "totalMinted", 10);
+  await (await pool.connect(owner).pause()).wait();
   await (await market.connect(owner).pause()).wait();
+  await (await pool.connect(owner).enableManualSnapshotMode(MANUAL_MODE_WINDOW)).wait();
   await (await pool.connect(owner).setExternalMarketSnapshot(2, 1, floor)).wait();
   await (await market.connect(owner).unpause()).wait();
+  await (await pool.connect(owner).unpause()).wait();
 }
 
 describe("PixelPool + PixelRouter economics flows", function () {

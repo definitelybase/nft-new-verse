@@ -8,6 +8,7 @@ const TRADE_FEE_BPS = 250;
 const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
 const MARKET_STATE_SLOT = 24;
+const MANUAL_MODE_WINDOW = 60 * 60;
 const slotCache = {};
 
 function palette16() {
@@ -142,9 +143,12 @@ async function forceMarketState(pool, value) {
 async function setStabilizationSnapshot(pool, market, owner) {
   const floor = await pool.getFloorPrice();
   await setUintVar(pool, "totalMinted", 10);
+  await (await pool.connect(owner).pause()).wait();
   await (await market.connect(owner).pause()).wait();
+  await (await pool.connect(owner).enableManualSnapshotMode(MANUAL_MODE_WINDOW)).wait();
   await (await pool.connect(owner).setExternalMarketSnapshot(2, 1, addBps(floor, STABILIZATION_SPREAD_BPS))).wait();
   await (await market.connect(owner).unpause()).wait();
+  await (await pool.connect(owner).unpause()).wait();
 }
 
 function addBps(value, bps) {
@@ -251,13 +255,27 @@ describe("Protocol fee and admin invariants", function () {
     const { owner, pool, market } = await deployStack();
     const floor = await pool.getFloorPrice();
 
+    await assert.rejects(
+      pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, STABILIZATION_SPREAD_BPS)),
+      /Pausable: not paused/
+    );
+
+    await (await pool.connect(owner).pause()).wait();
     await expectCustomError(
       pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, STABILIZATION_SPREAD_BPS)),
+      "ManualSnapshotModeInactive"
+    );
+
+    await expectCustomError(
+      pool.connect(owner).enableManualSnapshotMode(MANUAL_MODE_WINDOW),
       "ManualSnapshotDisabled"
     );
 
     await (await market.connect(owner).pause()).wait();
+    await (await pool.connect(owner).enableManualSnapshotMode(MANUAL_MODE_WINDOW)).wait();
     await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, STABILIZATION_SPREAD_BPS))).wait();
+    await (await market.connect(owner).unpause()).wait();
+    await (await pool.connect(owner).unpause()).wait();
 
     const [, , floorRatioBps] = await pool.getMarketSignals();
     assert.strictEqual(floorRatioBps.toString(), "12000");

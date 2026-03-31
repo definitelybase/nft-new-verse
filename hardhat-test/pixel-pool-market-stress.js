@@ -8,6 +8,7 @@ const TRADE_FEE_BPS = 250;
 const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
 const STATES = ["Expansion", "Stabilization", "WeakDemand"];
+const MANUAL_MODE_WINDOW = 60 * 60;
 const slotCache = {};
 
 function palette16() {
@@ -128,9 +129,12 @@ async function getState(pool) {
 async function setStabilizationSnapshot(pool, market, owner) {
   const floor = await pool.getFloorPrice();
   await setUintVar(pool, "totalMinted", 10);
+  await (await pool.connect(owner).pause()).wait();
   await (await market.connect(owner).pause()).wait();
+  await (await pool.connect(owner).enableManualSnapshotMode(MANUAL_MODE_WINDOW)).wait();
   await (await pool.connect(owner).setExternalMarketSnapshot(2, 1, floor.add(floor.mul(2500).div(10000)))).wait();
   await (await market.connect(owner).unpause()).wait();
+  await (await pool.connect(owner).unpause()).wait();
 }
 
 describe("Market-state stress tests", function () {
@@ -177,9 +181,12 @@ describe("Market-state stress tests", function () {
     await (await router.connect(alice).sellNFT(1, 0)).wait();
 
     const floor = await pool.getFloorPrice();
+    await (await pool.connect(owner).pause()).wait();
     await (await market.connect(owner).pause()).wait();
+    await (await pool.connect(owner).enableManualSnapshotMode(MANUAL_MODE_WINDOW)).wait();
     await (await pool.connect(owner).setExternalMarketSnapshot(0, 200, floor.sub(1))).wait();
     await (await market.connect(owner).unpause()).wait();
+    await (await pool.connect(owner).unpause()).wait();
     assert.strictEqual(await getState(pool), "WeakDemand");
 
     await setStabilizationSnapshot(pool, market, owner);
