@@ -969,30 +969,33 @@ function LiquiditySystemOverview({ className = "", style }) {
         <InsightPanel title="Floor bid curve" tone="#D4497A" glyph="↕" pixels={INFO_PANEL_PIXELS.curve}>
           <div
             style={{
-              padding: 16,
+              padding: "16px 16px 14px",
               borderRadius: 22,
               border: `1px solid ${COLORS.border}`,
               background: "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+              overflow: "hidden",
             }}
           >
-            <div style={{ display: "grid", gridTemplateRows: "repeat(3, 1fr)", gap: 14, marginBottom: -86, opacity: 0.42 }}>
-              {[0, 1, 2].map((row) => (
-                <div key={row} style={{ borderTop: `1px dashed rgba(212,73,122,0.18)` }} />
-              ))}
-            </div>
-            <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 86, position: "relative" }}>
-              {curveBars.map((value, index) => (
-                <div
-                  key={index}
-                  style={{
-                    flex: 1,
-                    height: `${Math.max(18, value)}%`,
-                    borderRadius: 8,
-                    background: `rgba(212,73,122,${0.38 - index * 0.02})`,
-                    minWidth: 20,
-                  }}
-                />
-              ))}
+            <div style={{ position: "relative", height: 84 }}>
+              <div style={{ position: "absolute", inset: 0, display: "grid", gridTemplateRows: "repeat(3, 1fr)", gap: 14, opacity: 0.42 }}>
+                {[0, 1, 2].map((row) => (
+                  <div key={row} style={{ borderTop: `1px dashed rgba(212,73,122,0.18)` }} />
+                ))}
+              </div>
+              <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: "100%", position: "relative", paddingTop: 8 }}>
+                {curveBars.map((value, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      flex: 1,
+                      height: `${Math.max(16, value)}%`,
+                      borderRadius: 8,
+                      background: `rgba(212,73,122,${0.38 - index * 0.02})`,
+                      minWidth: 20,
+                    }}
+                  />
+                ))}
+              </div>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
               <div style={{ color: COLORS.textMuted, fontFamily: fontDisplay, fontSize: 12, fontWeight: 600 }}>60% mint price</div>
@@ -1056,10 +1059,10 @@ function LiquiditySystemOverview({ className = "", style }) {
         </InsightPanel>
 
         <InsightPanel title="Weighted staking" tone="#D4497A" glyph="›" pixels={INFO_PANEL_PIXELS.staking}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, alignItems: "stretch" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 14, alignItems: "stretch" }}>
             <div
               style={{
-                padding: 14,
+                padding: 16,
                 borderRadius: 20,
                 border: `1px solid ${COLORS.border}`,
                 background: "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
@@ -1119,24 +1122,30 @@ function LiquiditySystemOverview({ className = "", style }) {
                     </div>
                   ))}
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 8, alignSelf: "end" }}>
-                  {["entry", "boost", "stronger", "max weight"].map((label, index) => (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10, alignSelf: "end" }}>
+                  {[
+                    { label: "entry", multiline: false },
+                    { label: "boost", multiline: false },
+                    { label: "stronger", multiline: false },
+                    { label: "max weight", multiline: true },
+                  ].map(({ label, multiline }, index) => (
                     <div
                       key={label}
                       style={{
                         minHeight: 54,
-                        padding: "8px 10px",
+                        padding: multiline ? "8px 10px" : "8px 12px",
                         borderRadius: 999,
                         border: `1px solid rgba(212,73,122,0.14)`,
                         background: index === 3 ? "rgba(212,73,122,0.12)" : "rgba(255,255,255,0.05)",
                         color: index === 3 ? "#D4497A" : COLORS.textDim,
                         fontFamily: fonts,
-                        fontSize: 9,
-                        lineHeight: 1.15,
-                        letterSpacing: 0.2,
+                        fontSize: multiline ? 8.5 : 9,
+                        lineHeight: multiline ? 1.1 : 1,
+                        letterSpacing: multiline ? 0.1 : 0,
                         display: "grid",
                         placeItems: "center",
                         textAlign: "center",
+                        whiteSpace: multiline ? "normal" : "nowrap",
                       }}
                     >
                       {label}
