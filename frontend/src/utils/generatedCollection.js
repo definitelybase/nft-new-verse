@@ -4,7 +4,7 @@ export const FEATURED_COLLECTION_IDS = [0,1,2,3];
 export const GENERATED_COLLECTION = [
   {
     "id": 0,
-    "name": "OnChainPixel #0",
+    "name": "Dwellers #0",
     "base": "human dark",
     "background": "forest",
     "hair": "afro blue",
@@ -16,7 +16,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 1,
-    "name": "OnChainPixel #1",
+    "name": "Dwellers #1",
     "base": "human pale",
     "background": "slate",
     "hair": "beanie blonde",
@@ -28,7 +28,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 2,
-    "name": "OnChainPixel #2",
+    "name": "Dwellers #2",
     "base": "human light",
     "background": "purple",
     "hair": "short purple",
@@ -40,7 +40,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 3,
-    "name": "OnChainPixel #3",
+    "name": "Dwellers #3",
     "base": "human pale",
     "background": "purple",
     "hair": "flat blue",
@@ -52,7 +52,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 4,
-    "name": "OnChainPixel #4",
+    "name": "Dwellers #4",
     "base": "human dark",
     "background": "ice",
     "hair": "short black",
@@ -64,7 +64,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 5,
-    "name": "OnChainPixel #5",
+    "name": "Dwellers #5",
     "base": "human tan",
     "background": "forest",
     "hair": "short green",
@@ -76,7 +76,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 6,
-    "name": "OnChainPixel #6",
+    "name": "Dwellers #6",
     "base": "human pale",
     "background": "navy",
     "hair": "short black",
@@ -88,7 +88,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 7,
-    "name": "OnChainPixel #7",
+    "name": "Dwellers #7",
     "base": "demon",
     "background": "forest",
     "hair": "short purple",
@@ -100,7 +100,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 8,
-    "name": "OnChainPixel #8",
+    "name": "Dwellers #8",
     "base": "human light",
     "background": "slate",
     "hair": "short blonde",
@@ -112,7 +112,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 9,
-    "name": "OnChainPixel #9",
+    "name": "Dwellers #9",
     "base": "alien blue",
     "background": "forest",
     "hair": "short black",
@@ -124,7 +124,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 10,
-    "name": "OnChainPixel #10",
+    "name": "Dwellers #10",
     "base": "human dark",
     "background": "crimson",
     "hair": "mohawk blonde",
@@ -136,7 +136,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 11,
-    "name": "OnChainPixel #11",
+    "name": "Dwellers #11",
     "base": "zombie",
     "background": "navy",
     "hair": "tall orange",
@@ -148,7 +148,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 12,
-    "name": "OnChainPixel #12",
+    "name": "Dwellers #12",
     "base": "human dark",
     "background": "gold",
     "hair": "tall black",
@@ -160,7 +160,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 13,
-    "name": "OnChainPixel #13",
+    "name": "Dwellers #13",
     "base": "zombie",
     "background": "midnight",
     "hair": "bald brown",
@@ -172,7 +172,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 14,
-    "name": "OnChainPixel #14",
+    "name": "Dwellers #14",
     "base": "human pale",
     "background": "slate",
     "hair": "short red",
@@ -184,7 +184,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 15,
-    "name": "OnChainPixel #15",
+    "name": "Dwellers #15",
     "base": "human light",
     "background": "forest",
     "hair": "tall black",
@@ -196,7 +196,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 16,
-    "name": "OnChainPixel #16",
+    "name": "Dwellers #16",
     "base": "human light",
     "background": "midnight",
     "hair": "ponytail blue",
@@ -208,7 +208,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 17,
-    "name": "OnChainPixel #17",
+    "name": "Dwellers #17",
     "base": "human light",
     "background": "forest",
     "hair": "bald black",
@@ -220,7 +220,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 18,
-    "name": "OnChainPixel #18",
+    "name": "Dwellers #18",
     "base": "human light",
     "background": "navy",
     "hair": "mohawk brown",
@@ -232,7 +232,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 19,
-    "name": "OnChainPixel #19",
+    "name": "Dwellers #19",
     "base": "human light",
     "background": "midnight",
     "hair": "tall pink",
@@ -244,7 +244,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 20,
-    "name": "OnChainPixel #20",
+    "name": "Dwellers #20",
     "base": "robot",
     "background": "ice",
     "hair": "short blue",
@@ -256,7 +256,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 21,
-    "name": "OnChainPixel #21",
+    "name": "Dwellers #21",
     "base": "human tan",
     "background": "midnight",
     "hair": "spiky black",
@@ -268,7 +268,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 22,
-    "name": "OnChainPixel #22",
+    "name": "Dwellers #22",
     "base": "human light",
     "background": "navy",
     "hair": "bald black",
@@ -280,7 +280,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 23,
-    "name": "OnChainPixel #23",
+    "name": "Dwellers #23",
     "base": "human dark",
     "background": "midnight",
     "hair": "short black",
@@ -292,7 +292,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 24,
-    "name": "OnChainPixel #24",
+    "name": "Dwellers #24",
     "base": "human dark",
     "background": "crimson",
     "hair": "bald red",
@@ -304,7 +304,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 25,
-    "name": "OnChainPixel #25",
+    "name": "Dwellers #25",
     "base": "human pale",
     "background": "ice",
     "hair": "spiky red",
@@ -316,7 +316,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 26,
-    "name": "OnChainPixel #26",
+    "name": "Dwellers #26",
     "base": "human light",
     "background": "slate",
     "hair": "bald blonde",
@@ -328,7 +328,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 27,
-    "name": "OnChainPixel #27",
+    "name": "Dwellers #27",
     "base": "human light",
     "background": "ice",
     "hair": "mohawk white",
@@ -340,7 +340,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 28,
-    "name": "OnChainPixel #28",
+    "name": "Dwellers #28",
     "base": "zombie",
     "background": "slate",
     "hair": "flat red",
@@ -352,7 +352,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 29,
-    "name": "OnChainPixel #29",
+    "name": "Dwellers #29",
     "base": "human light",
     "background": "crimson",
     "hair": "spiky pink",
@@ -364,7 +364,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 30,
-    "name": "OnChainPixel #30",
+    "name": "Dwellers #30",
     "base": "human light",
     "background": "gold",
     "hair": "bald white",
@@ -376,7 +376,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 31,
-    "name": "OnChainPixel #31",
+    "name": "Dwellers #31",
     "base": "human pale",
     "background": "midnight",
     "hair": "bald blue",
@@ -388,7 +388,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 32,
-    "name": "OnChainPixel #32",
+    "name": "Dwellers #32",
     "base": "human dark",
     "background": "midnight",
     "hair": "beanie red",
@@ -400,7 +400,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 33,
-    "name": "OnChainPixel #33",
+    "name": "Dwellers #33",
     "base": "human tan",
     "background": "midnight",
     "hair": "beanie brown",
@@ -412,7 +412,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 34,
-    "name": "OnChainPixel #34",
+    "name": "Dwellers #34",
     "base": "demon",
     "background": "ice",
     "hair": "flat orange",
@@ -424,7 +424,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 35,
-    "name": "OnChainPixel #35",
+    "name": "Dwellers #35",
     "base": "human tan",
     "background": "ice",
     "hair": "mohawk green",
@@ -436,7 +436,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 36,
-    "name": "OnChainPixel #36",
+    "name": "Dwellers #36",
     "base": "human dark",
     "background": "crimson",
     "hair": "afro black",
@@ -448,7 +448,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 37,
-    "name": "OnChainPixel #37",
+    "name": "Dwellers #37",
     "base": "human tan",
     "background": "forest",
     "hair": "flat brown",
@@ -460,7 +460,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 38,
-    "name": "OnChainPixel #38",
+    "name": "Dwellers #38",
     "base": "alien blue",
     "background": "midnight",
     "hair": "short black",
@@ -472,7 +472,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 39,
-    "name": "OnChainPixel #39",
+    "name": "Dwellers #39",
     "base": "human dark",
     "background": "ice",
     "hair": "short brown",
@@ -484,7 +484,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 40,
-    "name": "OnChainPixel #40",
+    "name": "Dwellers #40",
     "base": "gold",
     "background": "midnight",
     "hair": "beanie black",
@@ -496,7 +496,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 41,
-    "name": "OnChainPixel #41",
+    "name": "Dwellers #41",
     "base": "human light",
     "background": "navy",
     "hair": "side_part red",
@@ -508,7 +508,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 42,
-    "name": "OnChainPixel #42",
+    "name": "Dwellers #42",
     "base": "human light",
     "background": "gold",
     "hair": "afro brown",
@@ -520,7 +520,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 43,
-    "name": "OnChainPixel #43",
+    "name": "Dwellers #43",
     "base": "human light",
     "background": "navy",
     "hair": "side_part black",
@@ -532,7 +532,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 44,
-    "name": "OnChainPixel #44",
+    "name": "Dwellers #44",
     "base": "human tan",
     "background": "navy",
     "hair": "short blonde",
@@ -544,7 +544,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 45,
-    "name": "OnChainPixel #45",
+    "name": "Dwellers #45",
     "base": "human light",
     "background": "ice",
     "hair": "flat blonde",
@@ -556,7 +556,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 46,
-    "name": "OnChainPixel #46",
+    "name": "Dwellers #46",
     "base": "alien green",
     "background": "midnight",
     "hair": "flat pink",
@@ -568,7 +568,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 47,
-    "name": "OnChainPixel #47",
+    "name": "Dwellers #47",
     "base": "human tan",
     "background": "forest",
     "hair": "long teal",
@@ -580,7 +580,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 48,
-    "name": "OnChainPixel #48",
+    "name": "Dwellers #48",
     "base": "human light",
     "background": "slate",
     "hair": "ponytail blue",
@@ -592,7 +592,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 49,
-    "name": "OnChainPixel #49",
+    "name": "Dwellers #49",
     "base": "alien green",
     "background": "purple",
     "hair": "flat red",
@@ -604,7 +604,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 50,
-    "name": "OnChainPixel #50",
+    "name": "Dwellers #50",
     "base": "human light",
     "background": "crimson",
     "hair": "bald brown",
@@ -616,7 +616,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 51,
-    "name": "OnChainPixel #51",
+    "name": "Dwellers #51",
     "base": "zombie",
     "background": "slate",
     "hair": "short blonde",
@@ -628,7 +628,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 52,
-    "name": "OnChainPixel #52",
+    "name": "Dwellers #52",
     "base": "human tan",
     "background": "crimson",
     "hair": "bald brown",
@@ -640,7 +640,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 53,
-    "name": "OnChainPixel #53",
+    "name": "Dwellers #53",
     "base": "human pale",
     "background": "slate",
     "hair": "bald red",
@@ -652,7 +652,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 54,
-    "name": "OnChainPixel #54",
+    "name": "Dwellers #54",
     "base": "gold",
     "background": "purple",
     "hair": "long pink",
@@ -664,7 +664,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 55,
-    "name": "OnChainPixel #55",
+    "name": "Dwellers #55",
     "base": "human tan",
     "background": "slate",
     "hair": "short green",
@@ -676,7 +676,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 56,
-    "name": "OnChainPixel #56",
+    "name": "Dwellers #56",
     "base": "demon",
     "background": "slate",
     "hair": "beanie red",
@@ -688,7 +688,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 57,
-    "name": "OnChainPixel #57",
+    "name": "Dwellers #57",
     "base": "human dark",
     "background": "crimson",
     "hair": "mohawk black",
@@ -700,7 +700,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 58,
-    "name": "OnChainPixel #58",
+    "name": "Dwellers #58",
     "base": "human light",
     "background": "navy",
     "hair": "flat silver",
@@ -712,7 +712,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 59,
-    "name": "OnChainPixel #59",
+    "name": "Dwellers #59",
     "base": "human tan",
     "background": "slate",
     "hair": "short blue",
@@ -724,7 +724,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 60,
-    "name": "OnChainPixel #60",
+    "name": "Dwellers #60",
     "base": "zombie",
     "background": "purple",
     "hair": "beanie brown",
@@ -736,7 +736,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 61,
-    "name": "OnChainPixel #61",
+    "name": "Dwellers #61",
     "base": "human tan",
     "background": "midnight",
     "hair": "tall white",
@@ -748,7 +748,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 62,
-    "name": "OnChainPixel #62",
+    "name": "Dwellers #62",
     "base": "human dark",
     "background": "forest",
     "hair": "afro black",
@@ -760,7 +760,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 63,
-    "name": "OnChainPixel #63",
+    "name": "Dwellers #63",
     "base": "human light",
     "background": "navy",
     "hair": "afro brown",
@@ -772,7 +772,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 64,
-    "name": "OnChainPixel #64",
+    "name": "Dwellers #64",
     "base": "alien green",
     "background": "navy",
     "hair": "short blonde",
@@ -784,7 +784,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 65,
-    "name": "OnChainPixel #65",
+    "name": "Dwellers #65",
     "base": "human tan",
     "background": "midnight",
     "hair": "flat blue",
@@ -796,7 +796,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 66,
-    "name": "OnChainPixel #66",
+    "name": "Dwellers #66",
     "base": "human pale",
     "background": "crimson",
     "hair": "short black",
@@ -808,7 +808,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 67,
-    "name": "OnChainPixel #67",
+    "name": "Dwellers #67",
     "base": "human tan",
     "background": "forest",
     "hair": "afro brown",
@@ -820,7 +820,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 68,
-    "name": "OnChainPixel #68",
+    "name": "Dwellers #68",
     "base": "human tan",
     "background": "midnight",
     "hair": "short black",
@@ -832,7 +832,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 69,
-    "name": "OnChainPixel #69",
+    "name": "Dwellers #69",
     "base": "human tan",
     "background": "slate",
     "hair": "spiky black",
@@ -844,7 +844,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 70,
-    "name": "OnChainPixel #70",
+    "name": "Dwellers #70",
     "base": "alien blue",
     "background": "crimson",
     "hair": "long blue",
@@ -856,7 +856,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 71,
-    "name": "OnChainPixel #71",
+    "name": "Dwellers #71",
     "base": "human dark",
     "background": "navy",
     "hair": "short purple",
@@ -868,7 +868,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 72,
-    "name": "OnChainPixel #72",
+    "name": "Dwellers #72",
     "base": "human light",
     "background": "navy",
     "hair": "afro black",
@@ -880,7 +880,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 73,
-    "name": "OnChainPixel #73",
+    "name": "Dwellers #73",
     "base": "human light",
     "background": "midnight",
     "hair": "spiky blonde",
@@ -892,7 +892,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 74,
-    "name": "OnChainPixel #74",
+    "name": "Dwellers #74",
     "base": "human tan",
     "background": "purple",
     "hair": "mohawk brown",
@@ -904,7 +904,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 75,
-    "name": "OnChainPixel #75",
+    "name": "Dwellers #75",
     "base": "human light",
     "background": "gold",
     "hair": "beanie blonde",
@@ -916,7 +916,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 76,
-    "name": "OnChainPixel #76",
+    "name": "Dwellers #76",
     "base": "human tan",
     "background": "purple",
     "hair": "short brown",
@@ -928,7 +928,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 77,
-    "name": "OnChainPixel #77",
+    "name": "Dwellers #77",
     "base": "human light",
     "background": "purple",
     "hair": "flat green",
@@ -940,7 +940,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 78,
-    "name": "OnChainPixel #78",
+    "name": "Dwellers #78",
     "base": "human dark",
     "background": "forest",
     "hair": "spiky orange",
@@ -952,7 +952,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 79,
-    "name": "OnChainPixel #79",
+    "name": "Dwellers #79",
     "base": "alien blue",
     "background": "ice",
     "hair": "spiky black",
@@ -964,7 +964,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 80,
-    "name": "OnChainPixel #80",
+    "name": "Dwellers #80",
     "base": "human dark",
     "background": "slate",
     "hair": "beanie brown",
@@ -976,7 +976,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 81,
-    "name": "OnChainPixel #81",
+    "name": "Dwellers #81",
     "base": "human dark",
     "background": "crimson",
     "hair": "long red",
@@ -988,7 +988,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 82,
-    "name": "OnChainPixel #82",
+    "name": "Dwellers #82",
     "base": "human light",
     "background": "forest",
     "hair": "tall black",
@@ -1000,7 +1000,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 83,
-    "name": "OnChainPixel #83",
+    "name": "Dwellers #83",
     "base": "human dark",
     "background": "navy",
     "hair": "tall black",
@@ -1012,7 +1012,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 84,
-    "name": "OnChainPixel #84",
+    "name": "Dwellers #84",
     "base": "human dark",
     "background": "crimson",
     "hair": "flat brown",
@@ -1024,7 +1024,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 85,
-    "name": "OnChainPixel #85",
+    "name": "Dwellers #85",
     "base": "human tan",
     "background": "midnight",
     "hair": "flat brown",
@@ -1036,7 +1036,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 86,
-    "name": "OnChainPixel #86",
+    "name": "Dwellers #86",
     "base": "human light",
     "background": "slate",
     "hair": "afro brown",
@@ -1048,7 +1048,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 87,
-    "name": "OnChainPixel #87",
+    "name": "Dwellers #87",
     "base": "human light",
     "background": "forest",
     "hair": "tall black",
@@ -1060,7 +1060,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 88,
-    "name": "OnChainPixel #88",
+    "name": "Dwellers #88",
     "base": "human tan",
     "background": "navy",
     "hair": "ponytail red",
@@ -1072,7 +1072,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 89,
-    "name": "OnChainPixel #89",
+    "name": "Dwellers #89",
     "base": "human tan",
     "background": "midnight",
     "hair": "tall black",
@@ -1084,7 +1084,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 90,
-    "name": "OnChainPixel #90",
+    "name": "Dwellers #90",
     "base": "human tan",
     "background": "crimson",
     "hair": "short red",
@@ -1096,7 +1096,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 91,
-    "name": "OnChainPixel #91",
+    "name": "Dwellers #91",
     "base": "human light",
     "background": "purple",
     "hair": "flat blue",
@@ -1108,7 +1108,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 92,
-    "name": "OnChainPixel #92",
+    "name": "Dwellers #92",
     "base": "human pale",
     "background": "slate",
     "hair": "short green",
@@ -1120,7 +1120,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 93,
-    "name": "OnChainPixel #93",
+    "name": "Dwellers #93",
     "base": "zombie",
     "background": "crimson",
     "hair": "long black",
@@ -1132,7 +1132,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 94,
-    "name": "OnChainPixel #94",
+    "name": "Dwellers #94",
     "base": "human light",
     "background": "navy",
     "hair": "beanie blonde",
@@ -1144,7 +1144,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 95,
-    "name": "OnChainPixel #95",
+    "name": "Dwellers #95",
     "base": "human light",
     "background": "midnight",
     "hair": "mohawk brown",
@@ -1156,7 +1156,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 96,
-    "name": "OnChainPixel #96",
+    "name": "Dwellers #96",
     "base": "robot",
     "background": "midnight",
     "hair": "tall blonde",
@@ -1168,7 +1168,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 97,
-    "name": "OnChainPixel #97",
+    "name": "Dwellers #97",
     "base": "human tan",
     "background": "ice",
     "hair": "short red",
@@ -1180,7 +1180,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 98,
-    "name": "OnChainPixel #98",
+    "name": "Dwellers #98",
     "base": "human tan",
     "background": "slate",
     "hair": "mohawk red",
@@ -1192,7 +1192,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 99,
-    "name": "OnChainPixel #99",
+    "name": "Dwellers #99",
     "base": "human dark",
     "background": "ice",
     "hair": "beanie blue",
@@ -1204,7 +1204,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 100,
-    "name": "OnChainPixel #100",
+    "name": "Dwellers #100",
     "base": "alien green",
     "background": "purple",
     "hair": "beanie purple",
@@ -1216,7 +1216,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 101,
-    "name": "OnChainPixel #101",
+    "name": "Dwellers #101",
     "base": "alien green",
     "background": "purple",
     "hair": "flat red",
@@ -1228,7 +1228,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 102,
-    "name": "OnChainPixel #102",
+    "name": "Dwellers #102",
     "base": "human light",
     "background": "forest",
     "hair": "bald brown",
@@ -1240,7 +1240,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 103,
-    "name": "OnChainPixel #103",
+    "name": "Dwellers #103",
     "base": "human pale",
     "background": "slate",
     "hair": "flat black",
@@ -1252,7 +1252,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 104,
-    "name": "OnChainPixel #104",
+    "name": "Dwellers #104",
     "base": "human tan",
     "background": "purple",
     "hair": "long red",
@@ -1264,7 +1264,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 105,
-    "name": "OnChainPixel #105",
+    "name": "Dwellers #105",
     "base": "alien green",
     "background": "crimson",
     "hair": "spiky black",
@@ -1276,7 +1276,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 106,
-    "name": "OnChainPixel #106",
+    "name": "Dwellers #106",
     "base": "robot",
     "background": "crimson",
     "hair": "mohawk brown",
@@ -1288,7 +1288,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 107,
-    "name": "OnChainPixel #107",
+    "name": "Dwellers #107",
     "base": "alien blue",
     "background": "forest",
     "hair": "tall blonde",
@@ -1300,7 +1300,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 108,
-    "name": "OnChainPixel #108",
+    "name": "Dwellers #108",
     "base": "human light",
     "background": "midnight",
     "hair": "bald black",
@@ -1312,7 +1312,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 109,
-    "name": "OnChainPixel #109",
+    "name": "Dwellers #109",
     "base": "human light",
     "background": "purple",
     "hair": "spiky blue",
@@ -1324,7 +1324,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 110,
-    "name": "OnChainPixel #110",
+    "name": "Dwellers #110",
     "base": "human light",
     "background": "navy",
     "hair": "beanie red",
@@ -1336,7 +1336,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 111,
-    "name": "OnChainPixel #111",
+    "name": "Dwellers #111",
     "base": "human dark",
     "background": "purple",
     "hair": "mohawk purple",
@@ -1348,7 +1348,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 112,
-    "name": "OnChainPixel #112",
+    "name": "Dwellers #112",
     "base": "human tan",
     "background": "slate",
     "hair": "beanie blue",
@@ -1360,7 +1360,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 113,
-    "name": "OnChainPixel #113",
+    "name": "Dwellers #113",
     "base": "human tan",
     "background": "navy",
     "hair": "short brown",
@@ -1372,7 +1372,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 114,
-    "name": "OnChainPixel #114",
+    "name": "Dwellers #114",
     "base": "human light",
     "background": "navy",
     "hair": "ponytail red",
@@ -1384,7 +1384,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 115,
-    "name": "OnChainPixel #115",
+    "name": "Dwellers #115",
     "base": "human dark",
     "background": "purple",
     "hair": "spiky black",
@@ -1396,7 +1396,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 116,
-    "name": "OnChainPixel #116",
+    "name": "Dwellers #116",
     "base": "human light",
     "background": "ice",
     "hair": "mohawk brown",
@@ -1408,7 +1408,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 117,
-    "name": "OnChainPixel #117",
+    "name": "Dwellers #117",
     "base": "human pale",
     "background": "slate",
     "hair": "spiky white",
@@ -1420,7 +1420,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 118,
-    "name": "OnChainPixel #118",
+    "name": "Dwellers #118",
     "base": "human tan",
     "background": "gold",
     "hair": "flat orange",
@@ -1432,7 +1432,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 119,
-    "name": "OnChainPixel #119",
+    "name": "Dwellers #119",
     "base": "human tan",
     "background": "navy",
     "hair": "bald white",
@@ -1444,7 +1444,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 120,
-    "name": "OnChainPixel #120",
+    "name": "Dwellers #120",
     "base": "human dark",
     "background": "gold",
     "hair": "long black",
@@ -1456,7 +1456,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 121,
-    "name": "OnChainPixel #121",
+    "name": "Dwellers #121",
     "base": "alien green",
     "background": "slate",
     "hair": "beanie brown",
@@ -1468,7 +1468,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 122,
-    "name": "OnChainPixel #122",
+    "name": "Dwellers #122",
     "base": "human dark",
     "background": "ice",
     "hair": "ponytail white",
@@ -1480,7 +1480,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 123,
-    "name": "OnChainPixel #123",
+    "name": "Dwellers #123",
     "base": "human dark",
     "background": "navy",
     "hair": "beanie blonde",
@@ -1492,7 +1492,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 124,
-    "name": "OnChainPixel #124",
+    "name": "Dwellers #124",
     "base": "human tan",
     "background": "midnight",
     "hair": "short black",
@@ -1504,7 +1504,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 125,
-    "name": "OnChainPixel #125",
+    "name": "Dwellers #125",
     "base": "human light",
     "background": "slate",
     "hair": "ponytail white",
@@ -1516,7 +1516,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 126,
-    "name": "OnChainPixel #126",
+    "name": "Dwellers #126",
     "base": "human tan",
     "background": "navy",
     "hair": "short black",
@@ -1528,7 +1528,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 127,
-    "name": "OnChainPixel #127",
+    "name": "Dwellers #127",
     "base": "human light",
     "background": "navy",
     "hair": "tall brown",
@@ -1540,7 +1540,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 128,
-    "name": "OnChainPixel #128",
+    "name": "Dwellers #128",
     "base": "human light",
     "background": "ice",
     "hair": "flat brown",
@@ -1552,7 +1552,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 129,
-    "name": "OnChainPixel #129",
+    "name": "Dwellers #129",
     "base": "human pale",
     "background": "purple",
     "hair": "beanie pink",
@@ -1564,7 +1564,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 130,
-    "name": "OnChainPixel #130",
+    "name": "Dwellers #130",
     "base": "human dark",
     "background": "navy",
     "hair": "flat blue",
@@ -1576,7 +1576,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 131,
-    "name": "OnChainPixel #131",
+    "name": "Dwellers #131",
     "base": "human tan",
     "background": "purple",
     "hair": "long purple",
@@ -1588,7 +1588,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 132,
-    "name": "OnChainPixel #132",
+    "name": "Dwellers #132",
     "base": "human tan",
     "background": "midnight",
     "hair": "tall purple",
@@ -1600,7 +1600,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 133,
-    "name": "OnChainPixel #133",
+    "name": "Dwellers #133",
     "base": "human light",
     "background": "midnight",
     "hair": "flat red",
@@ -1612,7 +1612,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 134,
-    "name": "OnChainPixel #134",
+    "name": "Dwellers #134",
     "base": "human pale",
     "background": "ice",
     "hair": "beanie brown",
@@ -1624,7 +1624,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 135,
-    "name": "OnChainPixel #135",
+    "name": "Dwellers #135",
     "base": "human dark",
     "background": "slate",
     "hair": "buzz purple",
@@ -1636,7 +1636,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 136,
-    "name": "OnChainPixel #136",
+    "name": "Dwellers #136",
     "base": "human light",
     "background": "forest",
     "hair": "flat red",
@@ -1648,7 +1648,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 137,
-    "name": "OnChainPixel #137",
+    "name": "Dwellers #137",
     "base": "human pale",
     "background": "crimson",
     "hair": "mohawk red",
@@ -1660,7 +1660,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 138,
-    "name": "OnChainPixel #138",
+    "name": "Dwellers #138",
     "base": "human tan",
     "background": "purple",
     "hair": "side_part pink",
@@ -1672,7 +1672,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 139,
-    "name": "OnChainPixel #139",
+    "name": "Dwellers #139",
     "base": "human tan",
     "background": "ice",
     "hair": "beanie blonde",
@@ -1684,7 +1684,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 140,
-    "name": "OnChainPixel #140",
+    "name": "Dwellers #140",
     "base": "human dark",
     "background": "purple",
     "hair": "afro blonde",
@@ -1696,7 +1696,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 141,
-    "name": "OnChainPixel #141",
+    "name": "Dwellers #141",
     "base": "human tan",
     "background": "purple",
     "hair": "flat red",
@@ -1708,7 +1708,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 142,
-    "name": "OnChainPixel #142",
+    "name": "Dwellers #142",
     "base": "demon",
     "background": "navy",
     "hair": "flat brown",
@@ -1720,7 +1720,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 143,
-    "name": "OnChainPixel #143",
+    "name": "Dwellers #143",
     "base": "human dark",
     "background": "purple",
     "hair": "beanie black",
@@ -1732,7 +1732,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 144,
-    "name": "OnChainPixel #144",
+    "name": "Dwellers #144",
     "base": "robot",
     "background": "purple",
     "hair": "afro purple",
@@ -1744,7 +1744,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 145,
-    "name": "OnChainPixel #145",
+    "name": "Dwellers #145",
     "base": "human dark",
     "background": "crimson",
     "hair": "beanie blonde",
@@ -1756,7 +1756,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 146,
-    "name": "OnChainPixel #146",
+    "name": "Dwellers #146",
     "base": "alien green",
     "background": "gold",
     "hair": "short brown",
@@ -1768,7 +1768,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 147,
-    "name": "OnChainPixel #147",
+    "name": "Dwellers #147",
     "base": "human dark",
     "background": "forest",
     "hair": "spiky blonde",
@@ -1780,7 +1780,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 148,
-    "name": "OnChainPixel #148",
+    "name": "Dwellers #148",
     "base": "human tan",
     "background": "midnight",
     "hair": "mohawk black",
@@ -1792,7 +1792,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 149,
-    "name": "OnChainPixel #149",
+    "name": "Dwellers #149",
     "base": "human tan",
     "background": "forest",
     "hair": "beanie red",
@@ -1804,7 +1804,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 150,
-    "name": "OnChainPixel #150",
+    "name": "Dwellers #150",
     "base": "demon",
     "background": "forest",
     "hair": "side_part purple",
@@ -1816,7 +1816,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 151,
-    "name": "OnChainPixel #151",
+    "name": "Dwellers #151",
     "base": "human tan",
     "background": "navy",
     "hair": "short brown",
@@ -1828,7 +1828,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 152,
-    "name": "OnChainPixel #152",
+    "name": "Dwellers #152",
     "base": "zombie",
     "background": "forest",
     "hair": "short purple",
@@ -1840,7 +1840,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 153,
-    "name": "OnChainPixel #153",
+    "name": "Dwellers #153",
     "base": "human dark",
     "background": "forest",
     "hair": "spiky orange",
@@ -1852,7 +1852,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 154,
-    "name": "OnChainPixel #154",
+    "name": "Dwellers #154",
     "base": "alien green",
     "background": "navy",
     "hair": "spiky silver",
@@ -1864,7 +1864,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 155,
-    "name": "OnChainPixel #155",
+    "name": "Dwellers #155",
     "base": "demon",
     "background": "crimson",
     "hair": "tall red",
@@ -1876,7 +1876,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 156,
-    "name": "OnChainPixel #156",
+    "name": "Dwellers #156",
     "base": "human light",
     "background": "navy",
     "hair": "short brown",
@@ -1888,7 +1888,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 157,
-    "name": "OnChainPixel #157",
+    "name": "Dwellers #157",
     "base": "human tan",
     "background": "navy",
     "hair": "long brown",
@@ -1900,7 +1900,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 158,
-    "name": "OnChainPixel #158",
+    "name": "Dwellers #158",
     "base": "human tan",
     "background": "crimson",
     "hair": "ponytail black",
@@ -1912,7 +1912,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 159,
-    "name": "OnChainPixel #159",
+    "name": "Dwellers #159",
     "base": "human tan",
     "background": "forest",
     "hair": "spiky brown",
@@ -1924,7 +1924,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 160,
-    "name": "OnChainPixel #160",
+    "name": "Dwellers #160",
     "base": "human tan",
     "background": "forest",
     "hair": "long black",
@@ -1936,7 +1936,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 161,
-    "name": "OnChainPixel #161",
+    "name": "Dwellers #161",
     "base": "human light",
     "background": "forest",
     "hair": "long blue",
@@ -1948,7 +1948,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 162,
-    "name": "OnChainPixel #162",
+    "name": "Dwellers #162",
     "base": "human dark",
     "background": "slate",
     "hair": "flat blue",
@@ -1960,7 +1960,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 163,
-    "name": "OnChainPixel #163",
+    "name": "Dwellers #163",
     "base": "human light",
     "background": "crimson",
     "hair": "short blonde",
@@ -1972,7 +1972,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 164,
-    "name": "OnChainPixel #164",
+    "name": "Dwellers #164",
     "base": "human light",
     "background": "navy",
     "hair": "tall brown",
@@ -1984,7 +1984,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 165,
-    "name": "OnChainPixel #165",
+    "name": "Dwellers #165",
     "base": "human pale",
     "background": "midnight",
     "hair": "short blonde",
@@ -1996,7 +1996,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 166,
-    "name": "OnChainPixel #166",
+    "name": "Dwellers #166",
     "base": "alien green",
     "background": "navy",
     "hair": "side_part pink",
@@ -2008,7 +2008,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 167,
-    "name": "OnChainPixel #167",
+    "name": "Dwellers #167",
     "base": "zombie",
     "background": "crimson",
     "hair": "afro brown",
@@ -2020,7 +2020,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 168,
-    "name": "OnChainPixel #168",
+    "name": "Dwellers #168",
     "base": "human pale",
     "background": "crimson",
     "hair": "flat white",
@@ -2032,7 +2032,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 169,
-    "name": "OnChainPixel #169",
+    "name": "Dwellers #169",
     "base": "human light",
     "background": "slate",
     "hair": "ponytail black",
@@ -2044,7 +2044,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 170,
-    "name": "OnChainPixel #170",
+    "name": "Dwellers #170",
     "base": "human dark",
     "background": "navy",
     "hair": "short black",
@@ -2056,7 +2056,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 171,
-    "name": "OnChainPixel #171",
+    "name": "Dwellers #171",
     "base": "human tan",
     "background": "midnight",
     "hair": "side_part teal",
@@ -2068,7 +2068,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 172,
-    "name": "OnChainPixel #172",
+    "name": "Dwellers #172",
     "base": "human dark",
     "background": "gold",
     "hair": "flat black",
@@ -2080,7 +2080,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 173,
-    "name": "OnChainPixel #173",
+    "name": "Dwellers #173",
     "base": "human pale",
     "background": "purple",
     "hair": "long brown",
@@ -2092,7 +2092,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 174,
-    "name": "OnChainPixel #174",
+    "name": "Dwellers #174",
     "base": "human dark",
     "background": "purple",
     "hair": "beanie red",
@@ -2104,7 +2104,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 175,
-    "name": "OnChainPixel #175",
+    "name": "Dwellers #175",
     "base": "human light",
     "background": "midnight",
     "hair": "ponytail black",
@@ -2116,7 +2116,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 176,
-    "name": "OnChainPixel #176",
+    "name": "Dwellers #176",
     "base": "human light",
     "background": "purple",
     "hair": "long white",
@@ -2128,7 +2128,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 177,
-    "name": "OnChainPixel #177",
+    "name": "Dwellers #177",
     "base": "human tan",
     "background": "slate",
     "hair": "flat brown",
@@ -2140,7 +2140,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 178,
-    "name": "OnChainPixel #178",
+    "name": "Dwellers #178",
     "base": "human light",
     "background": "midnight",
     "hair": "bald purple",
@@ -2152,7 +2152,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 179,
-    "name": "OnChainPixel #179",
+    "name": "Dwellers #179",
     "base": "human light",
     "background": "slate",
     "hair": "flat brown",
@@ -2164,7 +2164,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 180,
-    "name": "OnChainPixel #180",
+    "name": "Dwellers #180",
     "base": "zombie",
     "background": "navy",
     "hair": "afro brown",
@@ -2176,7 +2176,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 181,
-    "name": "OnChainPixel #181",
+    "name": "Dwellers #181",
     "base": "human light",
     "background": "crimson",
     "hair": "bald brown",
@@ -2188,7 +2188,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 182,
-    "name": "OnChainPixel #182",
+    "name": "Dwellers #182",
     "base": "human dark",
     "background": "crimson",
     "hair": "afro blonde",
@@ -2200,7 +2200,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 183,
-    "name": "OnChainPixel #183",
+    "name": "Dwellers #183",
     "base": "human light",
     "background": "slate",
     "hair": "short pink",
@@ -2212,7 +2212,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 184,
-    "name": "OnChainPixel #184",
+    "name": "Dwellers #184",
     "base": "human dark",
     "background": "ice",
     "hair": "afro red",
@@ -2224,7 +2224,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 185,
-    "name": "OnChainPixel #185",
+    "name": "Dwellers #185",
     "base": "human tan",
     "background": "crimson",
     "hair": "long red",
@@ -2236,7 +2236,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 186,
-    "name": "OnChainPixel #186",
+    "name": "Dwellers #186",
     "base": "human light",
     "background": "forest",
     "hair": "short black",
@@ -2248,7 +2248,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 187,
-    "name": "OnChainPixel #187",
+    "name": "Dwellers #187",
     "base": "zombie",
     "background": "ice",
     "hair": "short purple",
@@ -2260,7 +2260,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 188,
-    "name": "OnChainPixel #188",
+    "name": "Dwellers #188",
     "base": "human tan",
     "background": "ice",
     "hair": "flat pink",
@@ -2272,7 +2272,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 189,
-    "name": "OnChainPixel #189",
+    "name": "Dwellers #189",
     "base": "human light",
     "background": "midnight",
     "hair": "mohawk green",
@@ -2284,7 +2284,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 190,
-    "name": "OnChainPixel #190",
+    "name": "Dwellers #190",
     "base": "human tan",
     "background": "crimson",
     "hair": "afro green",
@@ -2296,7 +2296,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 191,
-    "name": "OnChainPixel #191",
+    "name": "Dwellers #191",
     "base": "human tan",
     "background": "crimson",
     "hair": "short brown",
@@ -2308,7 +2308,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 192,
-    "name": "OnChainPixel #192",
+    "name": "Dwellers #192",
     "base": "human light",
     "background": "slate",
     "hair": "flat brown",
@@ -2320,7 +2320,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 193,
-    "name": "OnChainPixel #193",
+    "name": "Dwellers #193",
     "base": "human dark",
     "background": "navy",
     "hair": "beanie blonde",
@@ -2332,7 +2332,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 194,
-    "name": "OnChainPixel #194",
+    "name": "Dwellers #194",
     "base": "zombie",
     "background": "slate",
     "hair": "flat black",
@@ -2344,7 +2344,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 195,
-    "name": "OnChainPixel #195",
+    "name": "Dwellers #195",
     "base": "human dark",
     "background": "forest",
     "hair": "tall pink",
@@ -2356,7 +2356,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 196,
-    "name": "OnChainPixel #196",
+    "name": "Dwellers #196",
     "base": "alien green",
     "background": "ice",
     "hair": "spiky black",
@@ -2368,7 +2368,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 197,
-    "name": "OnChainPixel #197",
+    "name": "Dwellers #197",
     "base": "human light",
     "background": "purple",
     "hair": "flat black",
@@ -2380,7 +2380,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 198,
-    "name": "OnChainPixel #198",
+    "name": "Dwellers #198",
     "base": "human light",
     "background": "slate",
     "hair": "long black",
@@ -2392,7 +2392,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 199,
-    "name": "OnChainPixel #199",
+    "name": "Dwellers #199",
     "base": "human dark",
     "background": "forest",
     "hair": "tall white",
@@ -2404,7 +2404,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 200,
-    "name": "OnChainPixel #200",
+    "name": "Dwellers #200",
     "base": "zombie",
     "background": "crimson",
     "hair": "tall red",
@@ -2416,7 +2416,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 201,
-    "name": "OnChainPixel #201",
+    "name": "Dwellers #201",
     "base": "human dark",
     "background": "navy",
     "hair": "mohawk black",
@@ -2428,7 +2428,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 202,
-    "name": "OnChainPixel #202",
+    "name": "Dwellers #202",
     "base": "demon",
     "background": "slate",
     "hair": "ponytail brown",
@@ -2440,7 +2440,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 203,
-    "name": "OnChainPixel #203",
+    "name": "Dwellers #203",
     "base": "human tan",
     "background": "navy",
     "hair": "short pink",
@@ -2452,7 +2452,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 204,
-    "name": "OnChainPixel #204",
+    "name": "Dwellers #204",
     "base": "human light",
     "background": "crimson",
     "hair": "ponytail black",
@@ -2464,7 +2464,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 205,
-    "name": "OnChainPixel #205",
+    "name": "Dwellers #205",
     "base": "human light",
     "background": "slate",
     "hair": "beanie blonde",
@@ -2476,7 +2476,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 206,
-    "name": "OnChainPixel #206",
+    "name": "Dwellers #206",
     "base": "human dark",
     "background": "midnight",
     "hair": "bald brown",
@@ -2488,7 +2488,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 207,
-    "name": "OnChainPixel #207",
+    "name": "Dwellers #207",
     "base": "human tan",
     "background": "forest",
     "hair": "mohawk brown",
@@ -2500,7 +2500,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 208,
-    "name": "OnChainPixel #208",
+    "name": "Dwellers #208",
     "base": "human light",
     "background": "slate",
     "hair": "bald black",
@@ -2512,7 +2512,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 209,
-    "name": "OnChainPixel #209",
+    "name": "Dwellers #209",
     "base": "human light",
     "background": "ice",
     "hair": "buzz brown",
@@ -2524,7 +2524,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 210,
-    "name": "OnChainPixel #210",
+    "name": "Dwellers #210",
     "base": "human dark",
     "background": "purple",
     "hair": "beanie black",
@@ -2536,7 +2536,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 211,
-    "name": "OnChainPixel #211",
+    "name": "Dwellers #211",
     "base": "human dark",
     "background": "slate",
     "hair": "tall brown",
@@ -2548,7 +2548,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 212,
-    "name": "OnChainPixel #212",
+    "name": "Dwellers #212",
     "base": "human dark",
     "background": "crimson",
     "hair": "short black",
@@ -2560,7 +2560,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 213,
-    "name": "OnChainPixel #213",
+    "name": "Dwellers #213",
     "base": "human pale",
     "background": "crimson",
     "hair": "tall pink",
@@ -2572,7 +2572,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 214,
-    "name": "OnChainPixel #214",
+    "name": "Dwellers #214",
     "base": "human light",
     "background": "navy",
     "hair": "beanie black",
@@ -2584,7 +2584,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 215,
-    "name": "OnChainPixel #215",
+    "name": "Dwellers #215",
     "base": "human tan",
     "background": "midnight",
     "hair": "flat blonde",
@@ -2596,7 +2596,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 216,
-    "name": "OnChainPixel #216",
+    "name": "Dwellers #216",
     "base": "gold",
     "background": "ice",
     "hair": "flat red",
@@ -2608,7 +2608,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 217,
-    "name": "OnChainPixel #217",
+    "name": "Dwellers #217",
     "base": "human light",
     "background": "gold",
     "hair": "bald brown",
@@ -2620,7 +2620,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 218,
-    "name": "OnChainPixel #218",
+    "name": "Dwellers #218",
     "base": "human pale",
     "background": "crimson",
     "hair": "beanie teal",
@@ -2632,7 +2632,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 219,
-    "name": "OnChainPixel #219",
+    "name": "Dwellers #219",
     "base": "human tan",
     "background": "slate",
     "hair": "tall brown",
@@ -2644,7 +2644,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 220,
-    "name": "OnChainPixel #220",
+    "name": "Dwellers #220",
     "base": "human light",
     "background": "navy",
     "hair": "flat black",
@@ -2656,7 +2656,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 221,
-    "name": "OnChainPixel #221",
+    "name": "Dwellers #221",
     "base": "human tan",
     "background": "midnight",
     "hair": "beanie brown",
@@ -2668,7 +2668,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 222,
-    "name": "OnChainPixel #222",
+    "name": "Dwellers #222",
     "base": "alien blue",
     "background": "purple",
     "hair": "short red",
@@ -2680,7 +2680,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 223,
-    "name": "OnChainPixel #223",
+    "name": "Dwellers #223",
     "base": "human light",
     "background": "slate",
     "hair": "short blue",
@@ -2692,7 +2692,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 224,
-    "name": "OnChainPixel #224",
+    "name": "Dwellers #224",
     "base": "zombie",
     "background": "gold",
     "hair": "afro white",
@@ -2704,7 +2704,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 225,
-    "name": "OnChainPixel #225",
+    "name": "Dwellers #225",
     "base": "alien green",
     "background": "navy",
     "hair": "short green",
@@ -2716,7 +2716,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 226,
-    "name": "OnChainPixel #226",
+    "name": "Dwellers #226",
     "base": "human tan",
     "background": "purple",
     "hair": "flat brown",
@@ -2728,7 +2728,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 227,
-    "name": "OnChainPixel #227",
+    "name": "Dwellers #227",
     "base": "human pale",
     "background": "navy",
     "hair": "tall red",
@@ -2740,7 +2740,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 228,
-    "name": "OnChainPixel #228",
+    "name": "Dwellers #228",
     "base": "human pale",
     "background": "crimson",
     "hair": "mohawk green",
@@ -2752,7 +2752,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 229,
-    "name": "OnChainPixel #229",
+    "name": "Dwellers #229",
     "base": "gold",
     "background": "navy",
     "hair": "afro white",
@@ -2764,7 +2764,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 230,
-    "name": "OnChainPixel #230",
+    "name": "Dwellers #230",
     "base": "human light",
     "background": "midnight",
     "hair": "tall blue",
@@ -2776,7 +2776,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 231,
-    "name": "OnChainPixel #231",
+    "name": "Dwellers #231",
     "base": "human pale",
     "background": "crimson",
     "hair": "short blue",
@@ -2788,7 +2788,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 232,
-    "name": "OnChainPixel #232",
+    "name": "Dwellers #232",
     "base": "human light",
     "background": "navy",
     "hair": "tall brown",
@@ -2800,7 +2800,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 233,
-    "name": "OnChainPixel #233",
+    "name": "Dwellers #233",
     "base": "zombie",
     "background": "midnight",
     "hair": "beanie black",
@@ -2812,7 +2812,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 234,
-    "name": "OnChainPixel #234",
+    "name": "Dwellers #234",
     "base": "demon",
     "background": "midnight",
     "hair": "ponytail blue",
@@ -2824,7 +2824,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 235,
-    "name": "OnChainPixel #235",
+    "name": "Dwellers #235",
     "base": "human tan",
     "background": "purple",
     "hair": "short blonde",
@@ -2836,7 +2836,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 236,
-    "name": "OnChainPixel #236",
+    "name": "Dwellers #236",
     "base": "human pale",
     "background": "midnight",
     "hair": "short brown",
@@ -2848,7 +2848,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 237,
-    "name": "OnChainPixel #237",
+    "name": "Dwellers #237",
     "base": "human light",
     "background": "forest",
     "hair": "short blonde",
@@ -2860,7 +2860,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 238,
-    "name": "OnChainPixel #238",
+    "name": "Dwellers #238",
     "base": "human light",
     "background": "slate",
     "hair": "beanie brown",
@@ -2872,7 +2872,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 239,
-    "name": "OnChainPixel #239",
+    "name": "Dwellers #239",
     "base": "human tan",
     "background": "midnight",
     "hair": "bald red",
@@ -2884,7 +2884,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 240,
-    "name": "OnChainPixel #240",
+    "name": "Dwellers #240",
     "base": "human dark",
     "background": "gold",
     "hair": "tall purple",
@@ -2896,7 +2896,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 241,
-    "name": "OnChainPixel #241",
+    "name": "Dwellers #241",
     "base": "human light",
     "background": "crimson",
     "hair": "ponytail brown",
@@ -2908,7 +2908,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 242,
-    "name": "OnChainPixel #242",
+    "name": "Dwellers #242",
     "base": "robot",
     "background": "gold",
     "hair": "afro blonde",
@@ -2920,7 +2920,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 243,
-    "name": "OnChainPixel #243",
+    "name": "Dwellers #243",
     "base": "human dark",
     "background": "navy",
     "hair": "mohawk blonde",
@@ -2932,7 +2932,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 244,
-    "name": "OnChainPixel #244",
+    "name": "Dwellers #244",
     "base": "demon",
     "background": "midnight",
     "hair": "side_part black",
@@ -2944,7 +2944,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 245,
-    "name": "OnChainPixel #245",
+    "name": "Dwellers #245",
     "base": "robot",
     "background": "crimson",
     "hair": "beanie brown",
@@ -2956,7 +2956,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 246,
-    "name": "OnChainPixel #246",
+    "name": "Dwellers #246",
     "base": "human dark",
     "background": "crimson",
     "hair": "ponytail black",
@@ -2968,7 +2968,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 247,
-    "name": "OnChainPixel #247",
+    "name": "Dwellers #247",
     "base": "human light",
     "background": "midnight",
     "hair": "bald black",
@@ -2980,7 +2980,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 248,
-    "name": "OnChainPixel #248",
+    "name": "Dwellers #248",
     "base": "human light",
     "background": "crimson",
     "hair": "short brown",
@@ -2992,7 +2992,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 249,
-    "name": "OnChainPixel #249",
+    "name": "Dwellers #249",
     "base": "robot",
     "background": "crimson",
     "hair": "ponytail white",
@@ -3004,7 +3004,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 250,
-    "name": "OnChainPixel #250",
+    "name": "Dwellers #250",
     "base": "human light",
     "background": "forest",
     "hair": "beanie white",
@@ -3016,7 +3016,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 251,
-    "name": "OnChainPixel #251",
+    "name": "Dwellers #251",
     "base": "human dark",
     "background": "crimson",
     "hair": "tall pink",
@@ -3028,7 +3028,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 252,
-    "name": "OnChainPixel #252",
+    "name": "Dwellers #252",
     "base": "zombie",
     "background": "crimson",
     "hair": "flat teal",
@@ -3040,7 +3040,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 253,
-    "name": "OnChainPixel #253",
+    "name": "Dwellers #253",
     "base": "zombie",
     "background": "gold",
     "hair": "tall black",
@@ -3052,7 +3052,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 254,
-    "name": "OnChainPixel #254",
+    "name": "Dwellers #254",
     "base": "human dark",
     "background": "navy",
     "hair": "side_part black",
@@ -3064,7 +3064,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 255,
-    "name": "OnChainPixel #255",
+    "name": "Dwellers #255",
     "base": "human dark",
     "background": "slate",
     "hair": "mohawk green",
@@ -3076,7 +3076,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 256,
-    "name": "OnChainPixel #256",
+    "name": "Dwellers #256",
     "base": "gold",
     "background": "midnight",
     "hair": "mohawk black",
@@ -3088,7 +3088,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 257,
-    "name": "OnChainPixel #257",
+    "name": "Dwellers #257",
     "base": "human tan",
     "background": "purple",
     "hair": "short brown",
@@ -3100,7 +3100,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 258,
-    "name": "OnChainPixel #258",
+    "name": "Dwellers #258",
     "base": "human tan",
     "background": "gold",
     "hair": "mohawk brown",
@@ -3112,7 +3112,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 259,
-    "name": "OnChainPixel #259",
+    "name": "Dwellers #259",
     "base": "human tan",
     "background": "crimson",
     "hair": "side_part blue",
@@ -3124,7 +3124,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 260,
-    "name": "OnChainPixel #260",
+    "name": "Dwellers #260",
     "base": "alien green",
     "background": "gold",
     "hair": "bald brown",
@@ -3136,7 +3136,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 261,
-    "name": "OnChainPixel #261",
+    "name": "Dwellers #261",
     "base": "demon",
     "background": "navy",
     "hair": "mohawk pink",
@@ -3148,7 +3148,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 262,
-    "name": "OnChainPixel #262",
+    "name": "Dwellers #262",
     "base": "human tan",
     "background": "slate",
     "hair": "short black",
@@ -3160,7 +3160,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 263,
-    "name": "OnChainPixel #263",
+    "name": "Dwellers #263",
     "base": "human tan",
     "background": "ice",
     "hair": "short orange",
@@ -3172,7 +3172,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 264,
-    "name": "OnChainPixel #264",
+    "name": "Dwellers #264",
     "base": "human tan",
     "background": "slate",
     "hair": "flat blue",
@@ -3184,7 +3184,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 265,
-    "name": "OnChainPixel #265",
+    "name": "Dwellers #265",
     "base": "human tan",
     "background": "purple",
     "hair": "ponytail red",
@@ -3196,7 +3196,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 266,
-    "name": "OnChainPixel #266",
+    "name": "Dwellers #266",
     "base": "human light",
     "background": "navy",
     "hair": "long black",
@@ -3208,7 +3208,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 267,
-    "name": "OnChainPixel #267",
+    "name": "Dwellers #267",
     "base": "human pale",
     "background": "navy",
     "hair": "beanie black",
@@ -3220,7 +3220,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 268,
-    "name": "OnChainPixel #268",
+    "name": "Dwellers #268",
     "base": "human tan",
     "background": "slate",
     "hair": "flat brown",
@@ -3232,7 +3232,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 269,
-    "name": "OnChainPixel #269",
+    "name": "Dwellers #269",
     "base": "human dark",
     "background": "ice",
     "hair": "tall blonde",
@@ -3244,7 +3244,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 270,
-    "name": "OnChainPixel #270",
+    "name": "Dwellers #270",
     "base": "human light",
     "background": "purple",
     "hair": "afro brown",
@@ -3256,7 +3256,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 271,
-    "name": "OnChainPixel #271",
+    "name": "Dwellers #271",
     "base": "alien green",
     "background": "gold",
     "hair": "short black",
@@ -3268,7 +3268,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 272,
-    "name": "OnChainPixel #272",
+    "name": "Dwellers #272",
     "base": "human dark",
     "background": "crimson",
     "hair": "tall orange",
@@ -3280,7 +3280,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 273,
-    "name": "OnChainPixel #273",
+    "name": "Dwellers #273",
     "base": "human light",
     "background": "ice",
     "hair": "tall pink",
@@ -3292,7 +3292,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 274,
-    "name": "OnChainPixel #274",
+    "name": "Dwellers #274",
     "base": "human dark",
     "background": "crimson",
     "hair": "long black",
@@ -3304,7 +3304,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 275,
-    "name": "OnChainPixel #275",
+    "name": "Dwellers #275",
     "base": "human light",
     "background": "slate",
     "hair": "short brown",
@@ -3316,7 +3316,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 276,
-    "name": "OnChainPixel #276",
+    "name": "Dwellers #276",
     "base": "human tan",
     "background": "purple",
     "hair": "side_part brown",
@@ -3328,7 +3328,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 277,
-    "name": "OnChainPixel #277",
+    "name": "Dwellers #277",
     "base": "robot",
     "background": "gold",
     "hair": "flat red",
@@ -3340,7 +3340,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 278,
-    "name": "OnChainPixel #278",
+    "name": "Dwellers #278",
     "base": "human light",
     "background": "navy",
     "hair": "buzz white",
@@ -3352,7 +3352,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 279,
-    "name": "OnChainPixel #279",
+    "name": "Dwellers #279",
     "base": "human tan",
     "background": "slate",
     "hair": "spiky red",
@@ -3364,7 +3364,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 280,
-    "name": "OnChainPixel #280",
+    "name": "Dwellers #280",
     "base": "human tan",
     "background": "slate",
     "hair": "short black",
@@ -3376,7 +3376,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 281,
-    "name": "OnChainPixel #281",
+    "name": "Dwellers #281",
     "base": "human dark",
     "background": "ice",
     "hair": "tall blonde",
@@ -3388,7 +3388,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 282,
-    "name": "OnChainPixel #282",
+    "name": "Dwellers #282",
     "base": "human dark",
     "background": "midnight",
     "hair": "tall purple",
@@ -3400,7 +3400,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 283,
-    "name": "OnChainPixel #283",
+    "name": "Dwellers #283",
     "base": "human dark",
     "background": "crimson",
     "hair": "short blue",
@@ -3412,7 +3412,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 284,
-    "name": "OnChainPixel #284",
+    "name": "Dwellers #284",
     "base": "human tan",
     "background": "crimson",
     "hair": "afro blonde",
@@ -3424,7 +3424,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 285,
-    "name": "OnChainPixel #285",
+    "name": "Dwellers #285",
     "base": "zombie",
     "background": "gold",
     "hair": "beanie brown",
@@ -3436,7 +3436,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 286,
-    "name": "OnChainPixel #286",
+    "name": "Dwellers #286",
     "base": "human tan",
     "background": "crimson",
     "hair": "ponytail purple",
@@ -3448,7 +3448,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 287,
-    "name": "OnChainPixel #287",
+    "name": "Dwellers #287",
     "base": "human pale",
     "background": "ice",
     "hair": "short brown",
@@ -3460,7 +3460,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 288,
-    "name": "OnChainPixel #288",
+    "name": "Dwellers #288",
     "base": "human light",
     "background": "crimson",
     "hair": "long red",
@@ -3472,7 +3472,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 289,
-    "name": "OnChainPixel #289",
+    "name": "Dwellers #289",
     "base": "human tan",
     "background": "midnight",
     "hair": "short pink",
@@ -3484,7 +3484,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 290,
-    "name": "OnChainPixel #290",
+    "name": "Dwellers #290",
     "base": "human light",
     "background": "forest",
     "hair": "short brown",
@@ -3496,7 +3496,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 291,
-    "name": "OnChainPixel #291",
+    "name": "Dwellers #291",
     "base": "human light",
     "background": "crimson",
     "hair": "short blue",
@@ -3508,7 +3508,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 292,
-    "name": "OnChainPixel #292",
+    "name": "Dwellers #292",
     "base": "human tan",
     "background": "purple",
     "hair": "flat black",
@@ -3520,7 +3520,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 293,
-    "name": "OnChainPixel #293",
+    "name": "Dwellers #293",
     "base": "zombie",
     "background": "crimson",
     "hair": "tall black",
@@ -3532,7 +3532,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 294,
-    "name": "OnChainPixel #294",
+    "name": "Dwellers #294",
     "base": "human tan",
     "background": "ice",
     "hair": "tall brown",
@@ -3544,7 +3544,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 295,
-    "name": "OnChainPixel #295",
+    "name": "Dwellers #295",
     "base": "human pale",
     "background": "gold",
     "hair": "flat green",
@@ -3556,7 +3556,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 296,
-    "name": "OnChainPixel #296",
+    "name": "Dwellers #296",
     "base": "human light",
     "background": "crimson",
     "hair": "buzz blue",
@@ -3568,7 +3568,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 297,
-    "name": "OnChainPixel #297",
+    "name": "Dwellers #297",
     "base": "human tan",
     "background": "navy",
     "hair": "short white",
@@ -3580,7 +3580,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 298,
-    "name": "OnChainPixel #298",
+    "name": "Dwellers #298",
     "base": "human dark",
     "background": "midnight",
     "hair": "bald blue",
@@ -3592,7 +3592,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 299,
-    "name": "OnChainPixel #299",
+    "name": "Dwellers #299",
     "base": "human light",
     "background": "crimson",
     "hair": "bald red",
@@ -3604,7 +3604,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 300,
-    "name": "OnChainPixel #300",
+    "name": "Dwellers #300",
     "base": "human dark",
     "background": "forest",
     "hair": "side_part blonde",
@@ -3616,7 +3616,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 301,
-    "name": "OnChainPixel #301",
+    "name": "Dwellers #301",
     "base": "human tan",
     "background": "crimson",
     "hair": "short red",
@@ -3628,7 +3628,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 302,
-    "name": "OnChainPixel #302",
+    "name": "Dwellers #302",
     "base": "human light",
     "background": "midnight",
     "hair": "spiky red",
@@ -3640,7 +3640,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 303,
-    "name": "OnChainPixel #303",
+    "name": "Dwellers #303",
     "base": "human dark",
     "background": "navy",
     "hair": "short brown",
@@ -3652,7 +3652,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 304,
-    "name": "OnChainPixel #304",
+    "name": "Dwellers #304",
     "base": "human light",
     "background": "slate",
     "hair": "mohawk brown",
@@ -3664,7 +3664,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 305,
-    "name": "OnChainPixel #305",
+    "name": "Dwellers #305",
     "base": "human tan",
     "background": "crimson",
     "hair": "long brown",
@@ -3676,7 +3676,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 306,
-    "name": "OnChainPixel #306",
+    "name": "Dwellers #306",
     "base": "human dark",
     "background": "crimson",
     "hair": "afro red",
@@ -3688,7 +3688,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 307,
-    "name": "OnChainPixel #307",
+    "name": "Dwellers #307",
     "base": "robot",
     "background": "crimson",
     "hair": "long blonde",
@@ -3700,7 +3700,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 308,
-    "name": "OnChainPixel #308",
+    "name": "Dwellers #308",
     "base": "robot",
     "background": "purple",
     "hair": "flat blonde",
@@ -3712,7 +3712,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 309,
-    "name": "OnChainPixel #309",
+    "name": "Dwellers #309",
     "base": "human tan",
     "background": "crimson",
     "hair": "flat brown",
@@ -3724,7 +3724,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 310,
-    "name": "OnChainPixel #310",
+    "name": "Dwellers #310",
     "base": "human tan",
     "background": "forest",
     "hair": "spiky black",
@@ -3736,7 +3736,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 311,
-    "name": "OnChainPixel #311",
+    "name": "Dwellers #311",
     "base": "gold",
     "background": "crimson",
     "hair": "short brown",
@@ -3748,7 +3748,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 312,
-    "name": "OnChainPixel #312",
+    "name": "Dwellers #312",
     "base": "human pale",
     "background": "forest",
     "hair": "afro blonde",
@@ -3760,7 +3760,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 313,
-    "name": "OnChainPixel #313",
+    "name": "Dwellers #313",
     "base": "human pale",
     "background": "crimson",
     "hair": "beanie blonde",
@@ -3772,7 +3772,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 314,
-    "name": "OnChainPixel #314",
+    "name": "Dwellers #314",
     "base": "human dark",
     "background": "slate",
     "hair": "tall green",
@@ -3784,7 +3784,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 315,
-    "name": "OnChainPixel #315",
+    "name": "Dwellers #315",
     "base": "human dark",
     "background": "ice",
     "hair": "tall black",
@@ -3796,7 +3796,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 316,
-    "name": "OnChainPixel #316",
+    "name": "Dwellers #316",
     "base": "human dark",
     "background": "midnight",
     "hair": "mohawk silver",
@@ -3808,7 +3808,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 317,
-    "name": "OnChainPixel #317",
+    "name": "Dwellers #317",
     "base": "human tan",
     "background": "purple",
     "hair": "flat pink",
@@ -3820,7 +3820,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 318,
-    "name": "OnChainPixel #318",
+    "name": "Dwellers #318",
     "base": "human dark",
     "background": "forest",
     "hair": "afro blonde",
@@ -3832,7 +3832,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 319,
-    "name": "OnChainPixel #319",
+    "name": "Dwellers #319",
     "base": "human tan",
     "background": "navy",
     "hair": "short blonde",
@@ -3844,7 +3844,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 320,
-    "name": "OnChainPixel #320",
+    "name": "Dwellers #320",
     "base": "human tan",
     "background": "purple",
     "hair": "beanie black",
@@ -3856,7 +3856,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 321,
-    "name": "OnChainPixel #321",
+    "name": "Dwellers #321",
     "base": "human light",
     "background": "slate",
     "hair": "short teal",
@@ -3868,7 +3868,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 322,
-    "name": "OnChainPixel #322",
+    "name": "Dwellers #322",
     "base": "human dark",
     "background": "forest",
     "hair": "spiky orange",
@@ -3880,7 +3880,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 323,
-    "name": "OnChainPixel #323",
+    "name": "Dwellers #323",
     "base": "human pale",
     "background": "crimson",
     "hair": "spiky blonde",
@@ -3892,7 +3892,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 324,
-    "name": "OnChainPixel #324",
+    "name": "Dwellers #324",
     "base": "human light",
     "background": "gold",
     "hair": "short pink",
@@ -3904,7 +3904,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 325,
-    "name": "OnChainPixel #325",
+    "name": "Dwellers #325",
     "base": "human light",
     "background": "forest",
     "hair": "side_part black",
@@ -3916,7 +3916,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 326,
-    "name": "OnChainPixel #326",
+    "name": "Dwellers #326",
     "base": "human light",
     "background": "midnight",
     "hair": "flat black",
@@ -3928,7 +3928,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 327,
-    "name": "OnChainPixel #327",
+    "name": "Dwellers #327",
     "base": "human tan",
     "background": "navy",
     "hair": "buzz pink",
@@ -3940,7 +3940,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 328,
-    "name": "OnChainPixel #328",
+    "name": "Dwellers #328",
     "base": "demon",
     "background": "crimson",
     "hair": "mohawk white",
@@ -3952,7 +3952,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 329,
-    "name": "OnChainPixel #329",
+    "name": "Dwellers #329",
     "base": "human light",
     "background": "navy",
     "hair": "long pink",
@@ -3964,7 +3964,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 330,
-    "name": "OnChainPixel #330",
+    "name": "Dwellers #330",
     "base": "demon",
     "background": "forest",
     "hair": "short black",
@@ -3976,7 +3976,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 331,
-    "name": "OnChainPixel #331",
+    "name": "Dwellers #331",
     "base": "alien green",
     "background": "crimson",
     "hair": "beanie black",
@@ -3988,7 +3988,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 332,
-    "name": "OnChainPixel #332",
+    "name": "Dwellers #332",
     "base": "human light",
     "background": "navy",
     "hair": "tall red",
@@ -4000,7 +4000,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 333,
-    "name": "OnChainPixel #333",
+    "name": "Dwellers #333",
     "base": "human light",
     "background": "forest",
     "hair": "flat black",
@@ -4012,7 +4012,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 334,
-    "name": "OnChainPixel #334",
+    "name": "Dwellers #334",
     "base": "human pale",
     "background": "slate",
     "hair": "short red",
@@ -4024,7 +4024,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 335,
-    "name": "OnChainPixel #335",
+    "name": "Dwellers #335",
     "base": "alien blue",
     "background": "purple",
     "hair": "beanie brown",
@@ -4036,7 +4036,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 336,
-    "name": "OnChainPixel #336",
+    "name": "Dwellers #336",
     "base": "human tan",
     "background": "crimson",
     "hair": "long blue",
@@ -4048,7 +4048,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 337,
-    "name": "OnChainPixel #337",
+    "name": "Dwellers #337",
     "base": "alien blue",
     "background": "ice",
     "hair": "spiky white",
@@ -4060,7 +4060,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 338,
-    "name": "OnChainPixel #338",
+    "name": "Dwellers #338",
     "base": "human dark",
     "background": "ice",
     "hair": "afro brown",
@@ -4072,7 +4072,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 339,
-    "name": "OnChainPixel #339",
+    "name": "Dwellers #339",
     "base": "robot",
     "background": "navy",
     "hair": "short blonde",
@@ -4084,7 +4084,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 340,
-    "name": "OnChainPixel #340",
+    "name": "Dwellers #340",
     "base": "human tan",
     "background": "crimson",
     "hair": "short blue",
@@ -4096,7 +4096,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 341,
-    "name": "OnChainPixel #341",
+    "name": "Dwellers #341",
     "base": "robot",
     "background": "forest",
     "hair": "buzz purple",
@@ -4108,7 +4108,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 342,
-    "name": "OnChainPixel #342",
+    "name": "Dwellers #342",
     "base": "human pale",
     "background": "gold",
     "hair": "bald black",
@@ -4120,7 +4120,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 343,
-    "name": "OnChainPixel #343",
+    "name": "Dwellers #343",
     "base": "human light",
     "background": "forest",
     "hair": "beanie brown",
@@ -4132,7 +4132,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 344,
-    "name": "OnChainPixel #344",
+    "name": "Dwellers #344",
     "base": "zombie",
     "background": "gold",
     "hair": "ponytail red",
@@ -4144,7 +4144,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 345,
-    "name": "OnChainPixel #345",
+    "name": "Dwellers #345",
     "base": "human light",
     "background": "purple",
     "hair": "tall black",
@@ -4156,7 +4156,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 346,
-    "name": "OnChainPixel #346",
+    "name": "Dwellers #346",
     "base": "human tan",
     "background": "slate",
     "hair": "short black",
@@ -4168,7 +4168,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 347,
-    "name": "OnChainPixel #347",
+    "name": "Dwellers #347",
     "base": "human light",
     "background": "slate",
     "hair": "bald blue",
@@ -4180,7 +4180,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 348,
-    "name": "OnChainPixel #348",
+    "name": "Dwellers #348",
     "base": "human tan",
     "background": "ice",
     "hair": "flat pink",
@@ -4192,7 +4192,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 349,
-    "name": "OnChainPixel #349",
+    "name": "Dwellers #349",
     "base": "human tan",
     "background": "slate",
     "hair": "flat brown",
@@ -4204,7 +4204,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 350,
-    "name": "OnChainPixel #350",
+    "name": "Dwellers #350",
     "base": "human tan",
     "background": "slate",
     "hair": "short purple",
@@ -4216,7 +4216,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 351,
-    "name": "OnChainPixel #351",
+    "name": "Dwellers #351",
     "base": "human dark",
     "background": "forest",
     "hair": "spiky teal",
@@ -4228,7 +4228,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 352,
-    "name": "OnChainPixel #352",
+    "name": "Dwellers #352",
     "base": "zombie",
     "background": "slate",
     "hair": "long blue",
@@ -4240,7 +4240,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 353,
-    "name": "OnChainPixel #353",
+    "name": "Dwellers #353",
     "base": "human tan",
     "background": "slate",
     "hair": "flat blonde",
@@ -4252,7 +4252,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 354,
-    "name": "OnChainPixel #354",
+    "name": "Dwellers #354",
     "base": "alien blue",
     "background": "purple",
     "hair": "tall blue",
@@ -4264,7 +4264,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 355,
-    "name": "OnChainPixel #355",
+    "name": "Dwellers #355",
     "base": "human light",
     "background": "forest",
     "hair": "mohawk orange",
@@ -4276,7 +4276,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 356,
-    "name": "OnChainPixel #356",
+    "name": "Dwellers #356",
     "base": "robot",
     "background": "gold",
     "hair": "spiky blue",
@@ -4288,7 +4288,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 357,
-    "name": "OnChainPixel #357",
+    "name": "Dwellers #357",
     "base": "human pale",
     "background": "gold",
     "hair": "flat blonde",
@@ -4300,7 +4300,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 358,
-    "name": "OnChainPixel #358",
+    "name": "Dwellers #358",
     "base": "human light",
     "background": "midnight",
     "hair": "short blue",
@@ -4312,7 +4312,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 359,
-    "name": "OnChainPixel #359",
+    "name": "Dwellers #359",
     "base": "human tan",
     "background": "ice",
     "hair": "flat black",
@@ -4324,7 +4324,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 360,
-    "name": "OnChainPixel #360",
+    "name": "Dwellers #360",
     "base": "human dark",
     "background": "purple",
     "hair": "tall blonde",
@@ -4336,7 +4336,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 361,
-    "name": "OnChainPixel #361",
+    "name": "Dwellers #361",
     "base": "alien green",
     "background": "gold",
     "hair": "tall black",
@@ -4348,7 +4348,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 362,
-    "name": "OnChainPixel #362",
+    "name": "Dwellers #362",
     "base": "human dark",
     "background": "gold",
     "hair": "flat brown",
@@ -4360,7 +4360,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 363,
-    "name": "OnChainPixel #363",
+    "name": "Dwellers #363",
     "base": "human dark",
     "background": "purple",
     "hair": "flat black",
@@ -4372,7 +4372,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 364,
-    "name": "OnChainPixel #364",
+    "name": "Dwellers #364",
     "base": "human dark",
     "background": "midnight",
     "hair": "mohawk black",
@@ -4384,7 +4384,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 365,
-    "name": "OnChainPixel #365",
+    "name": "Dwellers #365",
     "base": "human tan",
     "background": "purple",
     "hair": "short black",
@@ -4396,7 +4396,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 366,
-    "name": "OnChainPixel #366",
+    "name": "Dwellers #366",
     "base": "alien green",
     "background": "navy",
     "hair": "buzz blue",
@@ -4408,7 +4408,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 367,
-    "name": "OnChainPixel #367",
+    "name": "Dwellers #367",
     "base": "human tan",
     "background": "midnight",
     "hair": "beanie brown",
@@ -4420,7 +4420,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 368,
-    "name": "OnChainPixel #368",
+    "name": "Dwellers #368",
     "base": "human light",
     "background": "forest",
     "hair": "flat white",
@@ -4432,7 +4432,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 369,
-    "name": "OnChainPixel #369",
+    "name": "Dwellers #369",
     "base": "alien blue",
     "background": "gold",
     "hair": "bald black",
@@ -4444,7 +4444,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 370,
-    "name": "OnChainPixel #370",
+    "name": "Dwellers #370",
     "base": "demon",
     "background": "slate",
     "hair": "long white",
@@ -4456,7 +4456,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 371,
-    "name": "OnChainPixel #371",
+    "name": "Dwellers #371",
     "base": "human light",
     "background": "navy",
     "hair": "short black",
@@ -4468,7 +4468,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 372,
-    "name": "OnChainPixel #372",
+    "name": "Dwellers #372",
     "base": "human tan",
     "background": "navy",
     "hair": "bald silver",
@@ -4480,7 +4480,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 373,
-    "name": "OnChainPixel #373",
+    "name": "Dwellers #373",
     "base": "human light",
     "background": "gold",
     "hair": "tall brown",
@@ -4492,7 +4492,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 374,
-    "name": "OnChainPixel #374",
+    "name": "Dwellers #374",
     "base": "human tan",
     "background": "purple",
     "hair": "tall brown",
@@ -4504,7 +4504,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 375,
-    "name": "OnChainPixel #375",
+    "name": "Dwellers #375",
     "base": "robot",
     "background": "navy",
     "hair": "long white",
@@ -4516,7 +4516,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 376,
-    "name": "OnChainPixel #376",
+    "name": "Dwellers #376",
     "base": "alien green",
     "background": "gold",
     "hair": "beanie red",
@@ -4528,7 +4528,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 377,
-    "name": "OnChainPixel #377",
+    "name": "Dwellers #377",
     "base": "gold",
     "background": "midnight",
     "hair": "short green",
@@ -4540,7 +4540,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 378,
-    "name": "OnChainPixel #378",
+    "name": "Dwellers #378",
     "base": "human tan",
     "background": "crimson",
     "hair": "spiky red",
@@ -4552,7 +4552,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 379,
-    "name": "OnChainPixel #379",
+    "name": "Dwellers #379",
     "base": "human dark",
     "background": "midnight",
     "hair": "flat blonde",
@@ -4564,7 +4564,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 380,
-    "name": "OnChainPixel #380",
+    "name": "Dwellers #380",
     "base": "human pale",
     "background": "gold",
     "hair": "tall blue",
@@ -4576,7 +4576,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 381,
-    "name": "OnChainPixel #381",
+    "name": "Dwellers #381",
     "base": "human light",
     "background": "crimson",
     "hair": "beanie brown",
@@ -4588,7 +4588,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 382,
-    "name": "OnChainPixel #382",
+    "name": "Dwellers #382",
     "base": "human dark",
     "background": "slate",
     "hair": "mohawk white",
@@ -4600,7 +4600,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 383,
-    "name": "OnChainPixel #383",
+    "name": "Dwellers #383",
     "base": "zombie",
     "background": "purple",
     "hair": "side_part black",
@@ -4612,7 +4612,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 384,
-    "name": "OnChainPixel #384",
+    "name": "Dwellers #384",
     "base": "alien blue",
     "background": "crimson",
     "hair": "bald red",
@@ -4624,7 +4624,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 385,
-    "name": "OnChainPixel #385",
+    "name": "Dwellers #385",
     "base": "human tan",
     "background": "navy",
     "hair": "short orange",
@@ -4636,7 +4636,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 386,
-    "name": "OnChainPixel #386",
+    "name": "Dwellers #386",
     "base": "robot",
     "background": "slate",
     "hair": "tall black",
@@ -4648,7 +4648,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 387,
-    "name": "OnChainPixel #387",
+    "name": "Dwellers #387",
     "base": "alien blue",
     "background": "midnight",
     "hair": "beanie pink",
@@ -4660,7 +4660,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 388,
-    "name": "OnChainPixel #388",
+    "name": "Dwellers #388",
     "base": "human light",
     "background": "crimson",
     "hair": "spiky black",
@@ -4672,7 +4672,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 389,
-    "name": "OnChainPixel #389",
+    "name": "Dwellers #389",
     "base": "human dark",
     "background": "crimson",
     "hair": "short black",
@@ -4684,7 +4684,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 390,
-    "name": "OnChainPixel #390",
+    "name": "Dwellers #390",
     "base": "zombie",
     "background": "ice",
     "hair": "short black",
@@ -4696,7 +4696,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 391,
-    "name": "OnChainPixel #391",
+    "name": "Dwellers #391",
     "base": "human tan",
     "background": "midnight",
     "hair": "flat black",
@@ -4708,7 +4708,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 392,
-    "name": "OnChainPixel #392",
+    "name": "Dwellers #392",
     "base": "human light",
     "background": "purple",
     "hair": "tall black",
@@ -4720,7 +4720,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 393,
-    "name": "OnChainPixel #393",
+    "name": "Dwellers #393",
     "base": "gold",
     "background": "purple",
     "hair": "mohawk black",
@@ -4732,7 +4732,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 394,
-    "name": "OnChainPixel #394",
+    "name": "Dwellers #394",
     "base": "demon",
     "background": "navy",
     "hair": "long black",
@@ -4744,7 +4744,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 395,
-    "name": "OnChainPixel #395",
+    "name": "Dwellers #395",
     "base": "human light",
     "background": "forest",
     "hair": "tall brown",
@@ -4756,7 +4756,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 396,
-    "name": "OnChainPixel #396",
+    "name": "Dwellers #396",
     "base": "human light",
     "background": "forest",
     "hair": "short black",
@@ -4768,7 +4768,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 397,
-    "name": "OnChainPixel #397",
+    "name": "Dwellers #397",
     "base": "human tan",
     "background": "slate",
     "hair": "flat silver",
@@ -4780,7 +4780,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 398,
-    "name": "OnChainPixel #398",
+    "name": "Dwellers #398",
     "base": "robot",
     "background": "ice",
     "hair": "short brown",
@@ -4792,7 +4792,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 399,
-    "name": "OnChainPixel #399",
+    "name": "Dwellers #399",
     "base": "human dark",
     "background": "midnight",
     "hair": "bald brown",
@@ -4804,7 +4804,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 400,
-    "name": "OnChainPixel #400",
+    "name": "Dwellers #400",
     "base": "human pale",
     "background": "forest",
     "hair": "mohawk black",
@@ -4816,7 +4816,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 401,
-    "name": "OnChainPixel #401",
+    "name": "Dwellers #401",
     "base": "human dark",
     "background": "midnight",
     "hair": "mohawk black",
@@ -4828,7 +4828,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 402,
-    "name": "OnChainPixel #402",
+    "name": "Dwellers #402",
     "base": "human light",
     "background": "navy",
     "hair": "long green",
@@ -4840,7 +4840,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 403,
-    "name": "OnChainPixel #403",
+    "name": "Dwellers #403",
     "base": "human light",
     "background": "purple",
     "hair": "bald red",
@@ -4852,7 +4852,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 404,
-    "name": "OnChainPixel #404",
+    "name": "Dwellers #404",
     "base": "human pale",
     "background": "midnight",
     "hair": "short brown",
@@ -4864,7 +4864,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 405,
-    "name": "OnChainPixel #405",
+    "name": "Dwellers #405",
     "base": "human dark",
     "background": "forest",
     "hair": "tall green",
@@ -4876,7 +4876,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 406,
-    "name": "OnChainPixel #406",
+    "name": "Dwellers #406",
     "base": "alien green",
     "background": "purple",
     "hair": "flat black",
@@ -4888,7 +4888,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 407,
-    "name": "OnChainPixel #407",
+    "name": "Dwellers #407",
     "base": "human tan",
     "background": "forest",
     "hair": "short green",
@@ -4900,7 +4900,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 408,
-    "name": "OnChainPixel #408",
+    "name": "Dwellers #408",
     "base": "demon",
     "background": "navy",
     "hair": "afro black",
@@ -4912,7 +4912,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 409,
-    "name": "OnChainPixel #409",
+    "name": "Dwellers #409",
     "base": "human light",
     "background": "crimson",
     "hair": "short black",
@@ -4924,7 +4924,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 410,
-    "name": "OnChainPixel #410",
+    "name": "Dwellers #410",
     "base": "robot",
     "background": "navy",
     "hair": "short brown",
@@ -4936,7 +4936,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 411,
-    "name": "OnChainPixel #411",
+    "name": "Dwellers #411",
     "base": "human tan",
     "background": "navy",
     "hair": "long brown",
@@ -4948,7 +4948,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 412,
-    "name": "OnChainPixel #412",
+    "name": "Dwellers #412",
     "base": "human light",
     "background": "gold",
     "hair": "spiky orange",
@@ -4960,7 +4960,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 413,
-    "name": "OnChainPixel #413",
+    "name": "Dwellers #413",
     "base": "human tan",
     "background": "purple",
     "hair": "tall green",
@@ -4972,7 +4972,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 414,
-    "name": "OnChainPixel #414",
+    "name": "Dwellers #414",
     "base": "human light",
     "background": "navy",
     "hair": "flat blue",
@@ -4984,7 +4984,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 415,
-    "name": "OnChainPixel #415",
+    "name": "Dwellers #415",
     "base": "alien blue",
     "background": "ice",
     "hair": "mohawk green",
@@ -4996,7 +4996,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 416,
-    "name": "OnChainPixel #416",
+    "name": "Dwellers #416",
     "base": "robot",
     "background": "crimson",
     "hair": "short black",
@@ -5008,7 +5008,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 417,
-    "name": "OnChainPixel #417",
+    "name": "Dwellers #417",
     "base": "demon",
     "background": "gold",
     "hair": "flat red",
@@ -5020,7 +5020,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 418,
-    "name": "OnChainPixel #418",
+    "name": "Dwellers #418",
     "base": "human dark",
     "background": "purple",
     "hair": "long black",
@@ -5032,7 +5032,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 419,
-    "name": "OnChainPixel #419",
+    "name": "Dwellers #419",
     "base": "human light",
     "background": "gold",
     "hair": "beanie blue",
@@ -5044,7 +5044,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 420,
-    "name": "OnChainPixel #420",
+    "name": "Dwellers #420",
     "base": "zombie",
     "background": "ice",
     "hair": "long brown",
@@ -5056,7 +5056,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 421,
-    "name": "OnChainPixel #421",
+    "name": "Dwellers #421",
     "base": "robot",
     "background": "crimson",
     "hair": "flat blue",
@@ -5068,7 +5068,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 422,
-    "name": "OnChainPixel #422",
+    "name": "Dwellers #422",
     "base": "demon",
     "background": "navy",
     "hair": "flat purple",
@@ -5080,7 +5080,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 423,
-    "name": "OnChainPixel #423",
+    "name": "Dwellers #423",
     "base": "alien blue",
     "background": "forest",
     "hair": "afro brown",
@@ -5092,7 +5092,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 424,
-    "name": "OnChainPixel #424",
+    "name": "Dwellers #424",
     "base": "human light",
     "background": "forest",
     "hair": "buzz white",
@@ -5104,7 +5104,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 425,
-    "name": "OnChainPixel #425",
+    "name": "Dwellers #425",
     "base": "robot",
     "background": "gold",
     "hair": "long pink",
@@ -5116,7 +5116,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 426,
-    "name": "OnChainPixel #426",
+    "name": "Dwellers #426",
     "base": "human dark",
     "background": "midnight",
     "hair": "long brown",
@@ -5128,7 +5128,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 427,
-    "name": "OnChainPixel #427",
+    "name": "Dwellers #427",
     "base": "human light",
     "background": "ice",
     "hair": "flat teal",
@@ -5140,7 +5140,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 428,
-    "name": "OnChainPixel #428",
+    "name": "Dwellers #428",
     "base": "human light",
     "background": "purple",
     "hair": "bald pink",
@@ -5152,7 +5152,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 429,
-    "name": "OnChainPixel #429",
+    "name": "Dwellers #429",
     "base": "human dark",
     "background": "navy",
     "hair": "spiky green",
@@ -5164,7 +5164,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 430,
-    "name": "OnChainPixel #430",
+    "name": "Dwellers #430",
     "base": "human light",
     "background": "forest",
     "hair": "tall red",
@@ -5176,7 +5176,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 431,
-    "name": "OnChainPixel #431",
+    "name": "Dwellers #431",
     "base": "human light",
     "background": "midnight",
     "hair": "tall brown",
@@ -5188,7 +5188,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 432,
-    "name": "OnChainPixel #432",
+    "name": "Dwellers #432",
     "base": "alien blue",
     "background": "ice",
     "hair": "flat orange",
@@ -5200,7 +5200,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 433,
-    "name": "OnChainPixel #433",
+    "name": "Dwellers #433",
     "base": "human tan",
     "background": "crimson",
     "hair": "flat red",
@@ -5212,7 +5212,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 434,
-    "name": "OnChainPixel #434",
+    "name": "Dwellers #434",
     "base": "human pale",
     "background": "navy",
     "hair": "buzz blonde",
@@ -5224,7 +5224,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 435,
-    "name": "OnChainPixel #435",
+    "name": "Dwellers #435",
     "base": "alien blue",
     "background": "slate",
     "hair": "short blonde",
@@ -5236,7 +5236,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 436,
-    "name": "OnChainPixel #436",
+    "name": "Dwellers #436",
     "base": "human tan",
     "background": "slate",
     "hair": "long orange",
@@ -5248,7 +5248,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 437,
-    "name": "OnChainPixel #437",
+    "name": "Dwellers #437",
     "base": "human pale",
     "background": "purple",
     "hair": "tall brown",
@@ -5260,7 +5260,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 438,
-    "name": "OnChainPixel #438",
+    "name": "Dwellers #438",
     "base": "human light",
     "background": "slate",
     "hair": "flat blue",
@@ -5272,7 +5272,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 439,
-    "name": "OnChainPixel #439",
+    "name": "Dwellers #439",
     "base": "robot",
     "background": "slate",
     "hair": "mohawk teal",
@@ -5284,7 +5284,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 440,
-    "name": "OnChainPixel #440",
+    "name": "Dwellers #440",
     "base": "human tan",
     "background": "slate",
     "hair": "spiky orange",
@@ -5296,7 +5296,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 441,
-    "name": "OnChainPixel #441",
+    "name": "Dwellers #441",
     "base": "human pale",
     "background": "purple",
     "hair": "bald black",
@@ -5308,7 +5308,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 442,
-    "name": "OnChainPixel #442",
+    "name": "Dwellers #442",
     "base": "human light",
     "background": "slate",
     "hair": "spiky black",
@@ -5320,7 +5320,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 443,
-    "name": "OnChainPixel #443",
+    "name": "Dwellers #443",
     "base": "human tan",
     "background": "purple",
     "hair": "buzz black",
@@ -5332,7 +5332,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 444,
-    "name": "OnChainPixel #444",
+    "name": "Dwellers #444",
     "base": "gold",
     "background": "slate",
     "hair": "buzz blonde",
@@ -5344,7 +5344,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 445,
-    "name": "OnChainPixel #445",
+    "name": "Dwellers #445",
     "base": "human tan",
     "background": "forest",
     "hair": "beanie red",
@@ -5356,7 +5356,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 446,
-    "name": "OnChainPixel #446",
+    "name": "Dwellers #446",
     "base": "human tan",
     "background": "slate",
     "hair": "flat pink",
@@ -5368,7 +5368,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 447,
-    "name": "OnChainPixel #447",
+    "name": "Dwellers #447",
     "base": "human light",
     "background": "gold",
     "hair": "mohawk brown",
@@ -5380,7 +5380,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 448,
-    "name": "OnChainPixel #448",
+    "name": "Dwellers #448",
     "base": "zombie",
     "background": "crimson",
     "hair": "long black",
@@ -5392,7 +5392,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 449,
-    "name": "OnChainPixel #449",
+    "name": "Dwellers #449",
     "base": "human dark",
     "background": "purple",
     "hair": "tall black",
@@ -5404,7 +5404,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 450,
-    "name": "OnChainPixel #450",
+    "name": "Dwellers #450",
     "base": "human dark",
     "background": "midnight",
     "hair": "beanie red",
@@ -5416,7 +5416,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 451,
-    "name": "OnChainPixel #451",
+    "name": "Dwellers #451",
     "base": "human pale",
     "background": "midnight",
     "hair": "side_part brown",
@@ -5428,7 +5428,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 452,
-    "name": "OnChainPixel #452",
+    "name": "Dwellers #452",
     "base": "human dark",
     "background": "midnight",
     "hair": "long black",
@@ -5440,7 +5440,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 453,
-    "name": "OnChainPixel #453",
+    "name": "Dwellers #453",
     "base": "human pale",
     "background": "gold",
     "hair": "short black",
@@ -5452,7 +5452,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 454,
-    "name": "OnChainPixel #454",
+    "name": "Dwellers #454",
     "base": "human pale",
     "background": "slate",
     "hair": "flat blonde",
@@ -5464,7 +5464,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 455,
-    "name": "OnChainPixel #455",
+    "name": "Dwellers #455",
     "base": "human light",
     "background": "gold",
     "hair": "short brown",
@@ -5476,7 +5476,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 456,
-    "name": "OnChainPixel #456",
+    "name": "Dwellers #456",
     "base": "human dark",
     "background": "ice",
     "hair": "tall black",
@@ -5488,7 +5488,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 457,
-    "name": "OnChainPixel #457",
+    "name": "Dwellers #457",
     "base": "alien blue",
     "background": "navy",
     "hair": "tall blue",
@@ -5500,7 +5500,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 458,
-    "name": "OnChainPixel #458",
+    "name": "Dwellers #458",
     "base": "human light",
     "background": "navy",
     "hair": "bald black",
@@ -5512,7 +5512,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 459,
-    "name": "OnChainPixel #459",
+    "name": "Dwellers #459",
     "base": "human light",
     "background": "ice",
     "hair": "bald brown",
@@ -5524,7 +5524,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 460,
-    "name": "OnChainPixel #460",
+    "name": "Dwellers #460",
     "base": "human light",
     "background": "ice",
     "hair": "long black",
@@ -5536,7 +5536,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 461,
-    "name": "OnChainPixel #461",
+    "name": "Dwellers #461",
     "base": "alien blue",
     "background": "purple",
     "hair": "short silver",
@@ -5548,7 +5548,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 462,
-    "name": "OnChainPixel #462",
+    "name": "Dwellers #462",
     "base": "human light",
     "background": "forest",
     "hair": "long blonde",
@@ -5560,7 +5560,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 463,
-    "name": "OnChainPixel #463",
+    "name": "Dwellers #463",
     "base": "alien green",
     "background": "gold",
     "hair": "afro pink",
@@ -5572,7 +5572,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 464,
-    "name": "OnChainPixel #464",
+    "name": "Dwellers #464",
     "base": "human light",
     "background": "navy",
     "hair": "tall black",
@@ -5584,7 +5584,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 465,
-    "name": "OnChainPixel #465",
+    "name": "Dwellers #465",
     "base": "human light",
     "background": "navy",
     "hair": "short black",
@@ -5596,7 +5596,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 466,
-    "name": "OnChainPixel #466",
+    "name": "Dwellers #466",
     "base": "alien green",
     "background": "purple",
     "hair": "short blue",
@@ -5608,7 +5608,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 467,
-    "name": "OnChainPixel #467",
+    "name": "Dwellers #467",
     "base": "human dark",
     "background": "gold",
     "hair": "bald blonde",
@@ -5620,7 +5620,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 468,
-    "name": "OnChainPixel #468",
+    "name": "Dwellers #468",
     "base": "human tan",
     "background": "navy",
     "hair": "short blue",
@@ -5632,7 +5632,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 469,
-    "name": "OnChainPixel #469",
+    "name": "Dwellers #469",
     "base": "human light",
     "background": "forest",
     "hair": "afro black",
@@ -5644,7 +5644,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 470,
-    "name": "OnChainPixel #470",
+    "name": "Dwellers #470",
     "base": "human dark",
     "background": "slate",
     "hair": "mohawk green",
@@ -5656,7 +5656,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 471,
-    "name": "OnChainPixel #471",
+    "name": "Dwellers #471",
     "base": "human light",
     "background": "navy",
     "hair": "short purple",
@@ -5668,7 +5668,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 472,
-    "name": "OnChainPixel #472",
+    "name": "Dwellers #472",
     "base": "human tan",
     "background": "crimson",
     "hair": "short blonde",
@@ -5680,7 +5680,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 473,
-    "name": "OnChainPixel #473",
+    "name": "Dwellers #473",
     "base": "human dark",
     "background": "slate",
     "hair": "short brown",
@@ -5692,7 +5692,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 474,
-    "name": "OnChainPixel #474",
+    "name": "Dwellers #474",
     "base": "human light",
     "background": "midnight",
     "hair": "mohawk brown",
@@ -5704,7 +5704,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 475,
-    "name": "OnChainPixel #475",
+    "name": "Dwellers #475",
     "base": "human pale",
     "background": "ice",
     "hair": "spiky blonde",
@@ -5716,7 +5716,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 476,
-    "name": "OnChainPixel #476",
+    "name": "Dwellers #476",
     "base": "human dark",
     "background": "navy",
     "hair": "mohawk pink",
@@ -5728,7 +5728,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 477,
-    "name": "OnChainPixel #477",
+    "name": "Dwellers #477",
     "base": "human light",
     "background": "crimson",
     "hair": "beanie red",
@@ -5740,7 +5740,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 478,
-    "name": "OnChainPixel #478",
+    "name": "Dwellers #478",
     "base": "human dark",
     "background": "navy",
     "hair": "mohawk black",
@@ -5752,7 +5752,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 479,
-    "name": "OnChainPixel #479",
+    "name": "Dwellers #479",
     "base": "human light",
     "background": "forest",
     "hair": "bald brown",
@@ -5764,7 +5764,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 480,
-    "name": "OnChainPixel #480",
+    "name": "Dwellers #480",
     "base": "human light",
     "background": "crimson",
     "hair": "tall green",
@@ -5776,7 +5776,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 481,
-    "name": "OnChainPixel #481",
+    "name": "Dwellers #481",
     "base": "human tan",
     "background": "forest",
     "hair": "mohawk black",
@@ -5788,7 +5788,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 482,
-    "name": "OnChainPixel #482",
+    "name": "Dwellers #482",
     "base": "zombie",
     "background": "slate",
     "hair": "short red",
@@ -5800,7 +5800,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 483,
-    "name": "OnChainPixel #483",
+    "name": "Dwellers #483",
     "base": "gold",
     "background": "purple",
     "hair": "flat orange",
@@ -5812,7 +5812,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 484,
-    "name": "OnChainPixel #484",
+    "name": "Dwellers #484",
     "base": "human light",
     "background": "forest",
     "hair": "tall black",
@@ -5824,7 +5824,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 485,
-    "name": "OnChainPixel #485",
+    "name": "Dwellers #485",
     "base": "human dark",
     "background": "slate",
     "hair": "long brown",
@@ -5836,7 +5836,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 486,
-    "name": "OnChainPixel #486",
+    "name": "Dwellers #486",
     "base": "human tan",
     "background": "navy",
     "hair": "tall pink",
@@ -5848,7 +5848,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 487,
-    "name": "OnChainPixel #487",
+    "name": "Dwellers #487",
     "base": "human tan",
     "background": "navy",
     "hair": "beanie white",
@@ -5860,7 +5860,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 488,
-    "name": "OnChainPixel #488",
+    "name": "Dwellers #488",
     "base": "human light",
     "background": "crimson",
     "hair": "beanie green",
@@ -5872,7 +5872,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 489,
-    "name": "OnChainPixel #489",
+    "name": "Dwellers #489",
     "base": "human dark",
     "background": "crimson",
     "hair": "short brown",
@@ -5884,7 +5884,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 490,
-    "name": "OnChainPixel #490",
+    "name": "Dwellers #490",
     "base": "human dark",
     "background": "crimson",
     "hair": "flat brown",
@@ -5896,7 +5896,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 491,
-    "name": "OnChainPixel #491",
+    "name": "Dwellers #491",
     "base": "human dark",
     "background": "gold",
     "hair": "bald blonde",
@@ -5908,7 +5908,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 492,
-    "name": "OnChainPixel #492",
+    "name": "Dwellers #492",
     "base": "human pale",
     "background": "ice",
     "hair": "long black",
@@ -5920,7 +5920,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 493,
-    "name": "OnChainPixel #493",
+    "name": "Dwellers #493",
     "base": "robot",
     "background": "purple",
     "hair": "mohawk silver",
@@ -5932,7 +5932,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 494,
-    "name": "OnChainPixel #494",
+    "name": "Dwellers #494",
     "base": "human dark",
     "background": "ice",
     "hair": "side_part red",
@@ -5944,7 +5944,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 495,
-    "name": "OnChainPixel #495",
+    "name": "Dwellers #495",
     "base": "human dark",
     "background": "midnight",
     "hair": "bald black",
@@ -5956,7 +5956,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 496,
-    "name": "OnChainPixel #496",
+    "name": "Dwellers #496",
     "base": "human light",
     "background": "crimson",
     "hair": "flat green",
@@ -5968,7 +5968,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 497,
-    "name": "OnChainPixel #497",
+    "name": "Dwellers #497",
     "base": "demon",
     "background": "slate",
     "hair": "tall red",
@@ -5980,7 +5980,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 498,
-    "name": "OnChainPixel #498",
+    "name": "Dwellers #498",
     "base": "zombie",
     "background": "forest",
     "hair": "tall pink",
@@ -5992,7 +5992,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 499,
-    "name": "OnChainPixel #499",
+    "name": "Dwellers #499",
     "base": "alien green",
     "background": "midnight",
     "hair": "bald brown",
@@ -6004,7 +6004,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 500,
-    "name": "OnChainPixel #500",
+    "name": "Dwellers #500",
     "base": "demon",
     "background": "crimson",
     "hair": "bald green",
@@ -6016,7 +6016,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 501,
-    "name": "OnChainPixel #501",
+    "name": "Dwellers #501",
     "base": "human light",
     "background": "slate",
     "hair": "flat brown",
@@ -6028,7 +6028,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 502,
-    "name": "OnChainPixel #502",
+    "name": "Dwellers #502",
     "base": "human pale",
     "background": "slate",
     "hair": "short blonde",
@@ -6040,7 +6040,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 503,
-    "name": "OnChainPixel #503",
+    "name": "Dwellers #503",
     "base": "human dark",
     "background": "navy",
     "hair": "side_part red",
@@ -6052,7 +6052,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 504,
-    "name": "OnChainPixel #504",
+    "name": "Dwellers #504",
     "base": "human tan",
     "background": "slate",
     "hair": "tall orange",
@@ -6064,7 +6064,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 505,
-    "name": "OnChainPixel #505",
+    "name": "Dwellers #505",
     "base": "alien blue",
     "background": "slate",
     "hair": "long red",
@@ -6076,7 +6076,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 506,
-    "name": "OnChainPixel #506",
+    "name": "Dwellers #506",
     "base": "human dark",
     "background": "ice",
     "hair": "spiky pink",
@@ -6088,7 +6088,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 507,
-    "name": "OnChainPixel #507",
+    "name": "Dwellers #507",
     "base": "human light",
     "background": "crimson",
     "hair": "tall black",
@@ -6100,7 +6100,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 508,
-    "name": "OnChainPixel #508",
+    "name": "Dwellers #508",
     "base": "human light",
     "background": "midnight",
     "hair": "beanie brown",
@@ -6112,7 +6112,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 509,
-    "name": "OnChainPixel #509",
+    "name": "Dwellers #509",
     "base": "human dark",
     "background": "midnight",
     "hair": "ponytail brown",
@@ -6124,7 +6124,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 510,
-    "name": "OnChainPixel #510",
+    "name": "Dwellers #510",
     "base": "alien blue",
     "background": "forest",
     "hair": "bald white",
@@ -6136,7 +6136,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 511,
-    "name": "OnChainPixel #511",
+    "name": "Dwellers #511",
     "base": "demon",
     "background": "midnight",
     "hair": "short black",
@@ -6148,7 +6148,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 512,
-    "name": "OnChainPixel #512",
+    "name": "Dwellers #512",
     "base": "human light",
     "background": "forest",
     "hair": "long blonde",
@@ -6160,7 +6160,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 513,
-    "name": "OnChainPixel #513",
+    "name": "Dwellers #513",
     "base": "human dark",
     "background": "crimson",
     "hair": "flat brown",
@@ -6172,7 +6172,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 514,
-    "name": "OnChainPixel #514",
+    "name": "Dwellers #514",
     "base": "human light",
     "background": "forest",
     "hair": "beanie orange",
@@ -6184,7 +6184,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 515,
-    "name": "OnChainPixel #515",
+    "name": "Dwellers #515",
     "base": "human tan",
     "background": "crimson",
     "hair": "beanie black",
@@ -6196,7 +6196,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 516,
-    "name": "OnChainPixel #516",
+    "name": "Dwellers #516",
     "base": "human light",
     "background": "midnight",
     "hair": "tall blue",
@@ -6208,7 +6208,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 517,
-    "name": "OnChainPixel #517",
+    "name": "Dwellers #517",
     "base": "human pale",
     "background": "navy",
     "hair": "tall black",
@@ -6220,7 +6220,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 518,
-    "name": "OnChainPixel #518",
+    "name": "Dwellers #518",
     "base": "human dark",
     "background": "slate",
     "hair": "tall blue",
@@ -6232,7 +6232,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 519,
-    "name": "OnChainPixel #519",
+    "name": "Dwellers #519",
     "base": "human light",
     "background": "crimson",
     "hair": "tall brown",
@@ -6244,7 +6244,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 520,
-    "name": "OnChainPixel #520",
+    "name": "Dwellers #520",
     "base": "human dark",
     "background": "crimson",
     "hair": "bald red",
@@ -6256,7 +6256,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 521,
-    "name": "OnChainPixel #521",
+    "name": "Dwellers #521",
     "base": "human light",
     "background": "ice",
     "hair": "side_part black",
@@ -6268,7 +6268,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 522,
-    "name": "OnChainPixel #522",
+    "name": "Dwellers #522",
     "base": "human light",
     "background": "midnight",
     "hair": "bald red",
@@ -6280,7 +6280,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 523,
-    "name": "OnChainPixel #523",
+    "name": "Dwellers #523",
     "base": "human light",
     "background": "slate",
     "hair": "short brown",
@@ -6292,7 +6292,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 524,
-    "name": "OnChainPixel #524",
+    "name": "Dwellers #524",
     "base": "demon",
     "background": "navy",
     "hair": "ponytail red",
@@ -6304,7 +6304,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 525,
-    "name": "OnChainPixel #525",
+    "name": "Dwellers #525",
     "base": "human pale",
     "background": "forest",
     "hair": "flat black",
@@ -6316,7 +6316,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 526,
-    "name": "OnChainPixel #526",
+    "name": "Dwellers #526",
     "base": "human tan",
     "background": "crimson",
     "hair": "side_part black",
@@ -6328,7 +6328,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 527,
-    "name": "OnChainPixel #527",
+    "name": "Dwellers #527",
     "base": "alien green",
     "background": "forest",
     "hair": "ponytail blue",
@@ -6340,7 +6340,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 528,
-    "name": "OnChainPixel #528",
+    "name": "Dwellers #528",
     "base": "human tan",
     "background": "gold",
     "hair": "long brown",
@@ -6352,7 +6352,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 529,
-    "name": "OnChainPixel #529",
+    "name": "Dwellers #529",
     "base": "human light",
     "background": "slate",
     "hair": "short white",
@@ -6364,7 +6364,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 530,
-    "name": "OnChainPixel #530",
+    "name": "Dwellers #530",
     "base": "human tan",
     "background": "navy",
     "hair": "afro white",
@@ -6376,7 +6376,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 531,
-    "name": "OnChainPixel #531",
+    "name": "Dwellers #531",
     "base": "alien green",
     "background": "crimson",
     "hair": "tall pink",
@@ -6388,7 +6388,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 532,
-    "name": "OnChainPixel #532",
+    "name": "Dwellers #532",
     "base": "alien blue",
     "background": "midnight",
     "hair": "short white",
@@ -6400,7 +6400,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 533,
-    "name": "OnChainPixel #533",
+    "name": "Dwellers #533",
     "base": "human light",
     "background": "navy",
     "hair": "short white",
@@ -6412,7 +6412,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 534,
-    "name": "OnChainPixel #534",
+    "name": "Dwellers #534",
     "base": "alien blue",
     "background": "slate",
     "hair": "afro teal",
@@ -6424,7 +6424,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 535,
-    "name": "OnChainPixel #535",
+    "name": "Dwellers #535",
     "base": "human tan",
     "background": "midnight",
     "hair": "beanie pink",
@@ -6436,7 +6436,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 536,
-    "name": "OnChainPixel #536",
+    "name": "Dwellers #536",
     "base": "alien blue",
     "background": "ice",
     "hair": "short purple",
@@ -6448,7 +6448,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 537,
-    "name": "OnChainPixel #537",
+    "name": "Dwellers #537",
     "base": "demon",
     "background": "midnight",
     "hair": "beanie blonde",
@@ -6460,7 +6460,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 538,
-    "name": "OnChainPixel #538",
+    "name": "Dwellers #538",
     "base": "human light",
     "background": "gold",
     "hair": "side_part blonde",
@@ -6472,7 +6472,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 539,
-    "name": "OnChainPixel #539",
+    "name": "Dwellers #539",
     "base": "demon",
     "background": "forest",
     "hair": "mohawk red",
@@ -6484,7 +6484,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 540,
-    "name": "OnChainPixel #540",
+    "name": "Dwellers #540",
     "base": "human tan",
     "background": "navy",
     "hair": "tall purple",
@@ -6496,7 +6496,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 541,
-    "name": "OnChainPixel #541",
+    "name": "Dwellers #541",
     "base": "human dark",
     "background": "navy",
     "hair": "flat green",
@@ -6508,7 +6508,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 542,
-    "name": "OnChainPixel #542",
+    "name": "Dwellers #542",
     "base": "human light",
     "background": "gold",
     "hair": "tall green",
@@ -6520,7 +6520,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 543,
-    "name": "OnChainPixel #543",
+    "name": "Dwellers #543",
     "base": "human pale",
     "background": "purple",
     "hair": "bald blonde",
@@ -6532,7 +6532,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 544,
-    "name": "OnChainPixel #544",
+    "name": "Dwellers #544",
     "base": "human dark",
     "background": "midnight",
     "hair": "short brown",
@@ -6544,7 +6544,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 545,
-    "name": "OnChainPixel #545",
+    "name": "Dwellers #545",
     "base": "human dark",
     "background": "midnight",
     "hair": "flat black",
@@ -6556,7 +6556,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 546,
-    "name": "OnChainPixel #546",
+    "name": "Dwellers #546",
     "base": "human light",
     "background": "crimson",
     "hair": "side_part white",
@@ -6568,7 +6568,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 547,
-    "name": "OnChainPixel #547",
+    "name": "Dwellers #547",
     "base": "human pale",
     "background": "forest",
     "hair": "beanie black",
@@ -6580,7 +6580,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 548,
-    "name": "OnChainPixel #548",
+    "name": "Dwellers #548",
     "base": "human light",
     "background": "ice",
     "hair": "mohawk blonde",
@@ -6592,7 +6592,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 549,
-    "name": "OnChainPixel #549",
+    "name": "Dwellers #549",
     "base": "human dark",
     "background": "gold",
     "hair": "short black",
@@ -6604,7 +6604,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 550,
-    "name": "OnChainPixel #550",
+    "name": "Dwellers #550",
     "base": "human light",
     "background": "forest",
     "hair": "beanie red",
@@ -6616,7 +6616,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 551,
-    "name": "OnChainPixel #551",
+    "name": "Dwellers #551",
     "base": "human light",
     "background": "ice",
     "hair": "bald teal",
@@ -6628,7 +6628,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 552,
-    "name": "OnChainPixel #552",
+    "name": "Dwellers #552",
     "base": "human light",
     "background": "forest",
     "hair": "short red",
@@ -6640,7 +6640,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 553,
-    "name": "OnChainPixel #553",
+    "name": "Dwellers #553",
     "base": "human tan",
     "background": "gold",
     "hair": "afro brown",
@@ -6652,7 +6652,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 554,
-    "name": "OnChainPixel #554",
+    "name": "Dwellers #554",
     "base": "zombie",
     "background": "crimson",
     "hair": "flat purple",
@@ -6664,7 +6664,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 555,
-    "name": "OnChainPixel #555",
+    "name": "Dwellers #555",
     "base": "human light",
     "background": "gold",
     "hair": "beanie pink",
@@ -6676,7 +6676,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 556,
-    "name": "OnChainPixel #556",
+    "name": "Dwellers #556",
     "base": "demon",
     "background": "slate",
     "hair": "beanie blue",
@@ -6688,7 +6688,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 557,
-    "name": "OnChainPixel #557",
+    "name": "Dwellers #557",
     "base": "human light",
     "background": "purple",
     "hair": "tall black",
@@ -6700,7 +6700,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 558,
-    "name": "OnChainPixel #558",
+    "name": "Dwellers #558",
     "base": "human pale",
     "background": "crimson",
     "hair": "flat red",
@@ -6712,7 +6712,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 559,
-    "name": "OnChainPixel #559",
+    "name": "Dwellers #559",
     "base": "human dark",
     "background": "midnight",
     "hair": "tall brown",
@@ -6724,7 +6724,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 560,
-    "name": "OnChainPixel #560",
+    "name": "Dwellers #560",
     "base": "human dark",
     "background": "forest",
     "hair": "mohawk red",
@@ -6736,7 +6736,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 561,
-    "name": "OnChainPixel #561",
+    "name": "Dwellers #561",
     "base": "human pale",
     "background": "gold",
     "hair": "short brown",
@@ -6748,7 +6748,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 562,
-    "name": "OnChainPixel #562",
+    "name": "Dwellers #562",
     "base": "human tan",
     "background": "midnight",
     "hair": "short red",
@@ -6760,7 +6760,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 563,
-    "name": "OnChainPixel #563",
+    "name": "Dwellers #563",
     "base": "human light",
     "background": "gold",
     "hair": "short blonde",
@@ -6772,7 +6772,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 564,
-    "name": "OnChainPixel #564",
+    "name": "Dwellers #564",
     "base": "alien blue",
     "background": "gold",
     "hair": "flat red",
@@ -6784,7 +6784,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 565,
-    "name": "OnChainPixel #565",
+    "name": "Dwellers #565",
     "base": "alien green",
     "background": "purple",
     "hair": "bald orange",
@@ -6796,7 +6796,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 566,
-    "name": "OnChainPixel #566",
+    "name": "Dwellers #566",
     "base": "robot",
     "background": "slate",
     "hair": "flat brown",
@@ -6808,7 +6808,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 567,
-    "name": "OnChainPixel #567",
+    "name": "Dwellers #567",
     "base": "human light",
     "background": "purple",
     "hair": "bald brown",
@@ -6820,7 +6820,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 568,
-    "name": "OnChainPixel #568",
+    "name": "Dwellers #568",
     "base": "human tan",
     "background": "midnight",
     "hair": "beanie black",
@@ -6832,7 +6832,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 569,
-    "name": "OnChainPixel #569",
+    "name": "Dwellers #569",
     "base": "human light",
     "background": "purple",
     "hair": "long black",
@@ -6844,7 +6844,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 570,
-    "name": "OnChainPixel #570",
+    "name": "Dwellers #570",
     "base": "human dark",
     "background": "purple",
     "hair": "long blonde",
@@ -6856,7 +6856,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 571,
-    "name": "OnChainPixel #571",
+    "name": "Dwellers #571",
     "base": "human pale",
     "background": "gold",
     "hair": "tall red",
@@ -6868,7 +6868,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 572,
-    "name": "OnChainPixel #572",
+    "name": "Dwellers #572",
     "base": "human dark",
     "background": "navy",
     "hair": "short black",
@@ -6880,7 +6880,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 573,
-    "name": "OnChainPixel #573",
+    "name": "Dwellers #573",
     "base": "human light",
     "background": "midnight",
     "hair": "afro black",
@@ -6892,7 +6892,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 574,
-    "name": "OnChainPixel #574",
+    "name": "Dwellers #574",
     "base": "human tan",
     "background": "purple",
     "hair": "short red",
@@ -6904,7 +6904,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 575,
-    "name": "OnChainPixel #575",
+    "name": "Dwellers #575",
     "base": "human dark",
     "background": "ice",
     "hair": "flat black",
@@ -6916,7 +6916,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 576,
-    "name": "OnChainPixel #576",
+    "name": "Dwellers #576",
     "base": "gold",
     "background": "crimson",
     "hair": "long brown",
@@ -6928,7 +6928,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 577,
-    "name": "OnChainPixel #577",
+    "name": "Dwellers #577",
     "base": "alien green",
     "background": "gold",
     "hair": "long black",
@@ -6940,7 +6940,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 578,
-    "name": "OnChainPixel #578",
+    "name": "Dwellers #578",
     "base": "alien green",
     "background": "midnight",
     "hair": "short black",
@@ -6952,7 +6952,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 579,
-    "name": "OnChainPixel #579",
+    "name": "Dwellers #579",
     "base": "human light",
     "background": "navy",
     "hair": "buzz white",
@@ -6964,7 +6964,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 580,
-    "name": "OnChainPixel #580",
+    "name": "Dwellers #580",
     "base": "human light",
     "background": "midnight",
     "hair": "long black",
@@ -6976,7 +6976,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 581,
-    "name": "OnChainPixel #581",
+    "name": "Dwellers #581",
     "base": "human dark",
     "background": "forest",
     "hair": "tall blonde",
@@ -6988,7 +6988,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 582,
-    "name": "OnChainPixel #582",
+    "name": "Dwellers #582",
     "base": "human light",
     "background": "navy",
     "hair": "spiky brown",
@@ -7000,7 +7000,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 583,
-    "name": "OnChainPixel #583",
+    "name": "Dwellers #583",
     "base": "human dark",
     "background": "forest",
     "hair": "short red",
@@ -7012,7 +7012,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 584,
-    "name": "OnChainPixel #584",
+    "name": "Dwellers #584",
     "base": "alien green",
     "background": "midnight",
     "hair": "afro blonde",
@@ -7024,7 +7024,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 585,
-    "name": "OnChainPixel #585",
+    "name": "Dwellers #585",
     "base": "alien blue",
     "background": "gold",
     "hair": "flat brown",
@@ -7036,7 +7036,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 586,
-    "name": "OnChainPixel #586",
+    "name": "Dwellers #586",
     "base": "human pale",
     "background": "forest",
     "hair": "short blonde",
@@ -7048,7 +7048,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 587,
-    "name": "OnChainPixel #587",
+    "name": "Dwellers #587",
     "base": "human light",
     "background": "purple",
     "hair": "short orange",
@@ -7060,7 +7060,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 588,
-    "name": "OnChainPixel #588",
+    "name": "Dwellers #588",
     "base": "zombie",
     "background": "ice",
     "hair": "short black",
@@ -7072,7 +7072,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 589,
-    "name": "OnChainPixel #589",
+    "name": "Dwellers #589",
     "base": "human light",
     "background": "purple",
     "hair": "long red",
@@ -7084,7 +7084,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 590,
-    "name": "OnChainPixel #590",
+    "name": "Dwellers #590",
     "base": "human light",
     "background": "slate",
     "hair": "tall blue",
@@ -7096,7 +7096,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 591,
-    "name": "OnChainPixel #591",
+    "name": "Dwellers #591",
     "base": "human tan",
     "background": "crimson",
     "hair": "side_part white",
@@ -7108,7 +7108,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 592,
-    "name": "OnChainPixel #592",
+    "name": "Dwellers #592",
     "base": "human light",
     "background": "purple",
     "hair": "spiky black",
@@ -7120,7 +7120,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 593,
-    "name": "OnChainPixel #593",
+    "name": "Dwellers #593",
     "base": "human light",
     "background": "ice",
     "hair": "tall teal",
@@ -7132,7 +7132,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 594,
-    "name": "OnChainPixel #594",
+    "name": "Dwellers #594",
     "base": "human tan",
     "background": "ice",
     "hair": "short green",
@@ -7144,7 +7144,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 595,
-    "name": "OnChainPixel #595",
+    "name": "Dwellers #595",
     "base": "human dark",
     "background": "gold",
     "hair": "beanie green",
@@ -7156,7 +7156,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 596,
-    "name": "OnChainPixel #596",
+    "name": "Dwellers #596",
     "base": "human dark",
     "background": "forest",
     "hair": "beanie blonde",
@@ -7168,7 +7168,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 597,
-    "name": "OnChainPixel #597",
+    "name": "Dwellers #597",
     "base": "human dark",
     "background": "forest",
     "hair": "beanie black",
@@ -7180,7 +7180,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 598,
-    "name": "OnChainPixel #598",
+    "name": "Dwellers #598",
     "base": "human dark",
     "background": "forest",
     "hair": "mohawk white",
@@ -7192,7 +7192,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 599,
-    "name": "OnChainPixel #599",
+    "name": "Dwellers #599",
     "base": "human light",
     "background": "purple",
     "hair": "flat blonde",
@@ -7204,7 +7204,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 600,
-    "name": "OnChainPixel #600",
+    "name": "Dwellers #600",
     "base": "human pale",
     "background": "crimson",
     "hair": "flat black",
@@ -7216,7 +7216,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 601,
-    "name": "OnChainPixel #601",
+    "name": "Dwellers #601",
     "base": "human tan",
     "background": "midnight",
     "hair": "long white",
@@ -7228,7 +7228,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 602,
-    "name": "OnChainPixel #602",
+    "name": "Dwellers #602",
     "base": "zombie",
     "background": "crimson",
     "hair": "mohawk black",
@@ -7240,7 +7240,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 603,
-    "name": "OnChainPixel #603",
+    "name": "Dwellers #603",
     "base": "human tan",
     "background": "gold",
     "hair": "mohawk white",
@@ -7252,7 +7252,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 604,
-    "name": "OnChainPixel #604",
+    "name": "Dwellers #604",
     "base": "human tan",
     "background": "ice",
     "hair": "short blonde",
@@ -7264,7 +7264,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 605,
-    "name": "OnChainPixel #605",
+    "name": "Dwellers #605",
     "base": "human light",
     "background": "navy",
     "hair": "beanie teal",
@@ -7276,7 +7276,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 606,
-    "name": "OnChainPixel #606",
+    "name": "Dwellers #606",
     "base": "human dark",
     "background": "forest",
     "hair": "tall red",
@@ -7288,7 +7288,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 607,
-    "name": "OnChainPixel #607",
+    "name": "Dwellers #607",
     "base": "human pale",
     "background": "forest",
     "hair": "ponytail teal",
@@ -7300,7 +7300,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 608,
-    "name": "OnChainPixel #608",
+    "name": "Dwellers #608",
     "base": "human tan",
     "background": "gold",
     "hair": "tall green",
@@ -7312,7 +7312,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 609,
-    "name": "OnChainPixel #609",
+    "name": "Dwellers #609",
     "base": "human light",
     "background": "crimson",
     "hair": "flat pink",
@@ -7324,7 +7324,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 610,
-    "name": "OnChainPixel #610",
+    "name": "Dwellers #610",
     "base": "human light",
     "background": "gold",
     "hair": "long blue",
@@ -7336,7 +7336,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 611,
-    "name": "OnChainPixel #611",
+    "name": "Dwellers #611",
     "base": "human tan",
     "background": "midnight",
     "hair": "flat teal",
@@ -7348,7 +7348,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 612,
-    "name": "OnChainPixel #612",
+    "name": "Dwellers #612",
     "base": "demon",
     "background": "midnight",
     "hair": "spiky black",
@@ -7360,7 +7360,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 613,
-    "name": "OnChainPixel #613",
+    "name": "Dwellers #613",
     "base": "human light",
     "background": "midnight",
     "hair": "side_part black",
@@ -7372,7 +7372,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 614,
-    "name": "OnChainPixel #614",
+    "name": "Dwellers #614",
     "base": "human tan",
     "background": "crimson",
     "hair": "flat red",
@@ -7384,7 +7384,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 615,
-    "name": "OnChainPixel #615",
+    "name": "Dwellers #615",
     "base": "human pale",
     "background": "crimson",
     "hair": "short white",
@@ -7396,7 +7396,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 616,
-    "name": "OnChainPixel #616",
+    "name": "Dwellers #616",
     "base": "alien blue",
     "background": "midnight",
     "hair": "beanie brown",
@@ -7408,7 +7408,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 617,
-    "name": "OnChainPixel #617",
+    "name": "Dwellers #617",
     "base": "human light",
     "background": "midnight",
     "hair": "spiky black",
@@ -7420,7 +7420,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 618,
-    "name": "OnChainPixel #618",
+    "name": "Dwellers #618",
     "base": "human light",
     "background": "navy",
     "hair": "mohawk brown",
@@ -7432,7 +7432,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 619,
-    "name": "OnChainPixel #619",
+    "name": "Dwellers #619",
     "base": "zombie",
     "background": "navy",
     "hair": "bald blue",
@@ -7444,7 +7444,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 620,
-    "name": "OnChainPixel #620",
+    "name": "Dwellers #620",
     "base": "gold",
     "background": "purple",
     "hair": "spiky green",
@@ -7456,7 +7456,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 621,
-    "name": "OnChainPixel #621",
+    "name": "Dwellers #621",
     "base": "human tan",
     "background": "navy",
     "hair": "tall brown",
@@ -7468,7 +7468,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 622,
-    "name": "OnChainPixel #622",
+    "name": "Dwellers #622",
     "base": "human light",
     "background": "gold",
     "hair": "bald black",
@@ -7480,7 +7480,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 623,
-    "name": "OnChainPixel #623",
+    "name": "Dwellers #623",
     "base": "alien blue",
     "background": "purple",
     "hair": "short blue",
@@ -7492,7 +7492,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 624,
-    "name": "OnChainPixel #624",
+    "name": "Dwellers #624",
     "base": "human light",
     "background": "navy",
     "hair": "afro white",
@@ -7504,7 +7504,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 625,
-    "name": "OnChainPixel #625",
+    "name": "Dwellers #625",
     "base": "human dark",
     "background": "purple",
     "hair": "long black",
@@ -7516,7 +7516,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 626,
-    "name": "OnChainPixel #626",
+    "name": "Dwellers #626",
     "base": "human light",
     "background": "midnight",
     "hair": "beanie brown",
@@ -7528,7 +7528,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 627,
-    "name": "OnChainPixel #627",
+    "name": "Dwellers #627",
     "base": "human pale",
     "background": "midnight",
     "hair": "beanie brown",
@@ -7540,7 +7540,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 628,
-    "name": "OnChainPixel #628",
+    "name": "Dwellers #628",
     "base": "human tan",
     "background": "slate",
     "hair": "short red",
@@ -7552,7 +7552,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 629,
-    "name": "OnChainPixel #629",
+    "name": "Dwellers #629",
     "base": "human tan",
     "background": "navy",
     "hair": "ponytail black",
@@ -7564,7 +7564,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 630,
-    "name": "OnChainPixel #630",
+    "name": "Dwellers #630",
     "base": "human dark",
     "background": "crimson",
     "hair": "flat blonde",
@@ -7576,7 +7576,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 631,
-    "name": "OnChainPixel #631",
+    "name": "Dwellers #631",
     "base": "robot",
     "background": "navy",
     "hair": "afro blue",
@@ -7588,7 +7588,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 632,
-    "name": "OnChainPixel #632",
+    "name": "Dwellers #632",
     "base": "human tan",
     "background": "slate",
     "hair": "flat teal",
@@ -7600,7 +7600,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 633,
-    "name": "OnChainPixel #633",
+    "name": "Dwellers #633",
     "base": "human light",
     "background": "purple",
     "hair": "short teal",
@@ -7612,7 +7612,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 634,
-    "name": "OnChainPixel #634",
+    "name": "Dwellers #634",
     "base": "alien green",
     "background": "crimson",
     "hair": "mohawk blonde",
@@ -7624,7 +7624,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 635,
-    "name": "OnChainPixel #635",
+    "name": "Dwellers #635",
     "base": "human tan",
     "background": "midnight",
     "hair": "spiky black",
@@ -7636,7 +7636,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 636,
-    "name": "OnChainPixel #636",
+    "name": "Dwellers #636",
     "base": "alien blue",
     "background": "purple",
     "hair": "flat brown",
@@ -7648,7 +7648,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 637,
-    "name": "OnChainPixel #637",
+    "name": "Dwellers #637",
     "base": "alien blue",
     "background": "forest",
     "hair": "short blonde",
@@ -7660,7 +7660,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 638,
-    "name": "OnChainPixel #638",
+    "name": "Dwellers #638",
     "base": "human light",
     "background": "forest",
     "hair": "short white",
@@ -7672,7 +7672,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 639,
-    "name": "OnChainPixel #639",
+    "name": "Dwellers #639",
     "base": "human tan",
     "background": "forest",
     "hair": "side_part brown",
@@ -7684,7 +7684,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 640,
-    "name": "OnChainPixel #640",
+    "name": "Dwellers #640",
     "base": "human light",
     "background": "crimson",
     "hair": "flat brown",
@@ -7696,7 +7696,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 641,
-    "name": "OnChainPixel #641",
+    "name": "Dwellers #641",
     "base": "zombie",
     "background": "midnight",
     "hair": "short white",
@@ -7708,7 +7708,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 642,
-    "name": "OnChainPixel #642",
+    "name": "Dwellers #642",
     "base": "human dark",
     "background": "ice",
     "hair": "short blue",
@@ -7720,7 +7720,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 643,
-    "name": "OnChainPixel #643",
+    "name": "Dwellers #643",
     "base": "demon",
     "background": "crimson",
     "hair": "bald blue",
@@ -7732,7 +7732,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 644,
-    "name": "OnChainPixel #644",
+    "name": "Dwellers #644",
     "base": "alien green",
     "background": "slate",
     "hair": "beanie red",
@@ -7744,7 +7744,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 645,
-    "name": "OnChainPixel #645",
+    "name": "Dwellers #645",
     "base": "human light",
     "background": "forest",
     "hair": "flat brown",
@@ -7756,7 +7756,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 646,
-    "name": "OnChainPixel #646",
+    "name": "Dwellers #646",
     "base": "alien green",
     "background": "forest",
     "hair": "beanie blue",
@@ -7768,7 +7768,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 647,
-    "name": "OnChainPixel #647",
+    "name": "Dwellers #647",
     "base": "human tan",
     "background": "slate",
     "hair": "mohawk blonde",
@@ -7780,7 +7780,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 648,
-    "name": "OnChainPixel #648",
+    "name": "Dwellers #648",
     "base": "alien blue",
     "background": "navy",
     "hair": "mohawk blonde",
@@ -7792,7 +7792,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 649,
-    "name": "OnChainPixel #649",
+    "name": "Dwellers #649",
     "base": "human dark",
     "background": "ice",
     "hair": "bald pink",
@@ -7804,7 +7804,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 650,
-    "name": "OnChainPixel #650",
+    "name": "Dwellers #650",
     "base": "human pale",
     "background": "navy",
     "hair": "spiky purple",
@@ -7816,7 +7816,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 651,
-    "name": "OnChainPixel #651",
+    "name": "Dwellers #651",
     "base": "gold",
     "background": "slate",
     "hair": "flat white",
@@ -7828,7 +7828,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 652,
-    "name": "OnChainPixel #652",
+    "name": "Dwellers #652",
     "base": "alien green",
     "background": "ice",
     "hair": "short blonde",
@@ -7840,7 +7840,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 653,
-    "name": "OnChainPixel #653",
+    "name": "Dwellers #653",
     "base": "human light",
     "background": "midnight",
     "hair": "flat purple",
@@ -7852,7 +7852,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 654,
-    "name": "OnChainPixel #654",
+    "name": "Dwellers #654",
     "base": "human light",
     "background": "forest",
     "hair": "short blonde",
@@ -7864,7 +7864,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 655,
-    "name": "OnChainPixel #655",
+    "name": "Dwellers #655",
     "base": "alien blue",
     "background": "midnight",
     "hair": "short black",
@@ -7876,7 +7876,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 656,
-    "name": "OnChainPixel #656",
+    "name": "Dwellers #656",
     "base": "human tan",
     "background": "forest",
     "hair": "buzz blue",
@@ -7888,7 +7888,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 657,
-    "name": "OnChainPixel #657",
+    "name": "Dwellers #657",
     "base": "alien green",
     "background": "crimson",
     "hair": "short green",
@@ -7900,7 +7900,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 658,
-    "name": "OnChainPixel #658",
+    "name": "Dwellers #658",
     "base": "human tan",
     "background": "forest",
     "hair": "short black",
@@ -7912,7 +7912,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 659,
-    "name": "OnChainPixel #659",
+    "name": "Dwellers #659",
     "base": "zombie",
     "background": "slate",
     "hair": "spiky black",
@@ -7924,7 +7924,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 660,
-    "name": "OnChainPixel #660",
+    "name": "Dwellers #660",
     "base": "human light",
     "background": "gold",
     "hair": "flat brown",
@@ -7936,7 +7936,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 661,
-    "name": "OnChainPixel #661",
+    "name": "Dwellers #661",
     "base": "human light",
     "background": "crimson",
     "hair": "bald brown",
@@ -7948,7 +7948,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 662,
-    "name": "OnChainPixel #662",
+    "name": "Dwellers #662",
     "base": "human tan",
     "background": "navy",
     "hair": "flat black",
@@ -7960,7 +7960,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 663,
-    "name": "OnChainPixel #663",
+    "name": "Dwellers #663",
     "base": "human dark",
     "background": "navy",
     "hair": "flat black",
@@ -7972,7 +7972,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 664,
-    "name": "OnChainPixel #664",
+    "name": "Dwellers #664",
     "base": "zombie",
     "background": "navy",
     "hair": "flat blonde",
@@ -7984,7 +7984,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 665,
-    "name": "OnChainPixel #665",
+    "name": "Dwellers #665",
     "base": "human light",
     "background": "slate",
     "hair": "flat teal",
@@ -7996,7 +7996,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 666,
-    "name": "OnChainPixel #666",
+    "name": "Dwellers #666",
     "base": "robot",
     "background": "navy",
     "hair": "bald red",
@@ -8008,7 +8008,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 667,
-    "name": "OnChainPixel #667",
+    "name": "Dwellers #667",
     "base": "human tan",
     "background": "slate",
     "hair": "tall blue",
@@ -8020,7 +8020,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 668,
-    "name": "OnChainPixel #668",
+    "name": "Dwellers #668",
     "base": "robot",
     "background": "gold",
     "hair": "bald brown",
@@ -8032,7 +8032,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 669,
-    "name": "OnChainPixel #669",
+    "name": "Dwellers #669",
     "base": "alien blue",
     "background": "midnight",
     "hair": "tall black",
@@ -8044,7 +8044,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 670,
-    "name": "OnChainPixel #670",
+    "name": "Dwellers #670",
     "base": "robot",
     "background": "forest",
     "hair": "beanie pink",
@@ -8056,7 +8056,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 671,
-    "name": "OnChainPixel #671",
+    "name": "Dwellers #671",
     "base": "human pale",
     "background": "purple",
     "hair": "spiky brown",
@@ -8068,7 +8068,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 672,
-    "name": "OnChainPixel #672",
+    "name": "Dwellers #672",
     "base": "human dark",
     "background": "navy",
     "hair": "flat orange",
@@ -8080,7 +8080,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 673,
-    "name": "OnChainPixel #673",
+    "name": "Dwellers #673",
     "base": "human tan",
     "background": "ice",
     "hair": "bald brown",
@@ -8092,7 +8092,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 674,
-    "name": "OnChainPixel #674",
+    "name": "Dwellers #674",
     "base": "human pale",
     "background": "purple",
     "hair": "beanie red",
@@ -8104,7 +8104,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 675,
-    "name": "OnChainPixel #675",
+    "name": "Dwellers #675",
     "base": "alien blue",
     "background": "navy",
     "hair": "flat red",
@@ -8116,7 +8116,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 676,
-    "name": "OnChainPixel #676",
+    "name": "Dwellers #676",
     "base": "zombie",
     "background": "ice",
     "hair": "short blue",
@@ -8128,7 +8128,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 677,
-    "name": "OnChainPixel #677",
+    "name": "Dwellers #677",
     "base": "human dark",
     "background": "navy",
     "hair": "mohawk black",
@@ -8140,7 +8140,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 678,
-    "name": "OnChainPixel #678",
+    "name": "Dwellers #678",
     "base": "gold",
     "background": "crimson",
     "hair": "tall pink",
@@ -8152,7 +8152,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 679,
-    "name": "OnChainPixel #679",
+    "name": "Dwellers #679",
     "base": "human tan",
     "background": "slate",
     "hair": "spiky brown",
@@ -8164,7 +8164,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 680,
-    "name": "OnChainPixel #680",
+    "name": "Dwellers #680",
     "base": "human light",
     "background": "navy",
     "hair": "side_part white",
@@ -8176,7 +8176,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 681,
-    "name": "OnChainPixel #681",
+    "name": "Dwellers #681",
     "base": "gold",
     "background": "midnight",
     "hair": "side_part blonde",
@@ -8188,7 +8188,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 682,
-    "name": "OnChainPixel #682",
+    "name": "Dwellers #682",
     "base": "human light",
     "background": "gold",
     "hair": "mohawk blonde",
@@ -8200,7 +8200,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 683,
-    "name": "OnChainPixel #683",
+    "name": "Dwellers #683",
     "base": "human dark",
     "background": "crimson",
     "hair": "tall brown",
@@ -8212,7 +8212,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 684,
-    "name": "OnChainPixel #684",
+    "name": "Dwellers #684",
     "base": "human light",
     "background": "midnight",
     "hair": "side_part brown",
@@ -8224,7 +8224,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 685,
-    "name": "OnChainPixel #685",
+    "name": "Dwellers #685",
     "base": "human light",
     "background": "ice",
     "hair": "flat brown",
@@ -8236,7 +8236,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 686,
-    "name": "OnChainPixel #686",
+    "name": "Dwellers #686",
     "base": "human dark",
     "background": "forest",
     "hair": "tall purple",
@@ -8248,7 +8248,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 687,
-    "name": "OnChainPixel #687",
+    "name": "Dwellers #687",
     "base": "alien blue",
     "background": "navy",
     "hair": "flat orange",
@@ -8260,7 +8260,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 688,
-    "name": "OnChainPixel #688",
+    "name": "Dwellers #688",
     "base": "human light",
     "background": "forest",
     "hair": "short green",
@@ -8272,7 +8272,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 689,
-    "name": "OnChainPixel #689",
+    "name": "Dwellers #689",
     "base": "human tan",
     "background": "midnight",
     "hair": "spiky blonde",
@@ -8284,7 +8284,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 690,
-    "name": "OnChainPixel #690",
+    "name": "Dwellers #690",
     "base": "human light",
     "background": "crimson",
     "hair": "long brown",
@@ -8296,7 +8296,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 691,
-    "name": "OnChainPixel #691",
+    "name": "Dwellers #691",
     "base": "human light",
     "background": "slate",
     "hair": "mohawk brown",
@@ -8308,7 +8308,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 692,
-    "name": "OnChainPixel #692",
+    "name": "Dwellers #692",
     "base": "human light",
     "background": "purple",
     "hair": "mohawk black",
@@ -8320,7 +8320,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 693,
-    "name": "OnChainPixel #693",
+    "name": "Dwellers #693",
     "base": "human tan",
     "background": "purple",
     "hair": "tall black",
@@ -8332,7 +8332,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 694,
-    "name": "OnChainPixel #694",
+    "name": "Dwellers #694",
     "base": "human light",
     "background": "crimson",
     "hair": "short red",
@@ -8344,7 +8344,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 695,
-    "name": "OnChainPixel #695",
+    "name": "Dwellers #695",
     "base": "human dark",
     "background": "navy",
     "hair": "tall red",
@@ -8356,7 +8356,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 696,
-    "name": "OnChainPixel #696",
+    "name": "Dwellers #696",
     "base": "human dark",
     "background": "purple",
     "hair": "beanie black",
@@ -8368,7 +8368,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 697,
-    "name": "OnChainPixel #697",
+    "name": "Dwellers #697",
     "base": "alien blue",
     "background": "slate",
     "hair": "short silver",
@@ -8380,7 +8380,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 698,
-    "name": "OnChainPixel #698",
+    "name": "Dwellers #698",
     "base": "human tan",
     "background": "midnight",
     "hair": "flat black",
@@ -8392,7 +8392,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 699,
-    "name": "OnChainPixel #699",
+    "name": "Dwellers #699",
     "base": "demon",
     "background": "navy",
     "hair": "tall brown",
@@ -8404,7 +8404,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 700,
-    "name": "OnChainPixel #700",
+    "name": "Dwellers #700",
     "base": "demon",
     "background": "midnight",
     "hair": "tall blue",
@@ -8416,7 +8416,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 701,
-    "name": "OnChainPixel #701",
+    "name": "Dwellers #701",
     "base": "human light",
     "background": "navy",
     "hair": "short black",
@@ -8428,7 +8428,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 702,
-    "name": "OnChainPixel #702",
+    "name": "Dwellers #702",
     "base": "alien green",
     "background": "ice",
     "hair": "beanie white",
@@ -8440,7 +8440,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 703,
-    "name": "OnChainPixel #703",
+    "name": "Dwellers #703",
     "base": "human light",
     "background": "forest",
     "hair": "spiky brown",
@@ -8452,7 +8452,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 704,
-    "name": "OnChainPixel #704",
+    "name": "Dwellers #704",
     "base": "human light",
     "background": "forest",
     "hair": "mohawk blue",
@@ -8464,7 +8464,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 705,
-    "name": "OnChainPixel #705",
+    "name": "Dwellers #705",
     "base": "robot",
     "background": "purple",
     "hair": "tall brown",
@@ -8476,7 +8476,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 706,
-    "name": "OnChainPixel #706",
+    "name": "Dwellers #706",
     "base": "gold",
     "background": "purple",
     "hair": "ponytail brown",
@@ -8488,7 +8488,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 707,
-    "name": "OnChainPixel #707",
+    "name": "Dwellers #707",
     "base": "human light",
     "background": "midnight",
     "hair": "long blue",
@@ -8500,7 +8500,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 708,
-    "name": "OnChainPixel #708",
+    "name": "Dwellers #708",
     "base": "human light",
     "background": "forest",
     "hair": "flat black",
@@ -8512,7 +8512,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 709,
-    "name": "OnChainPixel #709",
+    "name": "Dwellers #709",
     "base": "human light",
     "background": "gold",
     "hair": "tall brown",
@@ -8524,7 +8524,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 710,
-    "name": "OnChainPixel #710",
+    "name": "Dwellers #710",
     "base": "human tan",
     "background": "ice",
     "hair": "flat brown",
@@ -8536,7 +8536,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 711,
-    "name": "OnChainPixel #711",
+    "name": "Dwellers #711",
     "base": "human tan",
     "background": "crimson",
     "hair": "beanie brown",
@@ -8548,7 +8548,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 712,
-    "name": "OnChainPixel #712",
+    "name": "Dwellers #712",
     "base": "human dark",
     "background": "slate",
     "hair": "tall brown",
@@ -8560,7 +8560,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 713,
-    "name": "OnChainPixel #713",
+    "name": "Dwellers #713",
     "base": "alien blue",
     "background": "ice",
     "hair": "long brown",
@@ -8572,7 +8572,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 714,
-    "name": "OnChainPixel #714",
+    "name": "Dwellers #714",
     "base": "human tan",
     "background": "gold",
     "hair": "afro brown",
@@ -8584,7 +8584,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 715,
-    "name": "OnChainPixel #715",
+    "name": "Dwellers #715",
     "base": "alien green",
     "background": "gold",
     "hair": "bald pink",
@@ -8596,7 +8596,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 716,
-    "name": "OnChainPixel #716",
+    "name": "Dwellers #716",
     "base": "human pale",
     "background": "crimson",
     "hair": "bald black",
@@ -8608,7 +8608,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 717,
-    "name": "OnChainPixel #717",
+    "name": "Dwellers #717",
     "base": "human light",
     "background": "forest",
     "hair": "flat red",
@@ -8620,7 +8620,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 718,
-    "name": "OnChainPixel #718",
+    "name": "Dwellers #718",
     "base": "alien green",
     "background": "ice",
     "hair": "flat pink",
@@ -8632,7 +8632,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 719,
-    "name": "OnChainPixel #719",
+    "name": "Dwellers #719",
     "base": "human tan",
     "background": "purple",
     "hair": "mohawk blue",
@@ -8644,7 +8644,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 720,
-    "name": "OnChainPixel #720",
+    "name": "Dwellers #720",
     "base": "human tan",
     "background": "purple",
     "hair": "mohawk black",
@@ -8656,7 +8656,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 721,
-    "name": "OnChainPixel #721",
+    "name": "Dwellers #721",
     "base": "human dark",
     "background": "purple",
     "hair": "tall brown",
@@ -8668,7 +8668,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 722,
-    "name": "OnChainPixel #722",
+    "name": "Dwellers #722",
     "base": "robot",
     "background": "midnight",
     "hair": "side_part purple",
@@ -8680,7 +8680,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 723,
-    "name": "OnChainPixel #723",
+    "name": "Dwellers #723",
     "base": "human light",
     "background": "slate",
     "hair": "long red",
@@ -8692,7 +8692,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 724,
-    "name": "OnChainPixel #724",
+    "name": "Dwellers #724",
     "base": "human dark",
     "background": "crimson",
     "hair": "flat black",
@@ -8704,7 +8704,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 725,
-    "name": "OnChainPixel #725",
+    "name": "Dwellers #725",
     "base": "human light",
     "background": "crimson",
     "hair": "flat purple",
@@ -8716,7 +8716,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 726,
-    "name": "OnChainPixel #726",
+    "name": "Dwellers #726",
     "base": "human light",
     "background": "forest",
     "hair": "mohawk black",
@@ -8728,7 +8728,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 727,
-    "name": "OnChainPixel #727",
+    "name": "Dwellers #727",
     "base": "human tan",
     "background": "purple",
     "hair": "short red",
@@ -8740,7 +8740,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 728,
-    "name": "OnChainPixel #728",
+    "name": "Dwellers #728",
     "base": "human light",
     "background": "navy",
     "hair": "ponytail teal",
@@ -8752,7 +8752,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 729,
-    "name": "OnChainPixel #729",
+    "name": "Dwellers #729",
     "base": "human light",
     "background": "crimson",
     "hair": "spiky blonde",
@@ -8764,7 +8764,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 730,
-    "name": "OnChainPixel #730",
+    "name": "Dwellers #730",
     "base": "human dark",
     "background": "crimson",
     "hair": "flat brown",
@@ -8776,7 +8776,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 731,
-    "name": "OnChainPixel #731",
+    "name": "Dwellers #731",
     "base": "alien blue",
     "background": "midnight",
     "hair": "beanie brown",
@@ -8788,7 +8788,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 732,
-    "name": "OnChainPixel #732",
+    "name": "Dwellers #732",
     "base": "human light",
     "background": "forest",
     "hair": "tall brown",
@@ -8800,7 +8800,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 733,
-    "name": "OnChainPixel #733",
+    "name": "Dwellers #733",
     "base": "human light",
     "background": "crimson",
     "hair": "short brown",
@@ -8812,7 +8812,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 734,
-    "name": "OnChainPixel #734",
+    "name": "Dwellers #734",
     "base": "human light",
     "background": "ice",
     "hair": "spiky brown",
@@ -8824,7 +8824,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 735,
-    "name": "OnChainPixel #735",
+    "name": "Dwellers #735",
     "base": "human light",
     "background": "gold",
     "hair": "tall brown",
@@ -8836,7 +8836,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 736,
-    "name": "OnChainPixel #736",
+    "name": "Dwellers #736",
     "base": "human light",
     "background": "ice",
     "hair": "mohawk blue",
@@ -8848,7 +8848,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 737,
-    "name": "OnChainPixel #737",
+    "name": "Dwellers #737",
     "base": "human dark",
     "background": "crimson",
     "hair": "bald black",
@@ -8860,7 +8860,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 738,
-    "name": "OnChainPixel #738",
+    "name": "Dwellers #738",
     "base": "human pale",
     "background": "purple",
     "hair": "tall red",
@@ -8872,7 +8872,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 739,
-    "name": "OnChainPixel #739",
+    "name": "Dwellers #739",
     "base": "human tan",
     "background": "purple",
     "hair": "short red",
@@ -8884,7 +8884,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 740,
-    "name": "OnChainPixel #740",
+    "name": "Dwellers #740",
     "base": "alien green",
     "background": "navy",
     "hair": "flat white",
@@ -8896,7 +8896,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 741,
-    "name": "OnChainPixel #741",
+    "name": "Dwellers #741",
     "base": "human light",
     "background": "midnight",
     "hair": "short white",
@@ -8908,7 +8908,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 742,
-    "name": "OnChainPixel #742",
+    "name": "Dwellers #742",
     "base": "human pale",
     "background": "gold",
     "hair": "afro blonde",
@@ -8920,7 +8920,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 743,
-    "name": "OnChainPixel #743",
+    "name": "Dwellers #743",
     "base": "human light",
     "background": "midnight",
     "hair": "bald white",
@@ -8932,7 +8932,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 744,
-    "name": "OnChainPixel #744",
+    "name": "Dwellers #744",
     "base": "human tan",
     "background": "ice",
     "hair": "tall brown",
@@ -8944,7 +8944,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 745,
-    "name": "OnChainPixel #745",
+    "name": "Dwellers #745",
     "base": "alien green",
     "background": "slate",
     "hair": "side_part purple",
@@ -8956,7 +8956,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 746,
-    "name": "OnChainPixel #746",
+    "name": "Dwellers #746",
     "base": "human light",
     "background": "slate",
     "hair": "short brown",
@@ -8968,7 +8968,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 747,
-    "name": "OnChainPixel #747",
+    "name": "Dwellers #747",
     "base": "human light",
     "background": "forest",
     "hair": "flat red",
@@ -8980,7 +8980,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 748,
-    "name": "OnChainPixel #748",
+    "name": "Dwellers #748",
     "base": "human light",
     "background": "purple",
     "hair": "flat orange",
@@ -8992,7 +8992,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 749,
-    "name": "OnChainPixel #749",
+    "name": "Dwellers #749",
     "base": "human light",
     "background": "ice",
     "hair": "short black",
@@ -9004,7 +9004,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 750,
-    "name": "OnChainPixel #750",
+    "name": "Dwellers #750",
     "base": "alien green",
     "background": "purple",
     "hair": "short white",
@@ -9016,7 +9016,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 751,
-    "name": "OnChainPixel #751",
+    "name": "Dwellers #751",
     "base": "human tan",
     "background": "midnight",
     "hair": "short brown",
@@ -9028,7 +9028,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 752,
-    "name": "OnChainPixel #752",
+    "name": "Dwellers #752",
     "base": "human tan",
     "background": "gold",
     "hair": "afro green",
@@ -9040,7 +9040,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 753,
-    "name": "OnChainPixel #753",
+    "name": "Dwellers #753",
     "base": "human light",
     "background": "forest",
     "hair": "flat black",
@@ -9052,7 +9052,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 754,
-    "name": "OnChainPixel #754",
+    "name": "Dwellers #754",
     "base": "gold",
     "background": "midnight",
     "hair": "mohawk white",
@@ -9064,7 +9064,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 755,
-    "name": "OnChainPixel #755",
+    "name": "Dwellers #755",
     "base": "alien blue",
     "background": "crimson",
     "hair": "flat black",
@@ -9076,7 +9076,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 756,
-    "name": "OnChainPixel #756",
+    "name": "Dwellers #756",
     "base": "human light",
     "background": "navy",
     "hair": "mohawk blonde",
@@ -9088,7 +9088,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 757,
-    "name": "OnChainPixel #757",
+    "name": "Dwellers #757",
     "base": "human dark",
     "background": "slate",
     "hair": "flat brown",
@@ -9100,7 +9100,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 758,
-    "name": "OnChainPixel #758",
+    "name": "Dwellers #758",
     "base": "human tan",
     "background": "slate",
     "hair": "tall white",
@@ -9112,7 +9112,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 759,
-    "name": "OnChainPixel #759",
+    "name": "Dwellers #759",
     "base": "human tan",
     "background": "navy",
     "hair": "bald black",
@@ -9124,7 +9124,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 760,
-    "name": "OnChainPixel #760",
+    "name": "Dwellers #760",
     "base": "human light",
     "background": "crimson",
     "hair": "bald pink",
@@ -9136,7 +9136,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 761,
-    "name": "OnChainPixel #761",
+    "name": "Dwellers #761",
     "base": "human tan",
     "background": "navy",
     "hair": "side_part black",
@@ -9148,7 +9148,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 762,
-    "name": "OnChainPixel #762",
+    "name": "Dwellers #762",
     "base": "human pale",
     "background": "forest",
     "hair": "buzz brown",
@@ -9160,7 +9160,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 763,
-    "name": "OnChainPixel #763",
+    "name": "Dwellers #763",
     "base": "human tan",
     "background": "ice",
     "hair": "buzz purple",
@@ -9172,7 +9172,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 764,
-    "name": "OnChainPixel #764",
+    "name": "Dwellers #764",
     "base": "human light",
     "background": "crimson",
     "hair": "mohawk brown",
@@ -9184,7 +9184,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 765,
-    "name": "OnChainPixel #765",
+    "name": "Dwellers #765",
     "base": "human dark",
     "background": "midnight",
     "hair": "side_part black",
@@ -9196,7 +9196,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 766,
-    "name": "OnChainPixel #766",
+    "name": "Dwellers #766",
     "base": "human pale",
     "background": "midnight",
     "hair": "tall black",
@@ -9208,7 +9208,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 767,
-    "name": "OnChainPixel #767",
+    "name": "Dwellers #767",
     "base": "human tan",
     "background": "ice",
     "hair": "spiky blonde",
@@ -9220,7 +9220,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 768,
-    "name": "OnChainPixel #768",
+    "name": "Dwellers #768",
     "base": "zombie",
     "background": "midnight",
     "hair": "long purple",
@@ -9232,7 +9232,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 769,
-    "name": "OnChainPixel #769",
+    "name": "Dwellers #769",
     "base": "zombie",
     "background": "navy",
     "hair": "flat brown",
@@ -9244,7 +9244,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 770,
-    "name": "OnChainPixel #770",
+    "name": "Dwellers #770",
     "base": "human light",
     "background": "navy",
     "hair": "short brown",
@@ -9256,7 +9256,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 771,
-    "name": "OnChainPixel #771",
+    "name": "Dwellers #771",
     "base": "human dark",
     "background": "forest",
     "hair": "tall black",
@@ -9268,7 +9268,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 772,
-    "name": "OnChainPixel #772",
+    "name": "Dwellers #772",
     "base": "human tan",
     "background": "ice",
     "hair": "side_part brown",
@@ -9280,7 +9280,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 773,
-    "name": "OnChainPixel #773",
+    "name": "Dwellers #773",
     "base": "robot",
     "background": "forest",
     "hair": "beanie black",
@@ -9292,7 +9292,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 774,
-    "name": "OnChainPixel #774",
+    "name": "Dwellers #774",
     "base": "demon",
     "background": "navy",
     "hair": "side_part orange",
@@ -9304,7 +9304,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 775,
-    "name": "OnChainPixel #775",
+    "name": "Dwellers #775",
     "base": "demon",
     "background": "purple",
     "hair": "side_part red",
@@ -9316,7 +9316,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 776,
-    "name": "OnChainPixel #776",
+    "name": "Dwellers #776",
     "base": "human light",
     "background": "midnight",
     "hair": "tall pink",
@@ -9328,7 +9328,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 777,
-    "name": "OnChainPixel #777",
+    "name": "Dwellers #777",
     "base": "human tan",
     "background": "slate",
     "hair": "afro red",
@@ -9340,7 +9340,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 778,
-    "name": "OnChainPixel #778",
+    "name": "Dwellers #778",
     "base": "alien green",
     "background": "slate",
     "hair": "long pink",
@@ -9352,7 +9352,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 779,
-    "name": "OnChainPixel #779",
+    "name": "Dwellers #779",
     "base": "human light",
     "background": "midnight",
     "hair": "beanie red",
@@ -9364,7 +9364,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 780,
-    "name": "OnChainPixel #780",
+    "name": "Dwellers #780",
     "base": "human tan",
     "background": "midnight",
     "hair": "flat black",
@@ -9376,7 +9376,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 781,
-    "name": "OnChainPixel #781",
+    "name": "Dwellers #781",
     "base": "human pale",
     "background": "purple",
     "hair": "long brown",
@@ -9388,7 +9388,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 782,
-    "name": "OnChainPixel #782",
+    "name": "Dwellers #782",
     "base": "human light",
     "background": "gold",
     "hair": "mohawk black",
@@ -9400,7 +9400,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 783,
-    "name": "OnChainPixel #783",
+    "name": "Dwellers #783",
     "base": "human dark",
     "background": "forest",
     "hair": "afro black",
@@ -9412,7 +9412,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 784,
-    "name": "OnChainPixel #784",
+    "name": "Dwellers #784",
     "base": "alien green",
     "background": "purple",
     "hair": "mohawk white",
@@ -9424,7 +9424,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 785,
-    "name": "OnChainPixel #785",
+    "name": "Dwellers #785",
     "base": "alien blue",
     "background": "midnight",
     "hair": "tall purple",
@@ -9436,7 +9436,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 786,
-    "name": "OnChainPixel #786",
+    "name": "Dwellers #786",
     "base": "human tan",
     "background": "forest",
     "hair": "flat black",
@@ -9448,7 +9448,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 787,
-    "name": "OnChainPixel #787",
+    "name": "Dwellers #787",
     "base": "zombie",
     "background": "purple",
     "hair": "afro purple",
@@ -9460,7 +9460,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 788,
-    "name": "OnChainPixel #788",
+    "name": "Dwellers #788",
     "base": "zombie",
     "background": "navy",
     "hair": "long brown",
@@ -9472,7 +9472,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 789,
-    "name": "OnChainPixel #789",
+    "name": "Dwellers #789",
     "base": "human light",
     "background": "gold",
     "hair": "spiky green",
@@ -9484,7 +9484,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 790,
-    "name": "OnChainPixel #790",
+    "name": "Dwellers #790",
     "base": "human light",
     "background": "slate",
     "hair": "bald black",
@@ -9496,7 +9496,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 791,
-    "name": "OnChainPixel #791",
+    "name": "Dwellers #791",
     "base": "human dark",
     "background": "purple",
     "hair": "beanie brown",
@@ -9508,7 +9508,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 792,
-    "name": "OnChainPixel #792",
+    "name": "Dwellers #792",
     "base": "human light",
     "background": "ice",
     "hair": "mohawk pink",
@@ -9520,7 +9520,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 793,
-    "name": "OnChainPixel #793",
+    "name": "Dwellers #793",
     "base": "demon",
     "background": "gold",
     "hair": "short purple",
@@ -9532,7 +9532,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 794,
-    "name": "OnChainPixel #794",
+    "name": "Dwellers #794",
     "base": "human light",
     "background": "purple",
     "hair": "beanie brown",
@@ -9544,7 +9544,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 795,
-    "name": "OnChainPixel #795",
+    "name": "Dwellers #795",
     "base": "alien green",
     "background": "midnight",
     "hair": "short red",
@@ -9556,7 +9556,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 796,
-    "name": "OnChainPixel #796",
+    "name": "Dwellers #796",
     "base": "human dark",
     "background": "slate",
     "hair": "mohawk blue",
@@ -9568,7 +9568,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 797,
-    "name": "OnChainPixel #797",
+    "name": "Dwellers #797",
     "base": "zombie",
     "background": "slate",
     "hair": "mohawk brown",
@@ -9580,7 +9580,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 798,
-    "name": "OnChainPixel #798",
+    "name": "Dwellers #798",
     "base": "human pale",
     "background": "navy",
     "hair": "flat purple",
@@ -9592,7 +9592,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 799,
-    "name": "OnChainPixel #799",
+    "name": "Dwellers #799",
     "base": "human dark",
     "background": "forest",
     "hair": "mohawk brown",
@@ -9604,7 +9604,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 800,
-    "name": "OnChainPixel #800",
+    "name": "Dwellers #800",
     "base": "robot",
     "background": "forest",
     "hair": "ponytail pink",
@@ -9616,7 +9616,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 801,
-    "name": "OnChainPixel #801",
+    "name": "Dwellers #801",
     "base": "human light",
     "background": "navy",
     "hair": "flat orange",
@@ -9628,7 +9628,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 802,
-    "name": "OnChainPixel #802",
+    "name": "Dwellers #802",
     "base": "demon",
     "background": "slate",
     "hair": "afro black",
@@ -9640,7 +9640,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 803,
-    "name": "OnChainPixel #803",
+    "name": "Dwellers #803",
     "base": "alien blue",
     "background": "crimson",
     "hair": "short white",
@@ -9652,7 +9652,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 804,
-    "name": "OnChainPixel #804",
+    "name": "Dwellers #804",
     "base": "human tan",
     "background": "crimson",
     "hair": "mohawk brown",
@@ -9664,7 +9664,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 805,
-    "name": "OnChainPixel #805",
+    "name": "Dwellers #805",
     "base": "human light",
     "background": "forest",
     "hair": "short brown",
@@ -9676,7 +9676,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 806,
-    "name": "OnChainPixel #806",
+    "name": "Dwellers #806",
     "base": "human light",
     "background": "gold",
     "hair": "flat silver",
@@ -9688,7 +9688,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 807,
-    "name": "OnChainPixel #807",
+    "name": "Dwellers #807",
     "base": "demon",
     "background": "midnight",
     "hair": "beanie brown",
@@ -9700,7 +9700,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 808,
-    "name": "OnChainPixel #808",
+    "name": "Dwellers #808",
     "base": "alien green",
     "background": "purple",
     "hair": "buzz silver",
@@ -9712,7 +9712,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 809,
-    "name": "OnChainPixel #809",
+    "name": "Dwellers #809",
     "base": "human light",
     "background": "crimson",
     "hair": "spiky blue",
@@ -9724,7 +9724,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 810,
-    "name": "OnChainPixel #810",
+    "name": "Dwellers #810",
     "base": "human tan",
     "background": "navy",
     "hair": "flat red",
@@ -9736,7 +9736,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 811,
-    "name": "OnChainPixel #811",
+    "name": "Dwellers #811",
     "base": "human light",
     "background": "forest",
     "hair": "short black",
@@ -9748,7 +9748,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 812,
-    "name": "OnChainPixel #812",
+    "name": "Dwellers #812",
     "base": "human tan",
     "background": "navy",
     "hair": "flat black",
@@ -9760,7 +9760,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 813,
-    "name": "OnChainPixel #813",
+    "name": "Dwellers #813",
     "base": "human dark",
     "background": "crimson",
     "hair": "mohawk brown",
@@ -9772,7 +9772,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 814,
-    "name": "OnChainPixel #814",
+    "name": "Dwellers #814",
     "base": "human light",
     "background": "forest",
     "hair": "bald black",
@@ -9784,7 +9784,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 815,
-    "name": "OnChainPixel #815",
+    "name": "Dwellers #815",
     "base": "zombie",
     "background": "ice",
     "hair": "short black",
@@ -9796,7 +9796,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 816,
-    "name": "OnChainPixel #816",
+    "name": "Dwellers #816",
     "base": "robot",
     "background": "midnight",
     "hair": "short red",
@@ -9808,7 +9808,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 817,
-    "name": "OnChainPixel #817",
+    "name": "Dwellers #817",
     "base": "human tan",
     "background": "midnight",
     "hair": "spiky green",
@@ -9820,7 +9820,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 818,
-    "name": "OnChainPixel #818",
+    "name": "Dwellers #818",
     "base": "human tan",
     "background": "midnight",
     "hair": "spiky purple",
@@ -9832,7 +9832,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 819,
-    "name": "OnChainPixel #819",
+    "name": "Dwellers #819",
     "base": "robot",
     "background": "purple",
     "hair": "afro black",
@@ -9844,7 +9844,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 820,
-    "name": "OnChainPixel #820",
+    "name": "Dwellers #820",
     "base": "human tan",
     "background": "forest",
     "hair": "spiky brown",
@@ -9856,7 +9856,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 821,
-    "name": "OnChainPixel #821",
+    "name": "Dwellers #821",
     "base": "alien green",
     "background": "midnight",
     "hair": "bald brown",
@@ -9868,7 +9868,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 822,
-    "name": "OnChainPixel #822",
+    "name": "Dwellers #822",
     "base": "human pale",
     "background": "slate",
     "hair": "long black",
@@ -9880,7 +9880,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 823,
-    "name": "OnChainPixel #823",
+    "name": "Dwellers #823",
     "base": "human light",
     "background": "crimson",
     "hair": "beanie white",
@@ -9892,7 +9892,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 824,
-    "name": "OnChainPixel #824",
+    "name": "Dwellers #824",
     "base": "zombie",
     "background": "crimson",
     "hair": "flat purple",
@@ -9904,7 +9904,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 825,
-    "name": "OnChainPixel #825",
+    "name": "Dwellers #825",
     "base": "human dark",
     "background": "midnight",
     "hair": "long black",
@@ -9916,7 +9916,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 826,
-    "name": "OnChainPixel #826",
+    "name": "Dwellers #826",
     "base": "human light",
     "background": "navy",
     "hair": "tall white",
@@ -9928,7 +9928,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 827,
-    "name": "OnChainPixel #827",
+    "name": "Dwellers #827",
     "base": "human tan",
     "background": "ice",
     "hair": "mohawk brown",
@@ -9940,7 +9940,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 828,
-    "name": "OnChainPixel #828",
+    "name": "Dwellers #828",
     "base": "human dark",
     "background": "slate",
     "hair": "long black",
@@ -9952,7 +9952,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 829,
-    "name": "OnChainPixel #829",
+    "name": "Dwellers #829",
     "base": "human light",
     "background": "ice",
     "hair": "spiky blonde",
@@ -9964,7 +9964,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 830,
-    "name": "OnChainPixel #830",
+    "name": "Dwellers #830",
     "base": "human dark",
     "background": "forest",
     "hair": "mohawk white",
@@ -9976,7 +9976,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 831,
-    "name": "OnChainPixel #831",
+    "name": "Dwellers #831",
     "base": "human pale",
     "background": "midnight",
     "hair": "bald pink",
@@ -9988,7 +9988,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 832,
-    "name": "OnChainPixel #832",
+    "name": "Dwellers #832",
     "base": "human tan",
     "background": "forest",
     "hair": "short pink",
@@ -10000,7 +10000,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 833,
-    "name": "OnChainPixel #833",
+    "name": "Dwellers #833",
     "base": "alien green",
     "background": "purple",
     "hair": "ponytail brown",
@@ -10012,7 +10012,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 834,
-    "name": "OnChainPixel #834",
+    "name": "Dwellers #834",
     "base": "human dark",
     "background": "navy",
     "hair": "tall black",
@@ -10024,7 +10024,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 835,
-    "name": "OnChainPixel #835",
+    "name": "Dwellers #835",
     "base": "human dark",
     "background": "forest",
     "hair": "long black",
@@ -10036,7 +10036,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 836,
-    "name": "OnChainPixel #836",
+    "name": "Dwellers #836",
     "base": "human dark",
     "background": "crimson",
     "hair": "short pink",
@@ -10048,7 +10048,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 837,
-    "name": "OnChainPixel #837",
+    "name": "Dwellers #837",
     "base": "alien green",
     "background": "crimson",
     "hair": "short purple",
@@ -10060,7 +10060,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 838,
-    "name": "OnChainPixel #838",
+    "name": "Dwellers #838",
     "base": "human tan",
     "background": "crimson",
     "hair": "flat brown",
@@ -10072,7 +10072,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 839,
-    "name": "OnChainPixel #839",
+    "name": "Dwellers #839",
     "base": "human pale",
     "background": "crimson",
     "hair": "mohawk black",
@@ -10084,7 +10084,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 840,
-    "name": "OnChainPixel #840",
+    "name": "Dwellers #840",
     "base": "demon",
     "background": "purple",
     "hair": "bald green",
@@ -10096,7 +10096,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 841,
-    "name": "OnChainPixel #841",
+    "name": "Dwellers #841",
     "base": "human light",
     "background": "midnight",
     "hair": "flat black",
@@ -10108,7 +10108,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 842,
-    "name": "OnChainPixel #842",
+    "name": "Dwellers #842",
     "base": "human tan",
     "background": "purple",
     "hair": "tall white",
@@ -10120,7 +10120,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 843,
-    "name": "OnChainPixel #843",
+    "name": "Dwellers #843",
     "base": "human dark",
     "background": "gold",
     "hair": "flat red",
@@ -10132,7 +10132,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 844,
-    "name": "OnChainPixel #844",
+    "name": "Dwellers #844",
     "base": "human light",
     "background": "navy",
     "hair": "mohawk blue",
@@ -10144,7 +10144,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 845,
-    "name": "OnChainPixel #845",
+    "name": "Dwellers #845",
     "base": "gold",
     "background": "gold",
     "hair": "beanie purple",
@@ -10156,7 +10156,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 846,
-    "name": "OnChainPixel #846",
+    "name": "Dwellers #846",
     "base": "human tan",
     "background": "forest",
     "hair": "bald brown",
@@ -10168,7 +10168,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 847,
-    "name": "OnChainPixel #847",
+    "name": "Dwellers #847",
     "base": "human tan",
     "background": "forest",
     "hair": "afro red",
@@ -10180,7 +10180,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 848,
-    "name": "OnChainPixel #848",
+    "name": "Dwellers #848",
     "base": "human light",
     "background": "slate",
     "hair": "flat black",
@@ -10192,7 +10192,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 849,
-    "name": "OnChainPixel #849",
+    "name": "Dwellers #849",
     "base": "human dark",
     "background": "purple",
     "hair": "long blue",
@@ -10204,7 +10204,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 850,
-    "name": "OnChainPixel #850",
+    "name": "Dwellers #850",
     "base": "human light",
     "background": "midnight",
     "hair": "tall red",
@@ -10216,7 +10216,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 851,
-    "name": "OnChainPixel #851",
+    "name": "Dwellers #851",
     "base": "human light",
     "background": "slate",
     "hair": "short red",
@@ -10228,7 +10228,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 852,
-    "name": "OnChainPixel #852",
+    "name": "Dwellers #852",
     "base": "human pale",
     "background": "midnight",
     "hair": "short blonde",
@@ -10240,7 +10240,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 853,
-    "name": "OnChainPixel #853",
+    "name": "Dwellers #853",
     "base": "human light",
     "background": "purple",
     "hair": "tall black",
@@ -10252,7 +10252,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 854,
-    "name": "OnChainPixel #854",
+    "name": "Dwellers #854",
     "base": "alien green",
     "background": "midnight",
     "hair": "short black",
@@ -10264,7 +10264,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 855,
-    "name": "OnChainPixel #855",
+    "name": "Dwellers #855",
     "base": "human pale",
     "background": "forest",
     "hair": "short green",
@@ -10276,7 +10276,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 856,
-    "name": "OnChainPixel #856",
+    "name": "Dwellers #856",
     "base": "human dark",
     "background": "slate",
     "hair": "side_part red",
@@ -10288,7 +10288,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 857,
-    "name": "OnChainPixel #857",
+    "name": "Dwellers #857",
     "base": "human dark",
     "background": "ice",
     "hair": "mohawk pink",
@@ -10300,7 +10300,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 858,
-    "name": "OnChainPixel #858",
+    "name": "Dwellers #858",
     "base": "robot",
     "background": "midnight",
     "hair": "short blue",
@@ -10312,7 +10312,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 859,
-    "name": "OnChainPixel #859",
+    "name": "Dwellers #859",
     "base": "human tan",
     "background": "forest",
     "hair": "side_part red",
@@ -10324,7 +10324,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 860,
-    "name": "OnChainPixel #860",
+    "name": "Dwellers #860",
     "base": "human light",
     "background": "gold",
     "hair": "tall blue",
@@ -10336,7 +10336,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 861,
-    "name": "OnChainPixel #861",
+    "name": "Dwellers #861",
     "base": "human pale",
     "background": "slate",
     "hair": "flat brown",
@@ -10348,7 +10348,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 862,
-    "name": "OnChainPixel #862",
+    "name": "Dwellers #862",
     "base": "human light",
     "background": "crimson",
     "hair": "bald black",
@@ -10360,7 +10360,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 863,
-    "name": "OnChainPixel #863",
+    "name": "Dwellers #863",
     "base": "human light",
     "background": "gold",
     "hair": "bald blonde",
@@ -10372,7 +10372,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 864,
-    "name": "OnChainPixel #864",
+    "name": "Dwellers #864",
     "base": "human light",
     "background": "ice",
     "hair": "tall blonde",
@@ -10384,7 +10384,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 865,
-    "name": "OnChainPixel #865",
+    "name": "Dwellers #865",
     "base": "human tan",
     "background": "forest",
     "hair": "mohawk black",
@@ -10396,7 +10396,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 866,
-    "name": "OnChainPixel #866",
+    "name": "Dwellers #866",
     "base": "human dark",
     "background": "gold",
     "hair": "flat pink",
@@ -10408,7 +10408,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 867,
-    "name": "OnChainPixel #867",
+    "name": "Dwellers #867",
     "base": "human tan",
     "background": "ice",
     "hair": "mohawk black",
@@ -10420,7 +10420,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 868,
-    "name": "OnChainPixel #868",
+    "name": "Dwellers #868",
     "base": "human dark",
     "background": "forest",
     "hair": "beanie black",
@@ -10432,7 +10432,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 869,
-    "name": "OnChainPixel #869",
+    "name": "Dwellers #869",
     "base": "robot",
     "background": "navy",
     "hair": "flat black",
@@ -10444,7 +10444,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 870,
-    "name": "OnChainPixel #870",
+    "name": "Dwellers #870",
     "base": "alien blue",
     "background": "purple",
     "hair": "beanie silver",
@@ -10456,7 +10456,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 871,
-    "name": "OnChainPixel #871",
+    "name": "Dwellers #871",
     "base": "human light",
     "background": "navy",
     "hair": "short brown",
@@ -10468,7 +10468,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 872,
-    "name": "OnChainPixel #872",
+    "name": "Dwellers #872",
     "base": "human tan",
     "background": "crimson",
     "hair": "short purple",
@@ -10480,7 +10480,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 873,
-    "name": "OnChainPixel #873",
+    "name": "Dwellers #873",
     "base": "human light",
     "background": "navy",
     "hair": "afro pink",
@@ -10492,7 +10492,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 874,
-    "name": "OnChainPixel #874",
+    "name": "Dwellers #874",
     "base": "human tan",
     "background": "ice",
     "hair": "tall blonde",
@@ -10504,7 +10504,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 875,
-    "name": "OnChainPixel #875",
+    "name": "Dwellers #875",
     "base": "human tan",
     "background": "gold",
     "hair": "short pink",
@@ -10516,7 +10516,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 876,
-    "name": "OnChainPixel #876",
+    "name": "Dwellers #876",
     "base": "human dark",
     "background": "forest",
     "hair": "long red",
@@ -10528,7 +10528,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 877,
-    "name": "OnChainPixel #877",
+    "name": "Dwellers #877",
     "base": "human light",
     "background": "forest",
     "hair": "beanie red",
@@ -10540,7 +10540,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 878,
-    "name": "OnChainPixel #878",
+    "name": "Dwellers #878",
     "base": "human pale",
     "background": "midnight",
     "hair": "flat red",
@@ -10552,7 +10552,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 879,
-    "name": "OnChainPixel #879",
+    "name": "Dwellers #879",
     "base": "human light",
     "background": "purple",
     "hair": "mohawk red",
@@ -10564,7 +10564,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 880,
-    "name": "OnChainPixel #880",
+    "name": "Dwellers #880",
     "base": "human light",
     "background": "slate",
     "hair": "short silver",
@@ -10576,7 +10576,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 881,
-    "name": "OnChainPixel #881",
+    "name": "Dwellers #881",
     "base": "human tan",
     "background": "ice",
     "hair": "short pink",
@@ -10588,7 +10588,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 882,
-    "name": "OnChainPixel #882",
+    "name": "Dwellers #882",
     "base": "human pale",
     "background": "ice",
     "hair": "flat blue",
@@ -10600,7 +10600,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 883,
-    "name": "OnChainPixel #883",
+    "name": "Dwellers #883",
     "base": "human light",
     "background": "crimson",
     "hair": "flat black",
@@ -10612,7 +10612,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 884,
-    "name": "OnChainPixel #884",
+    "name": "Dwellers #884",
     "base": "alien blue",
     "background": "forest",
     "hair": "spiky purple",
@@ -10624,7 +10624,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 885,
-    "name": "OnChainPixel #885",
+    "name": "Dwellers #885",
     "base": "human light",
     "background": "forest",
     "hair": "tall white",
@@ -10636,7 +10636,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 886,
-    "name": "OnChainPixel #886",
+    "name": "Dwellers #886",
     "base": "human light",
     "background": "midnight",
     "hair": "flat orange",
@@ -10648,7 +10648,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 887,
-    "name": "OnChainPixel #887",
+    "name": "Dwellers #887",
     "base": "human tan",
     "background": "forest",
     "hair": "afro red",
@@ -10660,7 +10660,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 888,
-    "name": "OnChainPixel #888",
+    "name": "Dwellers #888",
     "base": "human light",
     "background": "crimson",
     "hair": "short pink",
@@ -10672,7 +10672,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 889,
-    "name": "OnChainPixel #889",
+    "name": "Dwellers #889",
     "base": "human dark",
     "background": "ice",
     "hair": "short blonde",
@@ -10684,7 +10684,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 890,
-    "name": "OnChainPixel #890",
+    "name": "Dwellers #890",
     "base": "human light",
     "background": "midnight",
     "hair": "short white",
@@ -10696,7 +10696,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 891,
-    "name": "OnChainPixel #891",
+    "name": "Dwellers #891",
     "base": "human pale",
     "background": "ice",
     "hair": "afro brown",
@@ -10708,7 +10708,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 892,
-    "name": "OnChainPixel #892",
+    "name": "Dwellers #892",
     "base": "human pale",
     "background": "midnight",
     "hair": "afro brown",
@@ -10720,7 +10720,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 893,
-    "name": "OnChainPixel #893",
+    "name": "Dwellers #893",
     "base": "human light",
     "background": "navy",
     "hair": "mohawk pink",
@@ -10732,7 +10732,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 894,
-    "name": "OnChainPixel #894",
+    "name": "Dwellers #894",
     "base": "alien blue",
     "background": "crimson",
     "hair": "flat brown",
@@ -10744,7 +10744,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 895,
-    "name": "OnChainPixel #895",
+    "name": "Dwellers #895",
     "base": "robot",
     "background": "purple",
     "hair": "flat pink",
@@ -10756,7 +10756,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 896,
-    "name": "OnChainPixel #896",
+    "name": "Dwellers #896",
     "base": "human light",
     "background": "purple",
     "hair": "beanie blonde",
@@ -10768,7 +10768,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 897,
-    "name": "OnChainPixel #897",
+    "name": "Dwellers #897",
     "base": "human pale",
     "background": "purple",
     "hair": "side_part blue",
@@ -10780,7 +10780,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 898,
-    "name": "OnChainPixel #898",
+    "name": "Dwellers #898",
     "base": "human tan",
     "background": "gold",
     "hair": "tall green",
@@ -10792,7 +10792,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 899,
-    "name": "OnChainPixel #899",
+    "name": "Dwellers #899",
     "base": "human tan",
     "background": "crimson",
     "hair": "long purple",
@@ -10804,7 +10804,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 900,
-    "name": "OnChainPixel #900",
+    "name": "Dwellers #900",
     "base": "zombie",
     "background": "navy",
     "hair": "spiky black",
@@ -10816,7 +10816,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 901,
-    "name": "OnChainPixel #901",
+    "name": "Dwellers #901",
     "base": "human light",
     "background": "midnight",
     "hair": "tall black",
@@ -10828,7 +10828,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 902,
-    "name": "OnChainPixel #902",
+    "name": "Dwellers #902",
     "base": "human dark",
     "background": "gold",
     "hair": "bald blue",
@@ -10840,7 +10840,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 903,
-    "name": "OnChainPixel #903",
+    "name": "Dwellers #903",
     "base": "human tan",
     "background": "midnight",
     "hair": "flat blue",
@@ -10852,7 +10852,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 904,
-    "name": "OnChainPixel #904",
+    "name": "Dwellers #904",
     "base": "gold",
     "background": "purple",
     "hair": "tall black",
@@ -10864,7 +10864,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 905,
-    "name": "OnChainPixel #905",
+    "name": "Dwellers #905",
     "base": "alien blue",
     "background": "gold",
     "hair": "mohawk pink",
@@ -10876,7 +10876,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 906,
-    "name": "OnChainPixel #906",
+    "name": "Dwellers #906",
     "base": "human tan",
     "background": "slate",
     "hair": "long red",
@@ -10888,7 +10888,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 907,
-    "name": "OnChainPixel #907",
+    "name": "Dwellers #907",
     "base": "human light",
     "background": "slate",
     "hair": "afro brown",
@@ -10900,7 +10900,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 908,
-    "name": "OnChainPixel #908",
+    "name": "Dwellers #908",
     "base": "alien blue",
     "background": "forest",
     "hair": "afro black",
@@ -10912,7 +10912,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 909,
-    "name": "OnChainPixel #909",
+    "name": "Dwellers #909",
     "base": "human tan",
     "background": "ice",
     "hair": "ponytail blonde",
@@ -10924,7 +10924,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 910,
-    "name": "OnChainPixel #910",
+    "name": "Dwellers #910",
     "base": "human light",
     "background": "crimson",
     "hair": "long black",
@@ -10936,7 +10936,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 911,
-    "name": "OnChainPixel #911",
+    "name": "Dwellers #911",
     "base": "human light",
     "background": "purple",
     "hair": "mohawk white",
@@ -10948,7 +10948,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 912,
-    "name": "OnChainPixel #912",
+    "name": "Dwellers #912",
     "base": "zombie",
     "background": "crimson",
     "hair": "side_part orange",
@@ -10960,7 +10960,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 913,
-    "name": "OnChainPixel #913",
+    "name": "Dwellers #913",
     "base": "human pale",
     "background": "crimson",
     "hair": "mohawk pink",
@@ -10972,7 +10972,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 914,
-    "name": "OnChainPixel #914",
+    "name": "Dwellers #914",
     "base": "human dark",
     "background": "ice",
     "hair": "bald pink",
@@ -10984,7 +10984,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 915,
-    "name": "OnChainPixel #915",
+    "name": "Dwellers #915",
     "base": "human light",
     "background": "gold",
     "hair": "mohawk black",
@@ -10996,7 +10996,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 916,
-    "name": "OnChainPixel #916",
+    "name": "Dwellers #916",
     "base": "human tan",
     "background": "forest",
     "hair": "spiky pink",
@@ -11008,7 +11008,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 917,
-    "name": "OnChainPixel #917",
+    "name": "Dwellers #917",
     "base": "human light",
     "background": "midnight",
     "hair": "bald orange",
@@ -11020,7 +11020,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 918,
-    "name": "OnChainPixel #918",
+    "name": "Dwellers #918",
     "base": "human dark",
     "background": "gold",
     "hair": "mohawk red",
@@ -11032,7 +11032,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 919,
-    "name": "OnChainPixel #919",
+    "name": "Dwellers #919",
     "base": "demon",
     "background": "forest",
     "hair": "flat blue",
@@ -11044,7 +11044,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 920,
-    "name": "OnChainPixel #920",
+    "name": "Dwellers #920",
     "base": "human light",
     "background": "purple",
     "hair": "flat black",
@@ -11056,7 +11056,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 921,
-    "name": "OnChainPixel #921",
+    "name": "Dwellers #921",
     "base": "human light",
     "background": "slate",
     "hair": "short pink",
@@ -11068,7 +11068,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 922,
-    "name": "OnChainPixel #922",
+    "name": "Dwellers #922",
     "base": "human light",
     "background": "slate",
     "hair": "tall white",
@@ -11080,7 +11080,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 923,
-    "name": "OnChainPixel #923",
+    "name": "Dwellers #923",
     "base": "alien green",
     "background": "crimson",
     "hair": "short brown",
@@ -11092,7 +11092,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 924,
-    "name": "OnChainPixel #924",
+    "name": "Dwellers #924",
     "base": "human pale",
     "background": "forest",
     "hair": "beanie red",
@@ -11104,7 +11104,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 925,
-    "name": "OnChainPixel #925",
+    "name": "Dwellers #925",
     "base": "human tan",
     "background": "gold",
     "hair": "side_part brown",
@@ -11116,7 +11116,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 926,
-    "name": "OnChainPixel #926",
+    "name": "Dwellers #926",
     "base": "alien green",
     "background": "crimson",
     "hair": "bald black",
@@ -11128,7 +11128,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 927,
-    "name": "OnChainPixel #927",
+    "name": "Dwellers #927",
     "base": "zombie",
     "background": "forest",
     "hair": "long black",
@@ -11140,7 +11140,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 928,
-    "name": "OnChainPixel #928",
+    "name": "Dwellers #928",
     "base": "demon",
     "background": "slate",
     "hair": "afro brown",
@@ -11152,7 +11152,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 929,
-    "name": "OnChainPixel #929",
+    "name": "Dwellers #929",
     "base": "human light",
     "background": "gold",
     "hair": "long red",
@@ -11164,7 +11164,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 930,
-    "name": "OnChainPixel #930",
+    "name": "Dwellers #930",
     "base": "robot",
     "background": "crimson",
     "hair": "tall silver",
@@ -11176,7 +11176,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 931,
-    "name": "OnChainPixel #931",
+    "name": "Dwellers #931",
     "base": "human light",
     "background": "gold",
     "hair": "afro pink",
@@ -11188,7 +11188,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 932,
-    "name": "OnChainPixel #932",
+    "name": "Dwellers #932",
     "base": "human tan",
     "background": "slate",
     "hair": "long brown",
@@ -11200,7 +11200,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 933,
-    "name": "OnChainPixel #933",
+    "name": "Dwellers #933",
     "base": "human tan",
     "background": "slate",
     "hair": "short green",
@@ -11212,7 +11212,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 934,
-    "name": "OnChainPixel #934",
+    "name": "Dwellers #934",
     "base": "zombie",
     "background": "purple",
     "hair": "short black",
@@ -11224,7 +11224,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 935,
-    "name": "OnChainPixel #935",
+    "name": "Dwellers #935",
     "base": "zombie",
     "background": "ice",
     "hair": "short teal",
@@ -11236,7 +11236,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 936,
-    "name": "OnChainPixel #936",
+    "name": "Dwellers #936",
     "base": "demon",
     "background": "forest",
     "hair": "spiky black",
@@ -11248,7 +11248,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 937,
-    "name": "OnChainPixel #937",
+    "name": "Dwellers #937",
     "base": "alien green",
     "background": "ice",
     "hair": "flat black",
@@ -11260,7 +11260,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 938,
-    "name": "OnChainPixel #938",
+    "name": "Dwellers #938",
     "base": "human dark",
     "background": "slate",
     "hair": "short black",
@@ -11272,7 +11272,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 939,
-    "name": "OnChainPixel #939",
+    "name": "Dwellers #939",
     "base": "human tan",
     "background": "slate",
     "hair": "short black",
@@ -11284,7 +11284,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 940,
-    "name": "OnChainPixel #940",
+    "name": "Dwellers #940",
     "base": "human dark",
     "background": "crimson",
     "hair": "tall blue",
@@ -11296,7 +11296,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 941,
-    "name": "OnChainPixel #941",
+    "name": "Dwellers #941",
     "base": "human tan",
     "background": "midnight",
     "hair": "bald red",
@@ -11308,7 +11308,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 942,
-    "name": "OnChainPixel #942",
+    "name": "Dwellers #942",
     "base": "human tan",
     "background": "gold",
     "hair": "afro red",
@@ -11320,7 +11320,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 943,
-    "name": "OnChainPixel #943",
+    "name": "Dwellers #943",
     "base": "human light",
     "background": "crimson",
     "hair": "flat red",
@@ -11332,7 +11332,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 944,
-    "name": "OnChainPixel #944",
+    "name": "Dwellers #944",
     "base": "human pale",
     "background": "purple",
     "hair": "afro pink",
@@ -11344,7 +11344,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 945,
-    "name": "OnChainPixel #945",
+    "name": "Dwellers #945",
     "base": "robot",
     "background": "gold",
     "hair": "flat black",
@@ -11356,7 +11356,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 946,
-    "name": "OnChainPixel #946",
+    "name": "Dwellers #946",
     "base": "alien blue",
     "background": "crimson",
     "hair": "tall red",
@@ -11368,7 +11368,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 947,
-    "name": "OnChainPixel #947",
+    "name": "Dwellers #947",
     "base": "human tan",
     "background": "slate",
     "hair": "tall brown",
@@ -11380,7 +11380,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 948,
-    "name": "OnChainPixel #948",
+    "name": "Dwellers #948",
     "base": "alien green",
     "background": "midnight",
     "hair": "ponytail teal",
@@ -11392,7 +11392,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 949,
-    "name": "OnChainPixel #949",
+    "name": "Dwellers #949",
     "base": "human light",
     "background": "gold",
     "hair": "tall blonde",
@@ -11404,7 +11404,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 950,
-    "name": "OnChainPixel #950",
+    "name": "Dwellers #950",
     "base": "human light",
     "background": "forest",
     "hair": "tall blue",
@@ -11416,7 +11416,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 951,
-    "name": "OnChainPixel #951",
+    "name": "Dwellers #951",
     "base": "zombie",
     "background": "midnight",
     "hair": "flat black",
@@ -11428,7 +11428,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 952,
-    "name": "OnChainPixel #952",
+    "name": "Dwellers #952",
     "base": "human dark",
     "background": "slate",
     "hair": "short brown",
@@ -11440,7 +11440,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 953,
-    "name": "OnChainPixel #953",
+    "name": "Dwellers #953",
     "base": "human light",
     "background": "midnight",
     "hair": "long brown",
@@ -11452,7 +11452,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 954,
-    "name": "OnChainPixel #954",
+    "name": "Dwellers #954",
     "base": "human dark",
     "background": "slate",
     "hair": "beanie blue",
@@ -11464,7 +11464,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 955,
-    "name": "OnChainPixel #955",
+    "name": "Dwellers #955",
     "base": "alien green",
     "background": "ice",
     "hair": "flat blue",
@@ -11476,7 +11476,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 956,
-    "name": "OnChainPixel #956",
+    "name": "Dwellers #956",
     "base": "human tan",
     "background": "slate",
     "hair": "short orange",
@@ -11488,7 +11488,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 957,
-    "name": "OnChainPixel #957",
+    "name": "Dwellers #957",
     "base": "human pale",
     "background": "slate",
     "hair": "bald brown",
@@ -11500,7 +11500,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 958,
-    "name": "OnChainPixel #958",
+    "name": "Dwellers #958",
     "base": "human dark",
     "background": "slate",
     "hair": "short black",
@@ -11512,7 +11512,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 959,
-    "name": "OnChainPixel #959",
+    "name": "Dwellers #959",
     "base": "human tan",
     "background": "navy",
     "hair": "spiky brown",
@@ -11524,7 +11524,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 960,
-    "name": "OnChainPixel #960",
+    "name": "Dwellers #960",
     "base": "human tan",
     "background": "midnight",
     "hair": "buzz blue",
@@ -11536,7 +11536,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 961,
-    "name": "OnChainPixel #961",
+    "name": "Dwellers #961",
     "base": "human pale",
     "background": "slate",
     "hair": "tall brown",
@@ -11548,7 +11548,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 962,
-    "name": "OnChainPixel #962",
+    "name": "Dwellers #962",
     "base": "human pale",
     "background": "crimson",
     "hair": "flat brown",
@@ -11560,7 +11560,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 963,
-    "name": "OnChainPixel #963",
+    "name": "Dwellers #963",
     "base": "demon",
     "background": "purple",
     "hair": "short blue",
@@ -11572,7 +11572,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 964,
-    "name": "OnChainPixel #964",
+    "name": "Dwellers #964",
     "base": "zombie",
     "background": "gold",
     "hair": "short blonde",
@@ -11584,7 +11584,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 965,
-    "name": "OnChainPixel #965",
+    "name": "Dwellers #965",
     "base": "human light",
     "background": "forest",
     "hair": "short purple",
@@ -11596,7 +11596,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 966,
-    "name": "OnChainPixel #966",
+    "name": "Dwellers #966",
     "base": "human light",
     "background": "navy",
     "hair": "mohawk pink",
@@ -11608,7 +11608,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 967,
-    "name": "OnChainPixel #967",
+    "name": "Dwellers #967",
     "base": "alien blue",
     "background": "forest",
     "hair": "bald red",
@@ -11620,7 +11620,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 968,
-    "name": "OnChainPixel #968",
+    "name": "Dwellers #968",
     "base": "human dark",
     "background": "crimson",
     "hair": "short black",
@@ -11632,7 +11632,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 969,
-    "name": "OnChainPixel #969",
+    "name": "Dwellers #969",
     "base": "human tan",
     "background": "ice",
     "hair": "short silver",
@@ -11644,7 +11644,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 970,
-    "name": "OnChainPixel #970",
+    "name": "Dwellers #970",
     "base": "human tan",
     "background": "navy",
     "hair": "mohawk black",
@@ -11656,7 +11656,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 971,
-    "name": "OnChainPixel #971",
+    "name": "Dwellers #971",
     "base": "zombie",
     "background": "crimson",
     "hair": "tall brown",
@@ -11668,7 +11668,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 972,
-    "name": "OnChainPixel #972",
+    "name": "Dwellers #972",
     "base": "human light",
     "background": "ice",
     "hair": "tall blue",
@@ -11680,7 +11680,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 973,
-    "name": "OnChainPixel #973",
+    "name": "Dwellers #973",
     "base": "human pale",
     "background": "slate",
     "hair": "afro silver",
@@ -11692,7 +11692,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 974,
-    "name": "OnChainPixel #974",
+    "name": "Dwellers #974",
     "base": "human pale",
     "background": "purple",
     "hair": "ponytail black",
@@ -11704,7 +11704,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 975,
-    "name": "OnChainPixel #975",
+    "name": "Dwellers #975",
     "base": "demon",
     "background": "midnight",
     "hair": "beanie orange",
@@ -11716,7 +11716,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 976,
-    "name": "OnChainPixel #976",
+    "name": "Dwellers #976",
     "base": "human light",
     "background": "crimson",
     "hair": "short white",
@@ -11728,7 +11728,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 977,
-    "name": "OnChainPixel #977",
+    "name": "Dwellers #977",
     "base": "human dark",
     "background": "navy",
     "hair": "short black",
@@ -11740,7 +11740,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 978,
-    "name": "OnChainPixel #978",
+    "name": "Dwellers #978",
     "base": "alien green",
     "background": "slate",
     "hair": "beanie silver",
@@ -11752,7 +11752,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 979,
-    "name": "OnChainPixel #979",
+    "name": "Dwellers #979",
     "base": "human light",
     "background": "midnight",
     "hair": "side_part red",
@@ -11764,7 +11764,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 980,
-    "name": "OnChainPixel #980",
+    "name": "Dwellers #980",
     "base": "robot",
     "background": "gold",
     "hair": "flat brown",
@@ -11776,7 +11776,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 981,
-    "name": "OnChainPixel #981",
+    "name": "Dwellers #981",
     "base": "demon",
     "background": "slate",
     "hair": "long brown",
@@ -11788,7 +11788,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 982,
-    "name": "OnChainPixel #982",
+    "name": "Dwellers #982",
     "base": "human pale",
     "background": "forest",
     "hair": "short white",
@@ -11800,7 +11800,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 983,
-    "name": "OnChainPixel #983",
+    "name": "Dwellers #983",
     "base": "human tan",
     "background": "forest",
     "hair": "flat blonde",
@@ -11812,7 +11812,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 984,
-    "name": "OnChainPixel #984",
+    "name": "Dwellers #984",
     "base": "human dark",
     "background": "midnight",
     "hair": "beanie red",
@@ -11824,7 +11824,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 985,
-    "name": "OnChainPixel #985",
+    "name": "Dwellers #985",
     "base": "robot",
     "background": "crimson",
     "hair": "flat brown",
@@ -11836,7 +11836,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 986,
-    "name": "OnChainPixel #986",
+    "name": "Dwellers #986",
     "base": "human light",
     "background": "crimson",
     "hair": "flat black",
@@ -11848,7 +11848,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 987,
-    "name": "OnChainPixel #987",
+    "name": "Dwellers #987",
     "base": "human dark",
     "background": "midnight",
     "hair": "ponytail pink",
@@ -11860,7 +11860,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 988,
-    "name": "OnChainPixel #988",
+    "name": "Dwellers #988",
     "base": "zombie",
     "background": "midnight",
     "hair": "afro brown",
@@ -11872,7 +11872,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 989,
-    "name": "OnChainPixel #989",
+    "name": "Dwellers #989",
     "base": "human light",
     "background": "forest",
     "hair": "short black",
@@ -11884,7 +11884,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 990,
-    "name": "OnChainPixel #990",
+    "name": "Dwellers #990",
     "base": "human light",
     "background": "gold",
     "hair": "mohawk brown",
@@ -11896,7 +11896,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 991,
-    "name": "OnChainPixel #991",
+    "name": "Dwellers #991",
     "base": "human tan",
     "background": "slate",
     "hair": "spiky red",
@@ -11908,7 +11908,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 992,
-    "name": "OnChainPixel #992",
+    "name": "Dwellers #992",
     "base": "human dark",
     "background": "purple",
     "hair": "tall pink",
@@ -11920,7 +11920,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 993,
-    "name": "OnChainPixel #993",
+    "name": "Dwellers #993",
     "base": "zombie",
     "background": "slate",
     "hair": "ponytail green",
@@ -11932,7 +11932,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 994,
-    "name": "OnChainPixel #994",
+    "name": "Dwellers #994",
     "base": "human light",
     "background": "forest",
     "hair": "mohawk purple",
@@ -11944,7 +11944,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 995,
-    "name": "OnChainPixel #995",
+    "name": "Dwellers #995",
     "base": "human tan",
     "background": "crimson",
     "hair": "tall orange",
@@ -11956,7 +11956,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 996,
-    "name": "OnChainPixel #996",
+    "name": "Dwellers #996",
     "base": "human tan",
     "background": "midnight",
     "hair": "short red",
@@ -11968,7 +11968,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 997,
-    "name": "OnChainPixel #997",
+    "name": "Dwellers #997",
     "base": "human light",
     "background": "crimson",
     "hair": "tall blonde",
@@ -11980,7 +11980,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 998,
-    "name": "OnChainPixel #998",
+    "name": "Dwellers #998",
     "base": "human light",
     "background": "slate",
     "hair": "spiky silver",
@@ -11992,7 +11992,7 @@ export const GENERATED_COLLECTION = [
   },
   {
     "id": 999,
-    "name": "OnChainPixel #999",
+    "name": "Dwellers #999",
     "base": "demon",
     "background": "gold",
     "hair": "long orange",

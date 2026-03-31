@@ -1,4 +1,4 @@
-# OnChainPixel Audit Notes
+# Dwellers Audit Notes
 
 This document is not an external audit.  
 It is the current transparent status of what is hardened, what still depends on trust, and what remains before a serious public launch.
@@ -239,7 +239,7 @@ Not enough for:
 
 ## Bottom Line
 
-OnChainPixel is now much cleaner than the earlier versions:
+Dwellers is now much cleaner than the earlier versions:
 
 - ownership handoff is safer
 - palette mutability is controlled

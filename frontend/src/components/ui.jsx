@@ -476,10 +476,10 @@ export function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode,
           </div>
           <div style={{ textAlign: "left" }}>
             <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600, letterSpacing: -0.6 }}>
-              OnChainPixel
+              Dwellers
             </div>
             <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 0.7 }}>
-              Fully on-chain pixel protocol
+              Fully on-chain pixel collection
             </div>
           </div>
         </MetalButton>

@@ -1,4 +1,4 @@
-# OnChainPixel Plan
+# Dwellers Plan
 
 This is the current roadmap for the real V1 direction, not the historical brainstorming path.
 

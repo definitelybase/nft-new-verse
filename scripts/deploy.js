@@ -1,5 +1,5 @@
 /**
- * OnChainPixel — Full Deploy Script
+ * Dwellers — Full Deploy Script
  * 
  * Deploys everything in order:
  *   1. Deploy PixelFactory
@@ -72,7 +72,7 @@ const PALETTE_16 = Buffer.from([
 // ============================================================
 
 const COLLECTION = {
-  name: "OnChainPixels",
+  name: "Dwellers",
   symbol: "OCPX",
   bitDepth: 4,
   defaultWidth: Number(process.env.DEFAULT_CANVAS_WIDTH || "16"),
@@ -129,7 +129,7 @@ async function main() {
   if (!isAddress(ownerAddress) || ownerAddress === ZeroAddress) {
     throw new Error("OWNER_ADDRESS/SAFE_ADDRESS must be a non-zero address");
   }
-  console.log(`\nOnChainPixel Full Deploy -> ${network}`);
+  console.log(`\nDwellers Full Deploy -> ${network}`);
   console.log(`Deployer: ${wallet.address}`);
   console.log(`Creator:  ${creatorAddress}`);
   console.log(`Owner:    ${ownerAddress}`);

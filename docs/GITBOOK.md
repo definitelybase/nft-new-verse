@@ -1,8 +1,8 @@
-# OnChainPixel
+# Dwellers
 
 ## What This Project Is
 
-OnChainPixel is a fully on-chain pixel NFT protocol with two native market layers:
+Dwellers is a fully on-chain pixel NFT protocol with two native market layers:
 
 - an on-chain floor exit lane through `PixelPool`
 - an on-chain peer-to-peer and protocol marketplace through `PixelMarketplace`
@@ -21,7 +21,7 @@ It is meant to be a more honest NFT system:
 
 ## Core Promise
 
-OnChainPixel tries to solve a specific problem:
+Dwellers tries to solve a specific problem:
 
 **most NFTs have no native exit lane at all.**
 
@@ -219,7 +219,7 @@ Most NFT systems split these concerns apart:
 - liquidity is somewhere else
 - treasury logic barely exists
 
-OnChainPixel tries to keep those layers in one coherent design:
+Dwellers tries to keep those layers in one coherent design:
 
 - on-chain art
 - reserve-backed floor logic

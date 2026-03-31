@@ -1,4 +1,4 @@
-# Lessons Learned — OnChainPixel
+# Lessons Learned — Dwellers
 
 ## Bug: SSTORE2 Creation Code Offset (Critical)
 **What happened**: SSTORE2 write function used `0x0a` (10) for CODECOPY offset, but the creation code was actually 12 bytes long (PUSH2 uses 3 bytes, not 1).

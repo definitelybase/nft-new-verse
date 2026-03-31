@@ -319,13 +319,13 @@ export default function MarketplacePage({ pool, isLive, wallet, appConfig, poolE
             <div style={{ width: 72, height: 72, borderRadius: 22, overflow: "hidden", border: `1px solid ${COLORS.borderStrong}`, background: COLORS.surfaceStrong }}>
               <img
                 src={`/collection/images/${FEATURED_COLLECTION_IDS[0]}.svg`}
-                alt="OnChainPixel featured token"
+                alt="Dwellers featured token"
                 style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated", display: "block" }}
               />
             </div>
             <div>
               <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 34, fontWeight: 600, letterSpacing: -1.2 }}>
-                OnChainPixel Genesis
+                Dwellers Genesis
               </div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
                 <Eyebrow tone="accent">Ethereum</Eyebrow>

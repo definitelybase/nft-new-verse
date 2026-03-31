@@ -1,5 +1,5 @@
 /**
- * OnChainPixel — Site Collection Generator
+ * Dwellers — Site Collection Generator
  *
  * 16x16 front-facing pixel characters, 4-bit color depth (16 colors).
  * Deterministic: seed (tokenId) -> always the same character.
@@ -479,7 +479,7 @@ function toSVG(grid) {
 
 function toMetadata(tokenId, traits, tier) {
   return {
-    name: `OnChainPixel #${tokenId}`,
+    name: `Dwellers #${tokenId}`,
     description: "Fully on-chain pixel art. No IPFS. No servers. Forever.",
     image: `images/${tokenId}.svg`,
     attributes: [

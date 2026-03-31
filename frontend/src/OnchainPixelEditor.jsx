@@ -95,7 +95,7 @@ function packPixelsToHex(grid) {
 }
 
 const TWITTER_HANDLE = "@pixel_dwallers";
-const TWITTER_POST = "https://x.com/OnChainPixel/status/XXXXXXXXX";
+const TWITTER_POST = "https://x.com/Dwellers/status/XXXXXXXXX";
 
 function StepCard({ number, title, children, done, onToggle }) {
   return (

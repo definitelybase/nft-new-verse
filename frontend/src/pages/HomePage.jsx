@@ -504,7 +504,7 @@ function LiquiditySystemOverview({ className = "", style }) {
       ],
     },
     {
-      label: "OnChainPixel",
+      label: "Dwellers",
       tone: COLORS.green,
       rows: [
         "Art fully on-chain",

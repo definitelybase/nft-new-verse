@@ -461,7 +461,7 @@ export default function MintPage({ wallet, appConfig, pool, isLive, poolError })
           <FrostCard className="site-reveal" style={{ padding: 24, height: "100%", display: "flex", flexDirection: "column", ...revealStyle(130) }}>
             <Eyebrow tone="purple">Mint route</Eyebrow>
             <div style={{ marginTop: 14, color: COLORS.text, fontFamily: fontDisplay, fontSize: 42, fontWeight: 600, letterSpacing: -1.6, lineHeight: 0.94 }}>
-              Mint OnChainPixel
+              Mint Dwellers
             </div>
             <div style={{ marginTop: 12, color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, lineHeight: 1.8 }}>
               Every mint stores the artwork on-chain, routes 60% into reserve, 10% into treasury, and 30% into the creator / team wallet.

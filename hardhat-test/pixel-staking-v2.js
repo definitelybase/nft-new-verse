@@ -31,7 +31,7 @@ async function deployStack() {
   const mintPrice = ethers.utils.parseEther("0.01");
 
   const NFT = await ethers.getContractFactory("OnChainPixelNFT");
-  const nft = await NFT.deploy("OnChainPixels", "OCPX", 4, 1, 1, 1000, mintPrice, palette16());
+  const nft = await NFT.deploy("Dwellers", "OCPX", 4, 1, 1, 1000, mintPrice, palette16());
 
   const Pool = await ethers.getContractFactory("PixelPool");
   const pool = await Pool.deploy(nft.address, mintPrice);

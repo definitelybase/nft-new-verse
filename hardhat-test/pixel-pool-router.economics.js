@@ -89,7 +89,7 @@ async function deployStack() {
 
   const NFT = await ethers.getContractFactory("OnChainPixelNFT");
   const nft = await NFT.deploy(
-    "OnChainPixels",
+    "Dwellers",
     "OCPX",
     4,
     1,

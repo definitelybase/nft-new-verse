@@ -1,8 +1,8 @@
-# OnChainPixel Architecture
+# Dwellers Architecture
 
 ## Design Goal
 
-OnChainPixel is built around a simple separation of roles:
+Dwellers is built around a simple separation of roles:
 
 - the NFT contract stores and renders the art
 - the router handles mint and sell entry flows
@@ -438,7 +438,7 @@ This is documented in:
 
 ## Summary
 
-OnChainPixel V1 is best understood as:
+Dwellers V1 is best understood as:
 
 - fully on-chain art
 - reserve-backed floor exits

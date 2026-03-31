@@ -1,8 +1,8 @@
-# OnChainPixel NFT Spec
+# Dwellers NFT Spec
 
 ## Purpose
 
-This document describes the `OnChainPixel` NFT layer itself.
+This document describes the `Dwellers` NFT layer itself.
 
 It is intentionally separate from:
 

@@ -111,7 +111,7 @@ describe("Factory and NFT admin paths", function () {
 
     const NFT = await ethers.getContractFactory("OnChainPixelNFT");
     const nft = await NFT.connect(owner).deploy(
-      "OnChainPixels",
+      "Dwellers",
       "OCPX",
       4,
       1,
@@ -189,7 +189,7 @@ describe("Factory and NFT admin paths", function () {
     const [owner] = await ethers.getSigners();
     const NFT = await ethers.getContractFactory("OnChainPixelNFT");
     const nft = await NFT.connect(owner).deploy(
-      "OnChainPixels",
+      "Dwellers",
       "OCPX",
       4,
       1,
@@ -221,7 +221,7 @@ describe("Factory and NFT admin paths", function () {
     const Router = await ethers.getContractFactory("PixelRouter");
 
     const nft = await NFT.connect(owner).deploy(
-      "OnChainPixels",
+      "Dwellers",
       "OCPX",
       4,
       1,

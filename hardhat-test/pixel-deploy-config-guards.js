@@ -21,12 +21,12 @@ describe("Deploy and config guards", function () {
     const mintPrice = ethers.utils.parseEther("0.01");
 
     await expectCustomError(
-      NFT.connect(owner).deploy("OnChainPixels", "OCPX", 4, 1, 1, 1000, 0, palette16()),
+      NFT.connect(owner).deploy("Dwellers", "OCPX", 4, 1, 1, 1000, 0, palette16()),
       "InvalidAmount"
     );
 
     const nft = await NFT.connect(owner).deploy(
-      "OnChainPixels",
+      "Dwellers",
       "OCPX",
       4,
       1,
@@ -53,7 +53,7 @@ describe("Deploy and config guards", function () {
     const Market = await ethers.getContractFactory("PixelMarketplace");
 
     await expectCustomError(
-      NFT.connect(owner).deploy("OnChainPixels", "OCPX", 4, 1, 1, 0, mintPrice, palette16()),
+      NFT.connect(owner).deploy("Dwellers", "OCPX", 4, 1, 1, 0, mintPrice, palette16()),
       "InvalidAmount"
     );
 
@@ -101,7 +101,7 @@ describe("Deploy and config guards", function () {
     const Router = await ethers.getContractFactory("PixelRouter");
 
     const nft = await NFT.connect(owner).deploy(
-      "OnChainPixels",
+      "Dwellers",
       "OCPX",
       4,
       1,

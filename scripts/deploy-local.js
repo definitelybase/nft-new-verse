@@ -1,5 +1,5 @@
 /**
- * OnChainPixel — Direct Deploy (no Factory)
+ * Dwellers — Direct Deploy (no Factory)
  *
  * Deploys NFT + Pool + Router directly. 5x cheaper than Factory pattern.
  * Works on localhost, Sepolia, or any network configured in hardhat.config.js.
@@ -69,7 +69,7 @@ async function main() {
   // 1. Deploy NFT
   const NFT = await ethers.getContractFactory("OnChainPixelNFT");
   const nft = await NFT.deploy(
-    "OnChainPixels", "OCPX",
+    "Dwellers", "OCPX",
     4, defaultWidth, defaultHeight, maxSupply,
     mintPrice, PALETTE_16
   );

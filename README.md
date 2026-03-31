@@ -1,6 +1,6 @@
-# OnChainPixel
+# Dwellers
 
-OnChainPixel is a fully on-chain pixel NFT protocol with a reserve-backed floor exit lane and a native on-chain marketplace.
+Dwellers is a fully on-chain pixel NFT protocol with a reserve-backed floor exit lane and a native on-chain marketplace.
 
 This repository contains the full V1 stack:
 
@@ -33,7 +33,7 @@ Technical NFT-standard references:
 
 ## What The Protocol Does
 
-OnChainPixel combines three layers that are usually separate:
+Dwellers combines three layers that are usually separate:
 
 1. **Art layer**  
    The NFT art is stored fully on-chain. Each token stores packed pixel data and renders its own SVG in the contract.
