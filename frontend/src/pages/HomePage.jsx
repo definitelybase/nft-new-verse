@@ -197,6 +197,30 @@ function LiquiditySystemOverview({ className = "", style }) {
     { label: "Trade fee", value: "2.5%", sub: "Each trade routes fee into stakers, reserve, treasury, and protocol fees.", tone: COLORS.green },
   ];
 
+  const signalRows = [
+    ["Purchase rate", "sales in 24h / circulating supply", "Expansion wants >= 35 bps. Release wants >= 15 bps. Weak demand counts it as weak below 10 bps."],
+    ["Listing pressure", "active listings / circulating supply", "Expansion wants <= 800 bps. Release wants <= 1200 bps. Weak demand counts it as weak above 1500 bps."],
+    ["Floor ratio", "market floor / protocol floor", "Expansion and release both want >= 120%. Weak demand counts it as weak at or below 100%."],
+  ];
+
+  const ruleCards = [
+    ["Mint route", "Router mints the NFT, then routes 60% into reserve, 10% into treasury, and 30% into ops. The reserve is funded on day one instead of waiting for secondary demand."],
+    ["Sell-to-pool gate", "Sell-to-pool only opens after the 6h launch-protection window, only outside Expansion, and only while coverage stays at or above 100%."],
+    ["Release gate", "Protocol inventory only re-enters the market in Stabilization and only if purchase rate, listing pressure, and floor ratio all pass the release thresholds."],
+    ["Weak-demand cleanup", "Buyback activates only when weak demand or stale / excess inventory appears, and only when coverage is at least 200%."],
+    ["Fee routing", "Trade fee is 2.5%. Inside that fee: 10% goes to stakers, 25% back to reserve, 25% to treasury, and 40% to protocol fees."],
+    ["Settlement truth", "Protocol inventory only improves sell pressure after a real marketplace sale. Moving an NFT into a listing does not count as cleanup by itself."],
+  ];
+
+  const lifecycleCards = [
+    ["1. Mint seeds the machine", "The first mint does not wait for secondary demand. It seeds reserve, treasury, and ops immediately."],
+    ["2. Holders choose the route", "After mint, holders can hold, list in the native market, stake for fee flow, or sell into the pool if the sell lane is open."],
+    ["3. Pool only quotes the floor", "The pool does not value rare traits. It only quotes the collection floor and leaves premium discovery to the marketplace."],
+    ["4. Marketplace feeds the state machine", "Recent sales, active listings, and the market floor feed Weak Demand, Stabilization, and Expansion inside the pool."],
+    ["5. Treasury cleans weak markets", "If inventory gets stale or weak demand persists, treasury buyback can remove part of that inventory under strict coverage limits."],
+    ["6. Vault and relist stay gated", "Inventory can move into vault, burn, or relist only when the protocol gates say the market can actually absorb it."],
+  ];
+
   const zones = [
     { label: "Weak demand", dot: "#D6B861" },
     { label: "Stabilization", dot: "#AE8BFF" },
@@ -210,8 +234,8 @@ function LiquiditySystemOverview({ className = "", style }) {
           <div style={{ color: "#7C56D8", fontFamily: fontDisplay, fontSize: 28, fontWeight: 600, letterSpacing: -0.9 }}>
             How liquidity works
           </div>
-          <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, marginTop: 6, lineHeight: 1.7, maxWidth: 560 }}>
-            Mints seed the reserve, the pool quotes a floor only while gates stay open, treasury handles weak-demand cleanup, and premium pricing stays in the marketplace.
+          <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, marginTop: 6, lineHeight: 1.7, maxWidth: 980 }}>
+            This is the full on-site protocol summary. Mints seed the reserve, the pool quotes only the floor lane, the native marketplace supplies the live demand signals, and treasury only cleans weak markets when guarded thresholds say it is safe. Rare-piece pricing stays in the marketplace, not inside the pool.
           </div>
         </div>
         <Eyebrow tone="purple">Protocol flow</Eyebrow>
@@ -359,17 +383,60 @@ function LiquiditySystemOverview({ className = "", style }) {
 
         <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 24, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <div style={{ color: "#1A9B67", fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
-            Protocol rules
+            Protocol rules and gates
           </div>
+          <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
+            The pool does not make discretionary decisions. It reads marketplace signals and follows explicit gates.
+          </div>
+
           <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
-            {[
-              ["Mint", "Every mint routes 60% into reserve, 10% into treasury, and 30% into ops. The reserve is funded on day one instead of waiting for secondary demand."],
-              ["Quote the floor", "The pool only quotes the collection floor. Rare pieces are still priced in the market, and sell-to-pool closes when coverage weakens or expansion starts."],
-              ["Clean up stale inventory", "Weak demand can leave old inventory sitting in the pool. Treasury buyback removes part of it when the cleanup gates are open."],
-              ["Stake for fee flow", "Stakers receive 10% of protocol trade fees. No emissions, no fixed APR, only fee flow when trading actually happens."],
-            ].map(([title, body]) => (
+            {ruleCards.map(([title, body]) => (
               <div key={title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, minHeight: 124 }}>
                 <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
+                  {title}
+                </div>
+                <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
+                  {body}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: 14, padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface }}>
+            <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
+              Signal inputs
+            </div>
+            <div style={{ marginTop: 8, display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
+              {signalRows.map(([title, formula, note]) => (
+                <div key={title} style={{ display: "grid", gridTemplateColumns: "150px 180px 1fr", gap: 10, alignItems: "start" }}>
+                  <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 13, fontWeight: 600 }}>{title}</div>
+                  <div style={{ color: "#7C56D8", fontFamily: fonts, fontSize: 10, letterSpacing: 0.4, lineHeight: 1.6, textTransform: "uppercase" }}>{formula}</div>
+                  <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>{note}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </FrostCard>
+      </div>
+
+      <div style={{ marginTop: 14 }}>
+        <FrostCard style={{ padding: 18, background: COLORS.surfaceStrong, borderRadius: 24 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+            <div>
+              <div style={{ color: "#2AABCF", fontFamily: fontDisplay, fontSize: 20, fontWeight: 600 }}>
+                Full lifecycle on one page
+              </div>
+              <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7, maxWidth: 920 }}>
+                This is the shortest honest explanation of the whole machine: mint funds reserve, holders choose between market / stake / pool, marketplace signals drive the state machine, and treasury only cleans inventory when demand weakens and coverage is strong enough.
+              </div>
+            </div>
+            <Eyebrow tone="green">End-to-end</Eyebrow>
+          </div>
+
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
+            {lifecycleCards.map(([title, body]) => (
+              <div key={title} style={{ padding: 14, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, minHeight: 118 }}>
+                <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 15, fontWeight: 600 }}>
                   {title}
                 </div>
                 <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
