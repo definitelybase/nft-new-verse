@@ -857,7 +857,7 @@ function LiquiditySystemOverview({ className = "", style }) {
         </InsightPanel>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.05fr 1fr 0.95fr", gap: 14, alignItems: "stretch" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 14, alignItems: "stretch" }}>
         <InsightPanel title="Floor bid curve" tone="#D4497A" glyph="↕" pixels={INFO_PANEL_PIXELS.curve}>
           <div
             style={{
@@ -915,7 +915,7 @@ function LiquiditySystemOverview({ className = "", style }) {
         </InsightPanel>
 
         <InsightPanel title="Weighted staking" tone="#D4497A" glyph="›" pixels={INFO_PANEL_PIXELS.staking}>
-          <div style={{ display: "grid", gridTemplateColumns: "1.02fr 0.98fr", gap: 14, alignItems: "stretch" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, alignItems: "stretch" }}>
             <div
               style={{
                 padding: 14,
@@ -992,7 +992,7 @@ function LiquiditySystemOverview({ className = "", style }) {
             The protocol does not need OpenSea to understand its own market. V1 is designed around native trading.
           </div>
 
-          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 10 }}>
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <div style={{ display: "grid", gap: 10 }}>
               {marketTiles.slice(0, 2).map(([title, body], index) => (
                 <div key={title} style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: index === 0 ? "rgba(110,231,183,0.08)" : "rgba(255,255,255,0.08)" }}>
@@ -1011,7 +1011,7 @@ function LiquiditySystemOverview({ className = "", style }) {
             </div>
           </div>
 
-          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: 10, paddingTop: 12, borderTop: `1px dashed ${COLORS.border}` }}>
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10, paddingTop: 12, borderTop: `1px dashed ${COLORS.border}` }}>
             {[
               "Rolling 24h sales count",
               "Active listing count",
@@ -1024,7 +1024,7 @@ function LiquiditySystemOverview({ className = "", style }) {
                   fontFamily: fonts,
                   fontSize: 11,
                   lineHeight: 1.55,
-                  paddingTop: index === 0 ? 2 : 10,
+                  paddingTop: 4,
                 }}
               >
                 {label}
@@ -1068,9 +1068,10 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
     <div
       style={{
         position: "relative",
-        width: "calc(100vw - 24px)",
+        width: "100%",
         margin: "0 auto",
         padding: "118px 12px 64px",
+        boxSizing: "border-box",
         overflow: "hidden",
       }}
     >
