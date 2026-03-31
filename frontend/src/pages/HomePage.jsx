@@ -16,6 +16,102 @@ const ROW2_IDS = buildMarqueeRow(25);
 const ROW3_IDS = buildMarqueeRow(50);
 const ROW4_IDS = buildMarqueeRow(75);
 
+const BACKDROP_PIXEL_PATTERNS = [
+  [[0, 0], [1, 0], [0, 1], [1, 1]],
+  [[0, 0], [1, 0], [2, 0], [1, 1]],
+  [[0, 0], [0, 1], [1, 1], [1, 2]],
+  [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]],
+  [[0, 0], [1, 0], [2, 0], [0, 1], [2, 1]],
+];
+
+function createSeededRandom(seed) {
+  let state = seed >>> 0;
+  return () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
+function buildBackdropPixels(count, seed = 1337) {
+  const random = createSeededRandom(seed);
+  const palette = [
+    "rgba(124, 86, 216, 0.18)",
+    "rgba(42, 171, 207, 0.16)",
+    "rgba(26, 155, 103, 0.16)",
+    "rgba(232, 133, 58, 0.16)",
+    "rgba(212, 73, 122, 0.15)",
+    "rgba(183, 138, 31, 0.15)",
+  ];
+
+  return Array.from({ length: count }, (_, index) => {
+    const pattern = BACKDROP_PIXEL_PATTERNS[Math.floor(random() * BACKDROP_PIXEL_PATTERNS.length)];
+    return {
+      id: index,
+      left: `${6 + random() * 88}%`,
+      top: `${3 + random() * 94}%`,
+      size: 8 + Math.floor(random() * 8),
+      opacity: 0.42 + random() * 0.34,
+      color: palette[Math.floor(random() * palette.length)],
+      pattern,
+    };
+  });
+}
+
+const HOME_BACKDROP_PIXELS = buildBackdropPixels(56, 20260331);
+
+function HomePixelBackdrop() {
+  return (
+    <div
+      aria-hidden
+      style={{
+        position: "absolute",
+        inset: 0,
+        overflow: "hidden",
+        pointerEvents: "none",
+        zIndex: 0,
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(circle at 12% 18%, rgba(124, 86, 216, 0.08), transparent 24%), radial-gradient(circle at 86% 12%, rgba(42, 171, 207, 0.08), transparent 22%), radial-gradient(circle at 14% 78%, rgba(232, 133, 58, 0.06), transparent 22%), radial-gradient(circle at 82% 74%, rgba(26, 155, 103, 0.06), transparent 24%)",
+        }}
+      />
+      {HOME_BACKDROP_PIXELS.map((cluster) => (
+        <div
+          key={cluster.id}
+          style={{
+            position: "absolute",
+            left: cluster.left,
+            top: cluster.top,
+            width: cluster.size * 3,
+            height: cluster.size * 3,
+            opacity: cluster.opacity,
+          }}
+        >
+          {cluster.pattern.map(([x, y], pixelIndex) => (
+            <div
+              key={pixelIndex}
+              style={{
+                position: "absolute",
+                left: x * cluster.size,
+                top: y * cluster.size,
+                width: cluster.size,
+                height: cluster.size,
+                borderRadius: 2,
+                background: cluster.color,
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.08) inset",
+              }}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function NftMarquee({ ids, speed = 28, reverse = false }) {
   const items = [...ids, ...ids]; // дублируем для бесконечности
   const totalWidth = ids.length * (80 + 8); // size + gap
@@ -621,70 +717,82 @@ export default function HomePage({ setPage, pool, isLive, poolError }) {
   ];
 
   return (
-    <div style={{ width: "calc(100vw - 24px)", margin: "0 auto", padding: "118px 12px 64px" }}>
-      <HeroGallery pool={pool} />
+    <div
+      style={{
+        position: "relative",
+        width: "calc(100vw - 24px)",
+        margin: "0 auto",
+        padding: "118px 12px 64px",
+        overflow: "hidden",
+      }}
+    >
+      <HomePixelBackdrop />
 
-      <div className="site-reveal-soft" style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 12, alignItems: "center", ...revealStyle(320) }}>
-        <MetalButton onClick={showSoon} tone="ghost" style={{ opacity: 0.5, cursor: "default" }}>
-          Mint route
-        </MetalButton>
-        <MetalButton onClick={showSoon} tone="ghost" style={{ opacity: 0.5, cursor: "default" }}>
-          Market route
-        </MetalButton>
-        <MetalButton onClick={showSoon} tone="ghost" style={{ opacity: 0.5, cursor: "default" }}>
-          Stake route
-        </MetalButton>
-      </div>
-      {toast && (
-        <div style={{
-          position: "fixed",
-          top: 80,
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "var(--ocp-surface-strong)",
-          border: "1px solid var(--ocp-border)",
-          borderRadius: 12,
-          padding: "10px 20px",
-          fontFamily: `'IBM Plex Mono', monospace`,
-          fontSize: 13,
-          color: "var(--ocp-text-muted)",
-          zIndex: 200,
-          pointerEvents: "none",
-          whiteSpace: "nowrap",
-        }}>
-          Preview only
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <HeroGallery pool={pool} />
+
+        <div className="site-reveal-soft" style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 12, alignItems: "center", ...revealStyle(320) }}>
+          <MetalButton onClick={showSoon} tone="ghost" style={{ opacity: 0.5, cursor: "default" }}>
+            Mint route
+          </MetalButton>
+          <MetalButton onClick={showSoon} tone="ghost" style={{ opacity: 0.5, cursor: "default" }}>
+            Market route
+          </MetalButton>
+          <MetalButton onClick={showSoon} tone="ghost" style={{ opacity: 0.5, cursor: "default" }}>
+            Stake route
+          </MetalButton>
         </div>
-      )}
-
-      <FrostCard className="site-reveal" style={{ padding: 18, marginTop: 22, ...revealStyle(620) }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <div>
-            <div style={{ color: "#D4497A", fontFamily: fontDisplay, fontSize: 24, fontWeight: 600, letterSpacing: -0.8 }}>
-              Protocol core
-            </div>
-            <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-              Three short rules that explain the protocol before the deeper liquidity diagram.
-            </div>
+        {toast && (
+          <div style={{
+            position: "fixed",
+            top: 80,
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "var(--ocp-surface-strong)",
+            border: "1px solid var(--ocp-border)",
+            borderRadius: 12,
+            padding: "10px 20px",
+            fontFamily: `'IBM Plex Mono', monospace`,
+            fontSize: 13,
+            color: "var(--ocp-text-muted)",
+            zIndex: 200,
+            pointerEvents: "none",
+            whiteSpace: "nowrap",
+          }}>
+            Preview only
           </div>
-          <Eyebrow tone="purple">Core notes</Eyebrow>
-        </div>
+        )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10, marginTop: 14, alignItems: "stretch" }}>
-          {features.map((feature, index) => (
-            <FrostCard key={feature.title} className="site-reveal" style={{ padding: 16, background: COLORS.surfaceStrong, minHeight: 144, display: "flex", flexDirection: "column", justifyContent: "space-between", ...revealStyle(680 + index * 70) }}>
-              <Eyebrow tone={feature.tone}>Protocol note</Eyebrow>
-              <div style={{ marginTop: 12, color: COLORS.text, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600, letterSpacing: -0.7 }}>
-                {feature.title}
+        <FrostCard className="site-reveal" style={{ padding: 18, marginTop: 22, ...revealStyle(620) }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <div>
+              <div style={{ color: "#D4497A", fontFamily: fontDisplay, fontSize: 24, fontWeight: 600, letterSpacing: -0.8 }}>
+                Protocol core
               </div>
-              <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.75 }}>
-                {feature.desc}
+              <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
+                Three short rules that explain the protocol before the deeper liquidity diagram.
               </div>
-            </FrostCard>
-          ))}
-        </div>
-      </FrostCard>
+            </div>
+            <Eyebrow tone="purple">Core notes</Eyebrow>
+          </div>
 
-      <LiquiditySystemOverview className="site-reveal" style={{ marginTop: 14, ...revealStyle(760) }} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10, marginTop: 14, alignItems: "stretch" }}>
+            {features.map((feature, index) => (
+              <FrostCard key={feature.title} className="site-reveal" style={{ padding: 16, background: COLORS.surfaceStrong, minHeight: 144, display: "flex", flexDirection: "column", justifyContent: "space-between", ...revealStyle(680 + index * 70) }}>
+                <Eyebrow tone={feature.tone}>Protocol note</Eyebrow>
+                <div style={{ marginTop: 12, color: COLORS.text, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600, letterSpacing: -0.7 }}>
+                  {feature.title}
+                </div>
+                <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.75 }}>
+                  {feature.desc}
+                </div>
+              </FrostCard>
+            ))}
+          </div>
+        </FrostCard>
+
+        <LiquiditySystemOverview className="site-reveal" style={{ marginTop: 14, ...revealStyle(760) }} />
+      </div>
     </div>
   );
 }

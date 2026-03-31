@@ -35,6 +35,36 @@ export function SiteMotionStyles() {
         opacity: 0.86;
       }
 
+      .site-glass-tab {
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+        box-shadow:
+          0 10px 24px rgba(0, 0, 0, 0.08),
+          inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+      }
+
+      .site-glass-tab > span:nth-of-type(1) {
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%) !important;
+      }
+
+      .site-glass-tab > span:nth-of-type(2) {
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.18) 0%, var(--ocp-surface) 100%) !important;
+        opacity: 0.92;
+      }
+
+      .site-glass-tab > span:nth-of-type(3) {
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.04) 100%) !important;
+        opacity: 0.46 !important;
+      }
+
+      .site-glass-tab-active > span:nth-of-type(2) {
+        background:
+          linear-gradient(180deg, rgba(186,156,255,0.24) 0%, rgba(255,255,255,0.14) 100%) !important;
+      }
+
       .site-hover-lift {
         transition: transform 220ms ease, border-color 220ms ease, background 220ms ease, box-shadow 220ms ease;
       }
@@ -465,6 +495,7 @@ export function FloatingNav({ page, setPage, wallet, onConnectWallet, themeMode,
                 onClick={() => setPage(item.id)}
                 tone={page === item.id ? "accent" : "ghost"}
                 active={page === item.id}
+                className={`site-glass-tab${page === item.id ? " site-glass-tab-active" : ""}`}
                 size="sm"
                 style={{
                   minHeight: 38,
