@@ -176,10 +176,10 @@ function LiquidityBar({ pool }) {
   const liveGrowthPct = minted > 0 ? Math.min((minted / COLLECTION_SUPPLY) * 100, 100) : 0;
   const growthPct = liveGrowthPct > 0 ? Math.max(liveGrowthPct, 4) : 12;
   const reserveMilestones = [1, 10, 100, COLLECTION_SUPPLY];
-  const growthSteps = [
-    ["User mints", "60% of that mint goes straight into reserve.", COLORS.accent],
-    ["Split executes", "10% goes to treasury and 30% to creator / team.", COLORS.purple],
-    ["Pool grows", "More mints deepen reserve and support the floor lane.", COLORS.green],
+  const mintAllocationCards = [
+    ["60%", "Pool reserve", "Every mint seeds the pool immediately.", COLORS.accent],
+    ["10%", "Treasury", "Cleanup and stale-inventory budget.", COLORS.purple],
+    ["30%", "Creator / team", "Build, rollout, and operating support.", COLORS.yellow],
   ];
   return (
     <FrostCard style={{ padding: 22, background: COLORS.surfaceStrong, borderRadius: 24, marginTop: 14 }}>
@@ -189,7 +189,7 @@ function LiquidityBar({ pool }) {
             How the reserve grows
           </div>
           <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, marginTop: 2 }}>
-            Minting does not just sell an NFT. It seeds reserve on the same transaction and grows the pool over time.
+            Every mint routes 60% into reserve. As supply fills, the pool compounds from that stream.
           </div>
         </div>
         <div style={{
@@ -202,37 +202,37 @@ function LiquidityBar({ pool }) {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
-        {growthSteps.map(([title, body, tone], index) => (
+        {mintAllocationCards.map(([value, title, body, tone]) => (
           <div
-            key={title}
+            key={value}
             style={{
               padding: 16,
               borderRadius: 20,
               border: `1px solid ${COLORS.border}`,
-              background: index === 1 ? "rgba(174,139,255,0.08)" : "rgba(255,255,255,0.05)",
+              background: "rgba(255,255,255,0.045)",
+              backdropFilter: "blur(12px)",
               position: "relative",
               overflow: "hidden",
               minHeight: 108,
             }}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-              <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{title}</div>
+              <div style={{ color: tone, fontFamily: fontDisplay, fontSize: 26, fontWeight: 700, lineHeight: 1 }}>{value}</div>
               <div
                 style={{
-                  width: 28,
-                  height: 28,
+                  padding: "6px 10px",
                   borderRadius: 999,
-                  display: "grid",
-                  placeItems: "center",
-                  background: `${tone}16`,
-                  border: `1px solid ${tone}28`,
+                  background: `${tone}12`,
+                  border: `1px solid ${tone}24`,
                   color: tone,
-                  fontFamily: fontDisplay,
-                  fontSize: 12,
+                  fontFamily: fonts,
+                  fontSize: 10,
                   fontWeight: 700,
+                  letterSpacing: 0.4,
+                  textTransform: "uppercase",
                 }}
               >
-                {index + 1}
+                {title}
               </div>
             </div>
             <div style={{ marginTop: 10, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.75, maxWidth: 250 }}>
@@ -332,7 +332,8 @@ function LiquidityBar({ pool }) {
               padding: 14,
               borderRadius: 18,
               border: `1px solid ${COLORS.border}`,
-              background: "rgba(255,255,255,0.04)",
+              background: "rgba(255,255,255,0.045)",
+              backdropFilter: "blur(12px)",
             }}
           >
             <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 9, letterSpacing: 1, textTransform: "uppercase" }}>{b.label}</div>
@@ -743,8 +744,12 @@ function LiquiditySystemOverview({ className = "", style }) {
               <div style={{ width: "30%", background: "rgba(244,207,102,0.22)" }} />
             </div>
             <div style={{ position: "absolute", inset: "0 0 auto 0", display: "grid", gridTemplateColumns: "60% 10% 30%" }}>
-              {["60%", "10%", "30%"].map((value) => (
-                <div key={value} style={{ textAlign: "center", color: COLORS.textDim, fontFamily: fontDisplay, fontSize: 14, fontWeight: 600 }}>
+              {[
+                ["60%", COLORS.accent],
+                ["10%", COLORS.purple],
+                ["30%", COLORS.yellow],
+              ].map(([value, color]) => (
+                <div key={value} style={{ textAlign: "center", color, fontFamily: fontDisplay, fontSize: 14, fontWeight: 700 }}>
                   {value}
                 </div>
               ))}
