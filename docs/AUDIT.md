@@ -68,7 +68,15 @@ The pool can now read live market signals from the native marketplace:
 - active listings
 - market floor
 
-Manual snapshot updates still exist as fallback, but they are no longer the primary path in the intended V1 architecture.
+Manual snapshot updates still exist, but only as a short paused-only emergency mode:
+
+- pool must be paused
+- marketplace must be paused
+- owner must explicitly enable manual mode
+- manual mode lasts at most `1 hour`
+- each snapshot is only valid for `30 minutes`
+
+That path is now incident tooling, not a normal market-operations path.
 
 ### Staking and fee accounting
 
@@ -88,7 +96,7 @@ The repository now includes guards and tests around:
 
 At the time of this document refresh:
 
-- Hardhat suite passes with `72` tests
+- Hardhat suite passes with `81` tests
 - frontend production build passes
 
 The test suite covers:
@@ -117,7 +125,8 @@ Owner powers still include important actions such as:
 - setting listing venue
 - queueing or applying router changes
 - releasing protocol inventory
-- updating fallback market snapshots
+- enabling short emergency manual snapshot mode while paused
+- updating manual market snapshots while paused
 - claiming protocol fees
 
 This means governance hardening matters just as much as contract correctness.
@@ -191,10 +200,9 @@ Normal protocol listings settle automatically now, which is good.
 
 But the system still keeps fallback controls for:
 
-- manual market snapshot updates
-- manual sale confirmations in non-standard cases
+- short emergency manual snapshot mode while pool and marketplace are both paused
 
-Those fallbacks are operationally useful, but they still imply owner power.
+That fallback is operationally useful, but it still implies owner power during incidents.
 
 ## What Is Good Enough Right Now
 

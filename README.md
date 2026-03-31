@@ -227,11 +227,20 @@ Transfer ownership to a Safe:
 NEW_OWNER_ADDRESS=0xYourSafe npx hardhat run scripts/transfer-ownership.js --network sepolia
 ```
 
-Prepare a manual market payload:
+Emergency-only manual market flow:
 
 ```bash
+RPC_URL=https://... npm run keeper:market -- manual-on deployment-11155111.json 1800
 RPC_URL=https://... npm run keeper:market -- snapshot deployment-11155111.json 35 800 0.012
+RPC_URL=https://... npm run keeper:market -- manual-off deployment-11155111.json
 ```
+
+Important:
+
+- this path is for incident recovery only
+- pause the pool and marketplace first
+- manual mode is short-lived by design
+- see [docs/EMERGENCY-GOVERNANCE.md](./docs/EMERGENCY-GOVERNANCE.md) for the exact runbook
 
 ## Deployment Artifacts
 
@@ -262,7 +271,7 @@ Important transparency points:
 
 - this is **not** an audited mainnet-ready system yet
 - the current frontend is still a product shell, not a finished production client
-- the protocol still depends on owner / Safe operations for some configuration and fallback flows
+- the protocol still depends on owner / Safe operations for some configuration and emergency flows
 
 For a full transparent status read:
 

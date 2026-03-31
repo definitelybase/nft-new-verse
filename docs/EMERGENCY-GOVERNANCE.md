@@ -30,8 +30,9 @@ In [contracts/PixelPool.sol](../contracts/PixelPool.sol), the owner can:
 - queue and apply router changes
 - cancel a pending router change
 - set the listing venue
-- update fallback market snapshots
-- confirm fallback external sales
+- enable manual snapshot mode while the pool is paused
+- disable manual snapshot mode
+- update a manual market snapshot while the pool is paused and manual mode is active
 - release protocol inventory for listing
 - relist vault inventory
 - pause
@@ -59,13 +60,20 @@ In [contracts/OnChainPixelNFT.sol](../contracts/OnChainPixelNFT.sol), the owner 
 - set palette until locked
 - lock palette
 - set mint price
-- enable or disable public mint
-- withdraw ETH held by the NFT contract
+- disable public mint
+- withdraw stray ETH held by the NFT contract
+
+Important:
+
+- the direct public mint path is intentionally disabled
+- normal minting is expected to go through the router so reserve / treasury routing still happens
 
 ### PixelMarketplace owner powers
 
 In [contracts/PixelMarketplace.sol](../contracts/PixelMarketplace.sol), the owner can:
 
+- pause
+- unpause
 - cancel protocol-owned listings
 - update protocol listing prices
 
@@ -95,6 +103,78 @@ Current pool behavior:
 - a `48 hour` delay applies before activation
 
 This is meant to protect users from a surprise router swap.
+
+## Emergency Manual Snapshot Mode
+
+This mode exists for incident handling only.
+
+It is not a normal market-operations tool and it is not meant for "tuning" the protocol during live trading.
+
+Current guardrails:
+
+- the pool must already be paused
+- the listing venue must already be paused
+- the owner must explicitly enable manual mode
+- manual mode can only be enabled for up to `1 hour`
+- each manual snapshot only remains live for `30 minutes`
+
+What this means in practice:
+
+- the protocol cannot quietly mix manual pricing into live trading
+- the team must first stop the venue, then enter a short recovery window
+- once the window expires, live venue signals take over again
+
+### What manual mode is for
+
+Use it only if:
+
+- the marketplace signal feed is broken
+- the marketplace is paused for incident recovery
+- the team needs a short snapshot so state transitions do not go blind during containment
+
+### What manual mode is not for
+
+Do not use it to:
+
+- make sell-to-pool look healthier
+- accelerate buyback or release decisions during normal trading
+- override a real live market just because the numbers are inconvenient
+- operate the protocol day to day
+
+### Exact emergency sequence
+
+1. Pause the pool.
+2. Pause the marketplace.
+3. Announce that the protocol is in incident mode.
+4. Enable manual snapshot mode for the shortest useful window, never more than `3600` seconds.
+5. Publish or record the exact reason the team is using manual mode.
+6. Submit the temporary snapshot.
+7. Repair the incident or finish the maintenance task.
+8. Disable manual snapshot mode.
+9. Unpause the marketplace.
+10. Unpause the pool.
+
+### Keeper commands
+
+These commands prepare Safe payloads; they do not remove the need for Safe review.
+
+Enable manual mode:
+
+```bash
+RPC_URL=https://... npm run keeper:market -- manual-on deployment-11155111.json 1800
+```
+
+Set the temporary snapshot:
+
+```bash
+RPC_URL=https://... npm run keeper:market -- snapshot deployment-11155111.json 35 800 0.012
+```
+
+Disable manual mode after recovery:
+
+```bash
+RPC_URL=https://... npm run keeper:market -- manual-off deployment-11155111.json
+```
 
 ## What We Should Not Do Yet
 
@@ -137,7 +217,13 @@ The more honest story is:
    - inventory accounting is wrong
    - marketplace settlement is affected
    - mint should be disabled at the UI layer
+   - manual snapshot mode is actually needed, or whether the market feed is still trustworthy
 3. Publish a short technical incident note.
+4. If manual snapshot mode is used, write down:
+   - who proposed it
+   - why it was needed
+   - what values were entered
+   - when it will be turned off
 
 ### After containment
 
@@ -147,6 +233,7 @@ The more honest story is:
    - root cause is identified
    - Safe signers agree
    - public note is ready
+4. Turn off manual snapshot mode before reopening if it was enabled.
 
 ## Normal Operating Playbook
 
@@ -163,7 +250,7 @@ The more honest story is:
 Use the Safe for:
 
 - config changes
-- market fallback updates
+- emergency manual snapshot mode only when both pool and marketplace are paused
 - protocol listing decisions
 - fee claims
 - incident actions

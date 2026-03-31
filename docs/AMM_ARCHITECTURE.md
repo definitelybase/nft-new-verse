@@ -234,7 +234,15 @@ Important nuance:
   - heavy listing pressure
   - marketplace floor at or below protocol floor
 
-The pool still supports manual owner-set snapshots as a fallback, but the native marketplace is now the normal signal source.
+The pool still supports a manual owner-set snapshot path, but only as emergency tooling:
+
+- pool paused
+- marketplace paused
+- explicit manual mode enabled
+- maximum mode window of `1 hour`
+- maximum snapshot TTL of `30 minutes`
+
+The native marketplace is still the normal signal source during ordinary operation.
 
 ## Market States
 
@@ -419,8 +427,7 @@ The current architecture still depends on owner / Safe controls for:
 
 - pause / unpause
 - listing venue configuration
-- fallback market snapshot update
-- fallback manual sale confirmation
+- short emergency manual snapshot mode while paused
 - router replacement queue / apply / cancel
 - protocol inventory release actions
 
