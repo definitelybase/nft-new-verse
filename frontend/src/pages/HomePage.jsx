@@ -326,7 +326,7 @@ function LiquiditySystemOverview({ className = "", style }) {
       <div
         style={{
           position: "relative",
-          minHeight: 180,
+          minHeight: 220,
           borderRadius: 20,
           border: `1px solid ${column.tone}33`,
           background: `linear-gradient(180deg, ${column.tone}14 0%, rgba(255,255,255,0.03) 72%)`,
@@ -458,10 +458,10 @@ function LiquiditySystemOverview({ className = "", style }) {
             Most NFT mints stop at the primary sale. This one seeds a reserve-backed protocol on the same transaction.
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "0.9fr 1.1fr", gap: 12, flex: 1 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12, flex: 1 }}>
             {comparisonColumns.map((column) => (
               <div key={column.label} style={{ padding: 16, borderRadius: 18, border: `1px solid ${COLORS.border}`, background: COLORS.surface, display: "flex", flexDirection: "column", gap: 12, minWidth: 0 }}>
-                <div>
+                <div style={{ minHeight: 88 }}>
                   <div style={{ color: column.tone, fontFamily: fontDisplay, fontSize: 18, fontWeight: 600 }}>
                     {column.label}
                   </div>
