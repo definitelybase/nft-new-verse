@@ -531,9 +531,7 @@ function LiquiditySystemOverview({ className = "", style }) {
     ["Activity log", "Full on-chain trade history"],
   ];
 
-  const afterMintWidths = ["100%", "78%", "88%"];
-  const afterMintAlign = ["flex-start", "flex-end", "flex-start"];
-  const stateHeights = [112, 138, 126];
+  const marketStateTones = [COLORS.accent, COLORS.purple, COLORS.yellow];
 
   return (
     <div className={className} style={{ display: "grid", gap: 14, ...style }}>
@@ -637,12 +635,66 @@ function LiquiditySystemOverview({ className = "", style }) {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, alignItems: "stretch" }}>
         <InsightPanel title="After you mint" tone={COLORS.green} glyph="↗" pixels={INFO_PANEL_PIXELS.afterMint}>
-          <div style={{ display: "grid", gap: 12 }}>
-            {afterMintCards.map(([title, body, background], index) => (
-              <div key={title} style={{ display: "flex", justifyContent: afterMintAlign[index] }}>
+          <div
+            style={{
+              padding: 16,
+              borderRadius: 24,
+              border: `1px solid ${COLORS.border}`,
+              background: "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+            }}
+          >
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                gap: 12,
+                marginBottom: 14,
+                position: "relative",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  left: "16.666%",
+                  right: "16.666%",
+                  top: 16,
+                  height: 2,
+                  background: "linear-gradient(90deg, rgba(110,231,183,0.25), rgba(174,139,255,0.24))",
+                }}
+              />
+              {["Market", "Pool", "Resale"].map((label, index) => (
+                <div key={label} style={{ display: "grid", justifyItems: "center", gap: 8, position: "relative", zIndex: 1 }}>
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 999,
+                      border: `1px solid ${index === 0 ? "rgba(110,231,183,0.3)" : index === 1 ? "rgba(244,207,102,0.3)" : "rgba(174,139,255,0.3)"}`,
+                      background: index === 0 ? "rgba(110,231,183,0.16)" : index === 1 ? "rgba(244,207,102,0.16)" : "rgba(174,139,255,0.14)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: COLORS.text,
+                      fontFamily: fontDisplay,
+                      fontSize: 14,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {index + 1}
+                  </div>
+                  <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 0.8, textTransform: "uppercase" }}>
+                    {label}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 12 }}>
+              {afterMintCards.map(([title, body, background], index) => (
                 <div
+                  key={title}
                   style={{
-                    width: afterMintWidths[index],
+                    gridColumn: index === 0 ? "1 / span 2" : "auto",
                     padding: 16,
                     borderRadius: 20,
                     border: `1px solid ${COLORS.border}`,
@@ -653,62 +705,136 @@ function LiquiditySystemOverview({ className = "", style }) {
                     alignItems: "start",
                   }}
                 >
-                <div style={{ width: 42, height: 42, borderRadius: 14, background, border: `1px solid ${COLORS.border}` }} />
-                <div>
-                  <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
-                    {title}
-                  </div>
-                  <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                    {body}
+                  <div style={{ width: 42, height: 42, borderRadius: 14, background, border: `1px solid ${COLORS.border}` }} />
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 12 }}>
+                      <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>
+                        {title}
+                      </div>
+                      <div
+                        style={{
+                          padding: "5px 10px",
+                          borderRadius: 999,
+                          border: `1px solid ${COLORS.border}`,
+                          background: "rgba(255,255,255,0.06)",
+                          color: COLORS.textDim,
+                          fontFamily: fonts,
+                          fontSize: 10,
+                          letterSpacing: 0.6,
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {index === 0 ? "premium" : index === 1 ? "floor lane" : "inventory"}
+                      </div>
+                    </div>
+                    <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
+                      {body}
+                    </div>
                   </div>
                 </div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </InsightPanel>
 
         <InsightPanel title="Market states" tone="#E8853A" glyph="◆" pixels={INFO_PANEL_PIXELS.states}>
-          <div style={{ display: "grid", gap: 12 }}>
-            {marketStateRows.map(([title, chip, body], index) => {
-              const tones = [COLORS.accent, COLORS.purple, COLORS.yellow];
-              const tone = tones[index];
-              return (
+          <div
+            style={{
+              padding: 14,
+              borderRadius: 24,
+              border: `1px solid ${COLORS.border}`,
+              background: "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+            }}
+          >
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8, marginBottom: 14 }}>
+              {marketStateRows.map(([title], index) => (
                 <div
                   key={title}
                   style={{
-                    padding: 16,
-                    borderRadius: 20,
-                    border: `1px solid ${COLORS.border}`,
-                    background: "rgba(255,255,255,0.08)",
-                    minHeight: stateHeights[index],
-                    display: "grid",
-                    alignContent: "start",
+                    padding: "10px 12px",
+                    borderRadius: 16,
+                    background: `${marketStateTones[index]}12`,
+                    border: `1px solid ${marketStateTones[index]}26`,
+                    color: marketStateTones[index],
+                    fontFamily: fontDisplay,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    textAlign: "center",
                   }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div style={{ width: 9, height: 9, borderRadius: 999, background: tone }} />
-                      <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{title}</div>
-                    </div>
-                    <div style={{ padding: "7px 11px", borderRadius: 999, border: `1px solid ${tone}30`, background: `${tone}14`, color: tone, fontFamily: fonts, fontSize: 10, letterSpacing: 0.5 }}>
-                      {chip}
-                    </div>
-                  </div>
-                  <div style={{ marginTop: 8, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
-                    {body}
-                  </div>
+                  {title}
                 </div>
-              );
-            })}
+              ))}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "0.94fr 1.12fr 0.94fr", gap: 12 }}>
+              {marketStateRows.map(([title, chip, body], index) => {
+                const tone = marketStateTones[index];
+                return (
+                  <div
+                    key={title}
+                    style={{
+                      padding: 16,
+                      borderRadius: 20,
+                      border: `1px solid ${COLORS.border}`,
+                      background: "rgba(255,255,255,0.08)",
+                      minHeight: 150,
+                      display: "grid",
+                      alignContent: "start",
+                      gap: 10,
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 12 }}>
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{ width: 9, height: 9, borderRadius: 999, background: tone }} />
+                          <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{title}</div>
+                        </div>
+                        <div style={{ marginTop: 10, width: 54, height: 6, borderRadius: 999, background: `${tone}40` }} />
+                      </div>
+                      <div style={{ padding: "7px 11px", borderRadius: 999, border: `1px solid ${tone}30`, background: `${tone}14`, color: tone, fontFamily: fonts, fontSize: 10, letterSpacing: 0.5 }}>
+                        {chip}
+                      </div>
+                    </div>
+                    <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.7 }}>
+                      {body}
+                    </div>
+                    <div style={{ marginTop: "auto", display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 6 }}>
+                      {[0.46, 0.72, 0.32].map((opacity, chipIndex) => (
+                        <div
+                          key={chipIndex}
+                          style={{
+                            height: 8,
+                            borderRadius: 999,
+                            background: `${tone}${Math.round(opacity * 255).toString(16).padStart(2, "0")}`,
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </InsightPanel>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1.05fr 1fr 0.95fr", gap: 14, alignItems: "stretch" }}>
         <InsightPanel title="Floor bid curve" tone="#D4497A" glyph="↕" pixels={INFO_PANEL_PIXELS.curve}>
-          <div style={{ padding: 14, borderRadius: 20, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.08)" }}>
-            <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 72 }}>
+          <div
+            style={{
+              padding: 16,
+              borderRadius: 22,
+              border: `1px solid ${COLORS.border}`,
+              background: "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+            }}
+          >
+            <div style={{ display: "grid", gridTemplateRows: "repeat(3, 1fr)", gap: 14, marginBottom: -86, opacity: 0.42 }}>
+              {[0, 1, 2].map((row) => (
+                <div key={row} style={{ borderTop: `1px dashed rgba(212,73,122,0.18)` }} />
+              ))}
+            </div>
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 86, position: "relative" }}>
               {curveBars.map((value, index) => (
                 <div
                   key={index}
@@ -727,23 +853,99 @@ function LiquiditySystemOverview({ className = "", style }) {
               <div style={{ color: COLORS.textMuted, fontFamily: fontDisplay, fontSize: 12, fontWeight: 600 }}>15% floor</div>
             </div>
           </div>
-          <div style={{ marginTop: 14, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.8 }}>
-            The floor starts at 60% of mint price and decays toward 15% as net pool sells accumulate. EMA guardrails stop abrupt collapse.
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "start" }}>
+            <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.8 }}>
+              The floor starts at 60% of mint price and decays toward 15% as net pool sells accumulate. EMA guardrails stop abrupt collapse.
+            </div>
+            <div
+              style={{
+                padding: "7px 11px",
+                borderRadius: 999,
+                border: `1px solid rgba(212,73,122,0.24)`,
+                background: "rgba(212,73,122,0.10)",
+                color: "#D4497A",
+                fontFamily: fonts,
+                fontSize: 10,
+                letterSpacing: 0.6,
+                textTransform: "uppercase",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Floor only
+            </div>
           </div>
         </InsightPanel>
 
         <InsightPanel title="Weighted staking" tone="#D4497A" glyph="›" pixels={INFO_PANEL_PIXELS.staking}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10 }}>
-            {stakeWeights.map(([weight, lock]) => (
-              <div key={weight} style={{ textAlign: "center" }}>
-                <div style={{ height: 42, borderRadius: 14, border: `1px solid rgba(212,73,122,0.18)`, background: "rgba(212,73,122,0.08)" }} />
-                <div style={{ marginTop: 10, color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{weight}</div>
-                <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.5 }}>{lock}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1.02fr 0.98fr", gap: 14, alignItems: "stretch" }}>
+            <div
+              style={{
+                padding: 14,
+                borderRadius: 20,
+                border: `1px solid ${COLORS.border}`,
+                background: "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+              }}
+            >
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10 }}>
+                {stakeWeights.map(([weight, lock], index) => (
+                  <div key={weight} style={{ textAlign: "center" }}>
+                    <div
+                      style={{
+                        height: 46,
+                        borderRadius: 14,
+                        border: `1px solid rgba(212,73,122,0.18)`,
+                        background: `linear-gradient(180deg, rgba(212,73,122,${0.08 + index * 0.03}), rgba(212,73,122,0.05))`,
+                        position: "relative",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div
+                        style={{
+                          position: "absolute",
+                          left: 8,
+                          right: 8,
+                          bottom: 8,
+                          height: 6 + index * 4,
+                          borderRadius: 999,
+                          background: "rgba(212,73,122,0.24)",
+                        }}
+                      />
+                    </div>
+                    <div style={{ marginTop: 10, color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{weight}</div>
+                    <div style={{ marginTop: 6, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.5 }}>{lock}</div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div style={{ marginTop: 18, color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, lineHeight: 1.85 }}>
-            Stakers earn 10% of all trade fees from real trading. No emissions token, no fixed APY. Lock longer for higher weight.
+            </div>
+            <div
+              style={{
+                padding: 16,
+                borderRadius: 20,
+                border: `1px solid rgba(212,73,122,0.16)`,
+                background: "rgba(212,73,122,0.06)",
+                display: "grid",
+                alignContent: "start",
+                gap: 12,
+              }}
+            >
+              <div style={{ color: "#D4497A", fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+                Real fee flow
+              </div>
+              <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 28, fontWeight: 600, lineHeight: 1 }}>
+                10%
+              </div>
+              <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 12, lineHeight: 1.85 }}>
+                Stakers earn 10% of all trade fees from real trading. No emissions token, no fixed APY. Longer locks only increase weight.
+              </div>
+              <div style={{ display: "grid", gap: 8 }}>
+                {["Fee flow only", "No fixed yield", "Weight from lock time"].map((label) => (
+                  <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, color: COLORS.textDim, fontFamily: fonts, fontSize: 11 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: 999, background: "rgba(212,73,122,0.55)" }} />
+                    {label}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </InsightPanel>
 
@@ -754,8 +956,8 @@ function LiquiditySystemOverview({ className = "", style }) {
 
           <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 10 }}>
             <div style={{ display: "grid", gap: 10 }}>
-              {marketTiles.slice(0, 2).map(([title, body]) => (
-                <div key={title} style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.08)" }}>
+              {marketTiles.slice(0, 2).map(([title, body], index) => (
+                <div key={title} style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: index === 0 ? "rgba(110,231,183,0.08)" : "rgba(255,255,255,0.08)" }}>
                   <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 16, fontWeight: 600 }}>{title}</div>
                   <div style={{ marginTop: 5, color: COLORS.textMuted, fontFamily: fonts, fontSize: 11, lineHeight: 1.65 }}>{body}</div>
                 </div>
@@ -771,7 +973,7 @@ function LiquiditySystemOverview({ className = "", style }) {
             </div>
           </div>
 
-          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: 10 }}>
+          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: 10, paddingTop: 12, borderTop: `1px dashed ${COLORS.border}` }}>
             {[
               "Rolling 24h sales count",
               "Active listing count",
