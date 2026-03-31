@@ -250,6 +250,13 @@ function HeroGallery({ pool }) {
     { label: "Mint split", value: "60% / 10% / 30%", sub: "reserve / treasury / creator", tone: COLORS.accent },
     { label: "Trade fee", value: "2.5% fee", sub: "real market activity, not emissions", tone: COLORS.green },
   ];
+  const mintSplitValue = [
+    ["60%", COLORS.accent],
+    [" / ", COLORS.textDim],
+    ["10%", COLORS.purple],
+    [" / ", COLORS.textDim],
+    ["30%", COLORS.yellow],
+  ];
 
   return (
     <FrostCard
@@ -331,7 +338,15 @@ function HeroGallery({ pool }) {
                 }}
               >
                 <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>{item.label}</div>
-                <div style={{ marginTop: 8, color: item.tone, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600, lineHeight: 1.05 }}>{item.value}</div>
+                <div style={{ marginTop: 8, fontFamily: fontDisplay, fontSize: 20, fontWeight: 600, lineHeight: 1.05 }}>
+                  {item.label === "Mint split"
+                    ? mintSplitValue.map(([part, color], index) => (
+                        <span key={`${part}-${index}`} style={{ color }}>
+                          {part}
+                        </span>
+                      ))
+                    : <span style={{ color: item.tone }}>{item.value}</span>}
+                </div>
                 {item.sub && <div style={{ marginTop: 4, color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, letterSpacing: 0.5 }}>{item.sub}</div>}
               </div>
             ))}
