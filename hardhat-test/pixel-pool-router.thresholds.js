@@ -165,8 +165,10 @@ async function forceMarketState(pool, value) {
   await ethers.provider.send("evm_mine", []);
 }
 
-async function setMarketSnapshot(pool, owner, sales24h, activeListings, externalFloor) {
+async function setMarketSnapshot(pool, market, owner, sales24h, activeListings, externalFloor) {
+  await (await market.connect(owner).pause()).wait();
   await (await pool.connect(owner).setExternalMarketSnapshot(sales24h, activeListings, externalFloor)).wait();
+  await (await market.connect(owner).unpause()).wait();
 }
 
 describe("PixelPool market-state thresholds and negative gates", function () {
@@ -193,7 +195,7 @@ describe("PixelPool market-state thresholds and negative gates", function () {
   });
 
   it("allows external listing only when stabilization, listing vault, and inventory are all present", async function () {
-    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, user, nft, pool, router, market, mintPrice } = await deployStack();
 
     await seedReserves(pool, owner, ethers.utils.parseEther("6"), ethers.constants.Zero);
     await increaseTime(LAUNCH_PROTECTION + 1);
@@ -202,27 +204,28 @@ describe("PixelPool market-state thresholds and negative gates", function () {
     assert.strictEqual(await pool.canReleaseInventoryForListing(), false);
 
     await mintAndSellOne(router, nft, user, mintPrice);
+    await setUintVar(pool, "totalMinted", 10);
 
     await forceMarketState(pool, 2);
     assert.strictEqual(await pool.canReleaseInventoryForListing(), false);
 
     const floor = await pool.getFloorPrice();
-    await setMarketSnapshot(pool, owner, 2, 120, addBps(floor, STABILIZATION_SPREAD_BPS));
+    await setMarketSnapshot(pool, market, owner, 2, 1, addBps(floor, STABILIZATION_SPREAD_BPS));
     assert.strictEqual(await pool.canReleaseInventoryForListing(), true);
   });
 
   it("keeps the market in stabilization when only one weak signal is present", async function () {
-    const { owner, pool } = await deployStack();
+    const { owner, pool, market } = await deployStack();
     const floor = await pool.getFloorPrice();
 
     await increaseTime(LAUNCH_PROTECTION + 1);
-    await setMarketSnapshot(pool, owner, 0, 120, addBps(floor, STABILIZATION_SPREAD_BPS));
+    await setMarketSnapshot(pool, market, owner, 0, 120, addBps(floor, STABILIZATION_SPREAD_BPS));
 
     assert.strictEqual((await pool.marketState()).toString(), "1");
   });
 
   it("keeps buyback disabled at exact weak-market boundary values", async function () {
-    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, user, nft, pool, router, market, mintPrice } = await deployStack();
 
     await seedReserves(pool, owner, ethers.utils.parseEther("6"), ethers.utils.parseEther("1"));
     await increaseTime(LAUNCH_PROTECTION + 1);
@@ -230,21 +233,21 @@ describe("PixelPool market-state thresholds and negative gates", function () {
 
     await forceMarketState(pool, 2);
     const floor = await pool.getFloorPrice();
-    await setMarketSnapshot(pool, owner, 1, 150, floor);
+    await setMarketSnapshot(pool, market, owner, 1, 150, floor);
 
     const [mode] = await pool.getBuybackMode();
     assert.strictEqual(mode.toString(), "0");
   });
 
   it("enables buyback once weak-market signals move past the thresholds", async function () {
-    const { owner, user, nft, pool, router, mintPrice } = await deployStack();
+    const { owner, user, nft, pool, router, market, mintPrice } = await deployStack();
 
     await seedReserves(pool, owner, ethers.utils.parseEther("6"), ethers.utils.parseEther("1"));
     await increaseTime(LAUNCH_PROTECTION + 1);
     await mintAndSellOne(router, nft, user, mintPrice);
 
     const floor = await pool.getFloorPrice();
-    await setMarketSnapshot(pool, owner, 0, 151, floor.sub(1));
+    await setMarketSnapshot(pool, market, owner, 0, 151, floor.sub(1));
 
     const [mode, maxBuy] = await pool.getBuybackMode();
     assert.strictEqual(mode.toString(), "1");

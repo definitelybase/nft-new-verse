@@ -177,7 +177,7 @@ contract PixelFactory is Ownable {
         if (nftCode.length == 0 || poolCode.length == 0 || routerCode.length == 0 || marketCode.length == 0) {
             revert MissingBytecode();
         }
-        if (params.mintPrice == 0) revert InvalidAmount();
+        if (params.maxSupply == 0 || params.mintPrice == 0) revert InvalidAmount();
         if (msg.value < factoryFee) revert InsufficientFee();
         if (params.poolSeedBps + params.treasuryBps > 10000) revert InvalidBps();
         if (params.finalOwner == address(0)) revert ZeroAddress();

@@ -43,6 +43,45 @@ describe("Deploy and config guards", function () {
     );
   });
 
+  it("rejects zero max supply in NFT constructor and factory createCollection", async function () {
+    const [owner, creator] = await ethers.getSigners();
+    const mintPrice = ethers.utils.parseEther("0.01");
+    const NFT = await ethers.getContractFactory("OnChainPixelNFT");
+    const Factory = await ethers.getContractFactory("PixelFactory");
+    const Pool = await ethers.getContractFactory("PixelPool");
+    const Router = await ethers.getContractFactory("PixelRouter");
+    const Market = await ethers.getContractFactory("PixelMarketplace");
+
+    await expectCustomError(
+      NFT.connect(owner).deploy("OnChainPixels", "OCPX", 4, 1, 1, 0, mintPrice, palette16()),
+      "InvalidAmount"
+    );
+
+    const factory = await Factory.connect(owner).deploy();
+    await factory.deployed();
+
+    await (await factory.connect(owner).setNFTCode(NFT.bytecode)).wait();
+    await (await factory.connect(owner).setPoolCode(Pool.bytecode)).wait();
+    await (await factory.connect(owner).setRouterCode(Router.bytecode)).wait();
+    await (await factory.connect(owner).setMarketplaceCode(Market.bytecode)).wait();
+
+    await expectCustomError(
+      factory.connect(creator).createCollection(
+        "FactoryPixels",
+        "FPXL",
+        4,
+        1,
+        1,
+        0,
+        mintPrice,
+        6000,
+        1000,
+        palette16()
+      ),
+      "InvalidAmount"
+    );
+  });
+
   it("rejects invalid pool constructor dependencies", async function () {
     const [owner] = await ethers.getSigners();
     const Pool = await ethers.getContractFactory("PixelPool");

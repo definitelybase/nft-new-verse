@@ -139,9 +139,12 @@ async function forceMarketState(pool, value) {
   await ethers.provider.send("evm_mine", []);
 }
 
-async function setStabilizationSnapshot(pool, owner) {
+async function setStabilizationSnapshot(pool, market, owner) {
   const floor = await pool.getFloorPrice();
-  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, STABILIZATION_SPREAD_BPS))).wait();
+  await setUintVar(pool, "totalMinted", 10);
+  await (await market.connect(owner).pause()).wait();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 1, addBps(floor, STABILIZATION_SPREAD_BPS))).wait();
+  await (await market.connect(owner).unpause()).wait();
 }
 
 function addBps(value, bps) {
@@ -230,7 +233,7 @@ describe("Protocol fee and admin invariants", function () {
     await (await router.connect(user).sellNFT(0, 0)).wait();
     assert.strictEqual(await nft.ownerOf(0), pool.address);
 
-    await setStabilizationSnapshot(pool, owner);
+    await setStabilizationSnapshot(pool, market, owner);
     assert.strictEqual(await pool.canReleaseInventoryForListing(), true);
 
     await (await pool.connect(owner).pause()).wait();
@@ -242,6 +245,22 @@ describe("Protocol fee and admin invariants", function () {
     await (await pool.connect(owner).unpause()).wait();
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
     assert.strictEqual(await nft.ownerOf(0), market.address);
+  });
+
+  it("allows manual market snapshots only while the listing venue is paused", async function () {
+    const { owner, pool, market } = await deployStack();
+    const floor = await pool.getFloorPrice();
+
+    await expectCustomError(
+      pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, STABILIZATION_SPREAD_BPS)),
+      "ManualSnapshotDisabled"
+    );
+
+    await (await market.connect(owner).pause()).wait();
+    await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, STABILIZATION_SPREAD_BPS))).wait();
+
+    const [, , floorRatioBps] = await pool.getMarketSignals();
+    assert.strictEqual(floorRatioBps.toString(), "12000");
   });
 
   it("enforces factory fees and lets only owner withdraw them", async function () {

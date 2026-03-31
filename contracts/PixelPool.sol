@@ -9,11 +9,13 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 
 interface IERC721Burnable is IERC721 {
     function protocolBurn(uint256 tokenId) external;
+    function totalSupply() external view returns (uint256);
     function maxSupply() external view returns (uint256);
 }
 
-interface IMarketSignalFeed {
+interface IListingVenueSignals {
     function getMarketSnapshot() external view returns (uint256 sales24h, uint256 activeListings, uint256 floorPrice);
+    function paused() external view returns (bool);
 }
 
 /// @title PixelPool
@@ -50,6 +52,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     error RouterChangeNotPending();
     error ExternalListingNotTracked();
     error NotListingVenue();
+    error ManualSnapshotDisabled();
 
     event NFTSold(address indexed seller, uint256 indexed tokenId, uint256 price, uint256 fee);
     event LiquidityAdded(uint256 ethAmount);
@@ -110,6 +113,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     uint256 public constant VAULT_BURN_AGE = 14 days;
     uint256 public constant RELIST_PROFIT_BPS = 2000;
     uint256 public constant ROUTER_CHANGE_DELAY = 48 hours;
+    uint256 public constant MANUAL_SNAPSHOT_TTL = 6 hours;
     uint256 public constant EXPANSION_PURCHASE_RATE_BPS = 35;
     uint256 public constant EXPANSION_LISTING_PRESSURE_BPS = 800;
     uint256 public constant EXPANSION_FLOOR_RATIO_BPS = 12000;
@@ -217,23 +221,37 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     ) {
         uint256 liveSupply = _referenceSupply();
         uint256 protocolFloor = getFloorPrice();
-        uint256 observedSales24h = externalSales24h;
-        uint256 observedListings = externalListings;
-        uint256 observedFloor = externalFloor;
+        uint256 observedSales24h;
+        uint256 observedListings;
+        uint256 observedFloor;
+        bool manualActive = _manualSnapshotActive();
+        bool venuePaused;
+        bool venuePauseKnown;
+
+        if (manualActive) {
+            observedSales24h = externalSales24h;
+            observedListings = externalListings;
+            observedFloor = externalFloor;
+        }
 
         if (listingVault != address(0) && listingVault.code.length > 0) {
-            try IMarketSignalFeed(listingVault).getMarketSnapshot() returns (
-                uint256 sales24h,
-                uint256 activeListings,
-                uint256 floorPrice
-            ) {
-                if (sales24h > 0 || activeListings > 0 || floorPrice > 0) {
-                    observedSales24h = sales24h;
-                    observedListings = activeListings;
-                    observedFloor = floorPrice;
-                }
-            } catch {
-                // Keep the last manual snapshot as fallback
+            try IListingVenueSignals(listingVault).paused() returns (bool isPaused) {
+                venuePaused = isPaused;
+                venuePauseKnown = true;
+            } catch {}
+
+            if (!venuePauseKnown || !venuePaused) {
+                try IListingVenueSignals(listingVault).getMarketSnapshot() returns (
+                    uint256 sales24h,
+                    uint256 activeListings,
+                    uint256 floorPrice
+                ) {
+                    if (sales24h > 0 || activeListings > 0 || floorPrice > 0) {
+                        observedSales24h = sales24h;
+                        observedListings = activeListings;
+                        observedFloor = floorPrice;
+                    }
+                } catch {}
             }
         }
 
@@ -398,7 +416,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         if (!canReleaseInventoryForListing()) revert RelistConditionsNotMet();
         uint256 observedFloor = externalFloor;
         if (listingVault.code.length > 0) {
-            try IMarketSignalFeed(listingVault).getMarketSnapshot() returns (
+            try IListingVenueSignals(listingVault).getMarketSnapshot() returns (
                 uint256,
                 uint256,
                 uint256 floorPrice
@@ -455,6 +473,7 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
         uint256 activeListings,
         uint256 floor
     ) external onlyOwner {
+        if (!_manualSnapshotAllowed()) revert ManualSnapshotDisabled();
         externalSales24h = sales24h;
         externalListings = activeListings;
         externalFloor = floor;
@@ -566,11 +585,14 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     function setListingVault(address vault) external onlyOwner {
         if (vault == address(0)) revert ZeroAddress();
         if (vault.code.length == 0) revert InvalidDependency();
-        try IMarketSignalFeed(vault).getMarketSnapshot() returns (
+        try IListingVenueSignals(vault).getMarketSnapshot() returns (
             uint256,
             uint256,
             uint256
         ) {} catch {
+            revert InvalidDependency();
+        }
+        try IListingVenueSignals(vault).paused() returns (bool) {} catch {
             revert InvalidDependency();
         }
         emit ListingVaultUpdated(listingVault, vault);
@@ -722,9 +744,23 @@ contract PixelPool is IERC721Receiver, Ownable, ReentrancyGuard, Pausable {
     }
 
     function _referenceSupply() private view returns (uint256) {
-        uint256 maxSupply = nftContract.maxSupply();
-        if (maxSupply > 0) return maxSupply;
-        return totalMinted > totalBurned ? totalMinted - totalBurned : 0;
+        uint256 mintedLive = totalMinted > totalBurned ? totalMinted - totalBurned : 0;
+        if (mintedLive > 0) return mintedLive;
+        return nftContract.totalSupply();
+    }
+
+    function _manualSnapshotActive() private view returns (bool) {
+        return externalSnapshotAt != 0 && block.timestamp <= externalSnapshotAt + MANUAL_SNAPSHOT_TTL;
+    }
+
+    function _manualSnapshotAllowed() private view returns (bool) {
+        if (listingVault == address(0)) return true;
+        if (listingVault.code.length == 0) return false;
+        try IListingVenueSignals(listingVault).paused() returns (bool isPaused) {
+            return isPaused;
+        } catch {
+            return false;
+        }
     }
 
     function _trackExternalListing(uint256 tokenId, bool fromPoolInventory) private {

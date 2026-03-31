@@ -6,6 +6,7 @@ const POOL_SEED_BPS = 6000;
 const TREASURY_BPS = 1000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
 const STABILIZATION_SPREAD_BPS = 2000;
+const slotCache = {};
 
 function palette16() {
   return ethers.utils.hexlify([
@@ -20,12 +21,62 @@ function onePixel(colorIndex = 1) {
   return ethers.utils.hexlify([(colorIndex & 0x0f) << 4]);
 }
 
+function slotHex(slot) {
+  return ethers.utils.hexZeroPad(ethers.utils.hexlify(slot), 32);
+}
+
+function valueHex(value) {
+  return ethers.utils.hexZeroPad(ethers.BigNumber.from(value).toHexString(), 32);
+}
+
 function addBps(value, bps) {
   return value.add(value.mul(bps).div(BPS));
 }
 
 async function increaseTime(seconds) {
   await ethers.provider.send("evm_increaseTime", [seconds]);
+  await ethers.provider.send("evm_mine", []);
+}
+
+function slotCacheKey(contract, getterName) {
+  return `${contract.address}:${getterName}`;
+}
+
+async function findStorageSlot(contract, getterName, probeValue) {
+  const key = slotCacheKey(contract, getterName);
+  if (slotCache[key] !== undefined) return slotCache[key];
+
+  for (let candidate = 0; candidate < 80; candidate++) {
+    const slot = slotHex(candidate);
+    const original = await ethers.provider.getStorageAt(contract.address, slot);
+
+    await ethers.provider.send("hardhat_setStorageAt", [contract.address, slot, valueHex(probeValue)]);
+    await ethers.provider.send("evm_mine", []);
+
+    const current = await contract[getterName]();
+    const matches = ethers.BigNumber.isBigNumber(current)
+      ? current.eq(probeValue)
+      : Number(current) === Number(probeValue);
+
+    await ethers.provider.send("hardhat_setStorageAt", [contract.address, slot, original]);
+    await ethers.provider.send("evm_mine", []);
+
+    if (matches) {
+      slotCache[key] = candidate;
+      return candidate;
+    }
+  }
+
+  throw new Error(`Unable to locate storage slot for ${getterName}`);
+}
+
+async function setUintVar(contract, getterName, value, probeValue = 987654321) {
+  const slot = await findStorageSlot(contract, getterName, probeValue);
+  await ethers.provider.send("hardhat_setStorageAt", [
+    contract.address,
+    slotHex(slot),
+    valueHex(value)
+  ]);
   await ethers.provider.send("evm_mine", []);
 }
 
@@ -175,14 +226,15 @@ describe("PixelFactory end-to-end", function () {
     await (await market.connect(nextBuyer).createListing(1, listingPrice)).wait();
     await (await market.connect(nextBuyer).createListing(2, listingPrice)).wait();
     await (await market.connect(creator).buyListing(1, { value: listingPrice })).wait();
-    await (await market.connect(creator).buyListing(2, { value: listingPrice })).wait();
+    await setUintVar(pool, "totalMinted", 10);
+    assert.strictEqual(await pool.canReleaseInventoryForListing(), true);
 
     await (await pool.connect(creator).releasePoolInventoryForListing(1)).wait();
 
     assert.strictEqual(await nft.ownerOf(0), market.address);
     assert.strictEqual((await pool.availableNFTs()).toString(), "0");
     const snapshot = await market.getMarketSnapshot();
-    assert.strictEqual(snapshot.listedCount.toString(), "1");
+    assert.strictEqual(snapshot.listedCount.toString(), "2");
   });
 
   it("can lock palette and hand ownership directly to a final owner via factory", async function () {

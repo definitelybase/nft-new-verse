@@ -8,6 +8,7 @@ const LAUNCH_PROTECTION = 6 * 60 * 60;
 const INVENTORY_STALE_AGE = 7 * 24 * 60 * 60;
 const VAULT_BURN_AGE = 14 * 24 * 60 * 60;
 const MARKET_STATE_SLOT = 24;
+const slotCache = {};
 
 function palette16() {
   return ethers.utils.hexlify([
@@ -36,6 +37,48 @@ function addBps(value, bps) {
 
 async function increaseTime(seconds) {
   await ethers.provider.send("evm_increaseTime", [seconds]);
+  await ethers.provider.send("evm_mine", []);
+}
+
+function slotCacheKey(contract, getterName) {
+  return `${contract.address}:${getterName}`;
+}
+
+async function findStorageSlot(contract, getterName, probeValue) {
+  const key = slotCacheKey(contract, getterName);
+  if (slotCache[key] !== undefined) return slotCache[key];
+
+  for (let candidate = 0; candidate < 80; candidate++) {
+    const slot = slotHex(candidate);
+    const original = await ethers.provider.getStorageAt(contract.address, slot);
+
+    await ethers.provider.send("hardhat_setStorageAt", [contract.address, slot, valueHex(probeValue)]);
+    await ethers.provider.send("evm_mine", []);
+
+    const current = await contract[getterName]();
+    const matches = ethers.BigNumber.isBigNumber(current)
+      ? current.eq(probeValue)
+      : Number(current) === Number(probeValue);
+
+    await ethers.provider.send("hardhat_setStorageAt", [contract.address, slot, original]);
+    await ethers.provider.send("evm_mine", []);
+
+    if (matches) {
+      slotCache[key] = candidate;
+      return candidate;
+    }
+  }
+
+  throw new Error(`Unable to locate storage slot for ${getterName}`);
+}
+
+async function setUintVar(contract, getterName, value, probeValue = 987654321) {
+  const slot = await findStorageSlot(contract, getterName, probeValue);
+  await ethers.provider.send("hardhat_setStorageAt", [
+    contract.address,
+    slotHex(slot),
+    valueHex(value)
+  ]);
   await ethers.provider.send("evm_mine", []);
 }
 
@@ -130,9 +173,12 @@ async function forceMarketState(pool, desiredState) {
   await ethers.provider.send("evm_mine", []);
 }
 
-async function setStabilizationSnapshot(pool, owner, floorOverride) {
+async function setStabilizationSnapshot(pool, market, owner, floorOverride) {
   const floor = floorOverride || addBps(await pool.getFloorPrice(), 2000);
-  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor)).wait();
+  await setUintVar(pool, "totalMinted", 10);
+  await (await market.connect(owner).pause()).wait();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 1, floor)).wait();
+  await (await market.connect(owner).unpause()).wait();
 }
 
 describe("PixelPool + PixelRouter economics flows", function () {
@@ -261,7 +307,7 @@ describe("PixelPool + PixelRouter economics flows", function () {
     const observedFloor = targetPrice.gt(releaseReadyFloor)
       ? targetPrice
       : releaseReadyFloor;
-    await setStabilizationSnapshot(pool, owner, observedFloor);
+    await setStabilizationSnapshot(pool, market, owner, observedFloor);
     assert.strictEqual((await pool.marketState()).toString(), "1");
 
     await (await pool.connect(owner).relistFromVault(1)).wait();

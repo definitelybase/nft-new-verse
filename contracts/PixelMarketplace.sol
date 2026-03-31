@@ -51,6 +51,7 @@ contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard, Pausable
 
     uint256 private constant BPS = 10000;
     uint256 private constant SALE_WINDOW = 1 days;
+    uint256 private constant SALE_BUCKET_COUNT = 24;
 
     struct Listing {
         address seller;
@@ -60,6 +61,11 @@ contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard, Pausable
         bool fromPoolInventory;
         bool active;
         uint64 createdAt;
+    }
+
+    struct SaleBucket {
+        uint64 windowStart;
+        uint64 count;
     }
 
     IERC721 public immutable nftContract;
@@ -75,9 +81,10 @@ contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard, Pausable
     mapping(uint256 => uint256) public listingIdByToken;
     uint256[] private _activeListingIds;
     mapping(uint256 => uint256) private _activeListingIdx;
+    uint256[] private _floorHeap;
+    mapping(uint256 => uint256) private _heapIndex;
 
-    uint256[] private _saleTimestamps;
-    uint256 private _salesCursor;
+    SaleBucket[SALE_BUCKET_COUNT] private _saleBuckets;
 
     constructor(address nft_, address pool_, uint256 marketFeeBps_) Ownable() {
         if (nft_ == address(0) || pool_ == address(0)) revert ZeroAddress();
@@ -115,16 +122,7 @@ contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard, Pausable
 
         uint256 previousPrice = listing.price;
         listing.price = newPrice;
-        if (listingId == floorListingId) {
-            if (newPrice > previousPrice) {
-                _recomputeFloor();
-            } else {
-                currentFloor = newPrice;
-            }
-        } else if (currentFloor == 0 || newPrice < currentFloor) {
-            currentFloor = newPrice;
-            floorListingId = listingId;
-        }
+        _heapRebalance(listingId);
 
         emit ListingPriceUpdated(listingId, previousPrice, newPrice);
     }
@@ -237,11 +235,7 @@ contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard, Pausable
         _activeListingIdx[listingId] = _activeListingIds.length;
         _activeListingIds.push(listingId);
         activeListings += 1;
-
-        if (currentFloor == 0 || price < currentFloor) {
-            currentFloor = price;
-            floorListingId = listingId;
-        }
+        _heapInsert(listingId);
 
         emit ListingCreated(listingId, seller, tokenId, price, protocolOwned, fromPoolInventory);
     }
@@ -249,6 +243,7 @@ contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard, Pausable
     function _takeListing(uint256 listingId) private returns (Listing memory listing) {
         listing = listings[listingId];
         if (!listing.active) revert ListingNotActive();
+        _heapRemove(listingId);
 
         uint256 tokenId = listing.tokenId;
         delete listingIdByToken[tokenId];
@@ -264,46 +259,133 @@ contract PixelMarketplace is IERC721Receiver, Ownable, ReentrancyGuard, Pausable
         _activeListingIds.pop();
         delete _activeListingIdx[listingId];
         activeListings -= 1;
+    }
 
-        if (listingId == floorListingId) {
-            _recomputeFloor();
+    function _heapInsert(uint256 listingId) private {
+        _floorHeap.push(listingId);
+        _heapIndex[listingId] = _floorHeap.length;
+        _heapSiftUp(_floorHeap.length - 1);
+        _syncFloorFromHeap();
+    }
+
+    function _heapRemove(uint256 listingId) private {
+        uint256 storedIndex = _heapIndex[listingId];
+        if (storedIndex == 0) return;
+
+        uint256 idx = storedIndex - 1;
+        uint256 lastIdx = _floorHeap.length - 1;
+        if (idx != lastIdx) {
+            uint256 movedListingId = _floorHeap[lastIdx];
+            _floorHeap[idx] = movedListingId;
+            _heapIndex[movedListingId] = idx + 1;
+        }
+
+        _floorHeap.pop();
+        delete _heapIndex[listingId];
+
+        if (idx < _floorHeap.length) {
+            _heapRebalanceAt(idx);
+        } else {
+            _syncFloorFromHeap();
         }
     }
 
-    function _recomputeFloor() private {
-        uint256 bestPrice;
-        uint256 bestListingId;
-        uint256 length = _activeListingIds.length;
-        for (uint256 i = 0; i < length; i++) {
-            uint256 listingId = _activeListingIds[i];
-            uint256 price = listings[listingId].price;
-            if (bestPrice == 0 || price < bestPrice) {
-                bestPrice = price;
-                bestListingId = listingId;
+    function _heapRebalance(uint256 listingId) private {
+        uint256 storedIndex = _heapIndex[listingId];
+        if (storedIndex == 0) return;
+        _heapRebalanceAt(storedIndex - 1);
+    }
+
+    function _heapRebalanceAt(uint256 idx) private {
+        if (idx > 0) {
+            uint256 parentIdx = (idx - 1) / 2;
+            if (_heapLess(_floorHeap[idx], _floorHeap[parentIdx])) {
+                _heapSiftUp(idx);
+                _syncFloorFromHeap();
+                return;
             }
         }
-        currentFloor = bestPrice;
-        floorListingId = bestListingId;
+
+        _heapSiftDown(idx);
+        _syncFloorFromHeap();
+    }
+
+    function _heapSiftUp(uint256 idx) private {
+        while (idx > 0) {
+            uint256 parentIdx = (idx - 1) / 2;
+            uint256 listingId = _floorHeap[idx];
+            uint256 parentListingId = _floorHeap[parentIdx];
+            if (!_heapLess(listingId, parentListingId)) break;
+            _heapSwap(idx, parentIdx);
+            idx = parentIdx;
+        }
+    }
+
+    function _heapSiftDown(uint256 idx) private {
+        uint256 length = _floorHeap.length;
+        while (true) {
+            uint256 left = (idx * 2) + 1;
+            uint256 right = left + 1;
+            uint256 smallest = idx;
+
+            if (left < length && _heapLess(_floorHeap[left], _floorHeap[smallest])) {
+                smallest = left;
+            }
+            if (right < length && _heapLess(_floorHeap[right], _floorHeap[smallest])) {
+                smallest = right;
+            }
+            if (smallest == idx) break;
+
+            _heapSwap(idx, smallest);
+            idx = smallest;
+        }
+    }
+
+    function _heapSwap(uint256 a, uint256 b) private {
+        uint256 listingA = _floorHeap[a];
+        uint256 listingB = _floorHeap[b];
+        _floorHeap[a] = listingB;
+        _floorHeap[b] = listingA;
+        _heapIndex[listingA] = b + 1;
+        _heapIndex[listingB] = a + 1;
+    }
+
+    function _heapLess(uint256 leftListingId, uint256 rightListingId) private view returns (bool) {
+        uint256 leftPrice = listings[leftListingId].price;
+        uint256 rightPrice = listings[rightListingId].price;
+        if (leftPrice == rightPrice) return leftListingId < rightListingId;
+        return leftPrice < rightPrice;
+    }
+
+    function _syncFloorFromHeap() private {
+        if (_floorHeap.length == 0) {
+            currentFloor = 0;
+            floorListingId = 0;
+            return;
+        }
+
+        uint256 rootListingId = _floorHeap[0];
+        floorListingId = rootListingId;
+        currentFloor = listings[rootListingId].price;
     }
 
     function _recordSale() private {
-        _pruneSalesCursor();
-        _saleTimestamps.push(block.timestamp);
+        uint64 bucketStart = uint64((block.timestamp / 1 hours) * 1 hours);
+        uint256 bucketIndex = (block.timestamp / 1 hours) % SALE_BUCKET_COUNT;
+        SaleBucket storage bucket = _saleBuckets[bucketIndex];
+        if (bucket.windowStart != bucketStart) {
+            bucket.windowStart = bucketStart;
+            bucket.count = 0;
+        }
+        bucket.count += 1;
     }
 
-    function _pruneSalesCursor() private {
-        uint256 length = _saleTimestamps.length;
-        while (_salesCursor < length && _saleTimestamps[_salesCursor] + SALE_WINDOW < block.timestamp) {
-            _salesCursor++;
+    function _salesLast24h() private view returns (uint256 total) {
+        for (uint256 i = 0; i < SALE_BUCKET_COUNT; i++) {
+            SaleBucket storage bucket = _saleBuckets[i];
+            if (bucket.windowStart == 0) continue;
+            if (bucket.windowStart + SALE_WINDOW <= block.timestamp) continue;
+            total += bucket.count;
         }
-    }
-
-    function _salesLast24h() private view returns (uint256) {
-        uint256 cursor = _salesCursor;
-        uint256 length = _saleTimestamps.length;
-        while (cursor < length && _saleTimestamps[cursor] + SALE_WINDOW < block.timestamp) {
-            cursor++;
-        }
-        return length - cursor;
     }
 }

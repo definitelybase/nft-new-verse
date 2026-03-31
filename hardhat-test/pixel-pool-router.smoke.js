@@ -7,6 +7,7 @@ const TREASURY_BPS = 1000;
 const TRADE_FEE_BPS = 250;
 const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
+const slotCache = {};
 
 function palette16() {
   return ethers.utils.hexlify([
@@ -21,8 +22,58 @@ function onePixel(colorIndex = 1) {
   return ethers.utils.hexlify([(colorIndex & 0x0f) << 4]);
 }
 
+function slotHex(slot) {
+  return ethers.utils.hexZeroPad(ethers.utils.hexlify(slot), 32);
+}
+
+function valueHex(value) {
+  return ethers.utils.hexZeroPad(ethers.BigNumber.from(value).toHexString(), 32);
+}
+
 async function increaseTime(seconds) {
   await ethers.provider.send("evm_increaseTime", [seconds]);
+  await ethers.provider.send("evm_mine", []);
+}
+
+function slotCacheKey(contract, getterName) {
+  return `${contract.address}:${getterName}`;
+}
+
+async function findStorageSlot(contract, getterName, probeValue) {
+  const key = slotCacheKey(contract, getterName);
+  if (slotCache[key] !== undefined) return slotCache[key];
+
+  for (let candidate = 0; candidate < 80; candidate++) {
+    const slot = slotHex(candidate);
+    const original = await ethers.provider.getStorageAt(contract.address, slot);
+
+    await ethers.provider.send("hardhat_setStorageAt", [contract.address, slot, valueHex(probeValue)]);
+    await ethers.provider.send("evm_mine", []);
+
+    const current = await contract[getterName]();
+    const matches = ethers.BigNumber.isBigNumber(current)
+      ? current.eq(probeValue)
+      : Number(current) === Number(probeValue);
+
+    await ethers.provider.send("hardhat_setStorageAt", [contract.address, slot, original]);
+    await ethers.provider.send("evm_mine", []);
+
+    if (matches) {
+      slotCache[key] = candidate;
+      return candidate;
+    }
+  }
+
+  throw new Error(`Unable to locate storage slot for ${getterName}`);
+}
+
+async function setUintVar(contract, getterName, value, probeValue = 987654321) {
+  const slot = await findStorageSlot(contract, getterName, probeValue);
+  await ethers.provider.send("hardhat_setStorageAt", [
+    contract.address,
+    slotHex(slot),
+    valueHex(value)
+  ]);
   await ethers.provider.send("evm_mine", []);
 }
 
@@ -76,9 +127,12 @@ async function seedPoolReserve(pool, owner, routerAddress, amount) {
   await (await pool.connect(owner).setRouter(routerAddress)).wait();
 }
 
-async function setStabilizationSnapshot(pool, owner) {
+async function setStabilizationSnapshot(pool, market, owner) {
   const floor = await pool.getFloorPrice();
-  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, STABILIZATION_SPREAD_BPS))).wait();
+  await setUintVar(pool, "totalMinted", 10);
+  await (await market.connect(owner).pause()).wait();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 1, addBps(floor, STABILIZATION_SPREAD_BPS))).wait();
+  await (await market.connect(owner).unpause()).wait();
 }
 
 function addBps(value, bps) {
@@ -303,7 +357,7 @@ describe("PixelPool + PixelRouter smoke suite", function () {
     assert.strictEqual((await pool.totalSoldIntoPool()).toString(), "1");
     assert.strictEqual((await pool.marketState()).toString(), "1");
 
-    await setStabilizationSnapshot(pool, owner);
+    await setStabilizationSnapshot(pool, market, owner);
     const floor = await pool.getFloorPrice();
     const ask = addBps(floor, STABILIZATION_SPREAD_BPS);
     assert.strictEqual((await pool.getListingPrice()).toString(), ask.toString());
@@ -332,7 +386,7 @@ describe("PixelPool + PixelRouter smoke suite", function () {
     await (await nft.connect(user).approve(router.address, 0)).wait();
     await (await router.connect(user).sellNFT(0, 0)).wait();
 
-    await setStabilizationSnapshot(pool, owner);
+    await setStabilizationSnapshot(pool, market, owner);
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
     assert.strictEqual(await nft.ownerOf(0), market.address);

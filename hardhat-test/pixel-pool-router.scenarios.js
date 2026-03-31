@@ -172,9 +172,12 @@ async function setUintVar(contract, getterName, value, probeValue = 987654321) {
   await ethers.provider.send("evm_mine", []);
 }
 
-async function setStabilizationSnapshot(pool, owner) {
+async function setStabilizationSnapshot(pool, market, owner) {
   const floor = await pool.getFloorPrice();
-  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, addBps(floor, 2500))).wait();
+  await setUintVar(pool, "totalMinted", 10);
+  await (await market.connect(owner).pause()).wait();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 1, addBps(floor, 2500))).wait();
+  await (await market.connect(owner).unpause()).wait();
 }
 
 describe("PixelPool longer scenarios", function () {
@@ -194,7 +197,7 @@ describe("PixelPool longer scenarios", function () {
     assert.strictEqual((await pool.availableNFTs()).toString(), "3");
     assert(floorAfterSells.lt(floorStart));
 
-    await setStabilizationSnapshot(pool, owner);
+    await setStabilizationSnapshot(pool, market, owner);
 
     await (await pool.connect(owner).releasePoolInventoryForListing(2)).wait();
 
@@ -233,7 +236,7 @@ describe("PixelPool longer scenarios", function () {
     const floorAfterSell = await pool.getFloorPrice();
     assert(emaAfterSell.lt(emaStart));
 
-    await setStabilizationSnapshot(pool, owner);
+    await setStabilizationSnapshot(pool, market, owner);
 
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 

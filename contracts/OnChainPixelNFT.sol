@@ -64,7 +64,7 @@ contract OnChainPixelNFT is ERC721, Ownable, IOnChainPixel {
         uint256 mintPrice_,
         bytes memory paletteRGB
     ) ERC721(name_, symbol_) Ownable() {
-        if (mintPrice_ == 0) revert InvalidAmount();
+        if (maxSupply_ == 0 || mintPrice_ == 0) revert InvalidAmount();
         if (bitDepth_ != 2 && bitDepth_ != 4 && bitDepth_ != 8) {
             revert InvalidBitDepth();
         }

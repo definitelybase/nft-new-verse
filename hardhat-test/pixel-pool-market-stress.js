@@ -8,6 +8,7 @@ const TRADE_FEE_BPS = 250;
 const STABILIZATION_SPREAD_BPS = 2000;
 const LAUNCH_PROTECTION = 6 * 60 * 60;
 const STATES = ["Expansion", "Stabilization", "WeakDemand"];
+const slotCache = {};
 
 function palette16() {
   return ethers.utils.hexlify([
@@ -22,8 +23,58 @@ function onePixel(colorIndex = 1) {
   return ethers.utils.hexlify([(colorIndex & 0x0f) << 4]);
 }
 
+function slotHex(slot) {
+  return ethers.utils.hexZeroPad(ethers.utils.hexlify(slot), 32);
+}
+
+function valueHex(value) {
+  return ethers.utils.hexZeroPad(ethers.BigNumber.from(value).toHexString(), 32);
+}
+
 async function increaseTime(seconds) {
   await ethers.provider.send("evm_increaseTime", [seconds]);
+  await ethers.provider.send("evm_mine", []);
+}
+
+function slotCacheKey(contract, getterName) {
+  return `${contract.address}:${getterName}`;
+}
+
+async function findStorageSlot(contract, getterName, probeValue) {
+  const key = slotCacheKey(contract, getterName);
+  if (slotCache[key] !== undefined) return slotCache[key];
+
+  for (let candidate = 0; candidate < 80; candidate++) {
+    const slot = slotHex(candidate);
+    const original = await ethers.provider.getStorageAt(contract.address, slot);
+
+    await ethers.provider.send("hardhat_setStorageAt", [contract.address, slot, valueHex(probeValue)]);
+    await ethers.provider.send("evm_mine", []);
+
+    const current = await contract[getterName]();
+    const matches = ethers.BigNumber.isBigNumber(current)
+      ? current.eq(probeValue)
+      : Number(current) === Number(probeValue);
+
+    await ethers.provider.send("hardhat_setStorageAt", [contract.address, slot, original]);
+    await ethers.provider.send("evm_mine", []);
+
+    if (matches) {
+      slotCache[key] = candidate;
+      return candidate;
+    }
+  }
+
+  throw new Error(`Unable to locate storage slot for ${getterName}`);
+}
+
+async function setUintVar(contract, getterName, value, probeValue = 987654321) {
+  const slot = await findStorageSlot(contract, getterName, probeValue);
+  await ethers.provider.send("hardhat_setStorageAt", [
+    contract.address,
+    slotHex(slot),
+    valueHex(value)
+  ]);
   await ethers.provider.send("evm_mine", []);
 }
 
@@ -74,9 +125,12 @@ async function getState(pool) {
   return STATES[s] || `Unknown(${s})`;
 }
 
-async function setStabilizationSnapshot(pool, owner) {
+async function setStabilizationSnapshot(pool, market, owner) {
   const floor = await pool.getFloorPrice();
-  await (await pool.connect(owner).setExternalMarketSnapshot(2, 120, floor.add(floor.mul(2500).div(10000)))).wait();
+  await setUintVar(pool, "totalMinted", 10);
+  await (await market.connect(owner).pause()).wait();
+  await (await pool.connect(owner).setExternalMarketSnapshot(2, 1, floor.add(floor.mul(2500).div(10000)))).wait();
+  await (await market.connect(owner).unpause()).wait();
 }
 
 describe("Market-state stress tests", function () {
@@ -123,10 +177,12 @@ describe("Market-state stress tests", function () {
     await (await router.connect(alice).sellNFT(1, 0)).wait();
 
     const floor = await pool.getFloorPrice();
+    await (await market.connect(owner).pause()).wait();
     await (await pool.connect(owner).setExternalMarketSnapshot(0, 200, floor.sub(1))).wait();
+    await (await market.connect(owner).unpause()).wait();
     assert.strictEqual(await getState(pool), "WeakDemand");
 
-    await setStabilizationSnapshot(pool, owner);
+    await setStabilizationSnapshot(pool, market, owner);
 
     await (await pool.connect(owner).releasePoolInventoryForListing(1)).wait();
 
