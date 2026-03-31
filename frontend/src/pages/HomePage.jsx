@@ -214,6 +214,7 @@ function LiquiditySystemOverview({ className = "", style }) {
 
   const comparisonColumns = [
     {
+      kind: "standard",
       label: "Standard NFT mint",
       tone: "#E8853A",
       summary: "Mint revenue usually goes to the team wallet, and the collection waits for secondary demand to create any market structure.",
@@ -230,6 +231,7 @@ function LiquiditySystemOverview({ className = "", style }) {
       ],
     },
     {
+      kind: "protocol",
       label: "OnChainPixel mint",
       tone: "#7C56D8",
       summary: "The mint is not only a sale. It seeds a full machine: reserve, treasury, native market behavior, and fee routing.",
@@ -246,6 +248,142 @@ function LiquiditySystemOverview({ className = "", style }) {
       ],
     },
   ];
+
+  function renderComparisonVisual(column) {
+    if (column.kind === "standard") {
+      return (
+        <div
+          style={{
+            position: "relative",
+            minHeight: 180,
+            borderRadius: 20,
+            border: `1px solid ${column.tone}33`,
+            background: `linear-gradient(180deg, ${column.tone}14 0%, rgba(255,255,255,0.03) 72%)`,
+            overflow: "hidden",
+            padding: 16,
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              right: -18,
+              top: -18,
+              width: 96,
+              height: 96,
+              borderRadius: "50%",
+              background: `${column.tone}16`,
+              filter: "blur(10px)",
+            }}
+          />
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+            <div style={{ padding: "7px 12px", borderRadius: 999, background: `${column.tone}12`, color: column.tone, border: `1px solid ${column.tone}33`, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+              Primary sale only
+            </div>
+            <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+              value exits the protocol early
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr)) 1.2fr", gap: 10, alignItems: "center" }}>
+            {[
+              ["Mint", "user pays mint price"],
+              ["Creator wallet", "primary sale ends here"],
+              ["NFT in market", "secondary demand starts later"],
+            ].map(([title, sub], index) => (
+              <React.Fragment key={title}>
+                <div style={{ padding: "14px 12px", borderRadius: 16, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.05)", minHeight: 88, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                  <div style={{ color: COLORS.text, fontFamily: fontDisplay, fontSize: 13, fontWeight: 600 }}>{title}</div>
+                  <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.6 }}>{sub}</div>
+                </div>
+                {index < 2 ? (
+                  <div style={{ height: 2, background: `linear-gradient(90deg, ${column.tone}, ${column.tone}00)`, borderRadius: 999, opacity: 0.7 }} />
+                ) : null}
+              </React.Fragment>
+            ))}
+            <div style={{ padding: "14px 12px", borderRadius: 16, border: `1px dashed ${column.tone}55`, background: `${column.tone}0D`, minHeight: 88, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+              <div style={{ color: column.tone, fontFamily: fontDisplay, fontSize: 13, fontWeight: 600 }}>What is missing</div>
+              <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.6 }}>
+                No reserve, no cleanup lane, no protocol-owned market inventory, no fee machine.
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        style={{
+          position: "relative",
+          minHeight: 180,
+          borderRadius: 20,
+          border: `1px solid ${column.tone}33`,
+          background: `linear-gradient(180deg, ${column.tone}14 0%, rgba(255,255,255,0.03) 72%)`,
+          overflow: "hidden",
+          padding: 16,
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            left: -22,
+            bottom: -26,
+            width: 120,
+            height: 120,
+            borderRadius: "50%",
+            background: `${column.tone}14`,
+            filter: "blur(12px)",
+          }}
+        />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 14 }}>
+          <div style={{ padding: "7px 12px", borderRadius: 999, background: `${column.tone}12`, color: column.tone, border: `1px solid ${column.tone}33`, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+            Protocol machine starts
+          </div>
+          <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+            reserve + treasury + market logic
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 12, alignItems: "stretch" }}>
+          <div style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.05)" }}>
+            <div style={{ color: COLORS.textDim, fontFamily: fonts, fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>
+              Mint split on the same tx
+            </div>
+            <div style={{ marginTop: 10, display: "flex", height: 18, borderRadius: 999, overflow: "hidden", border: `1px solid ${COLORS.border}` }}>
+              <div style={{ width: "60%", background: COLORS.accent }} />
+              <div style={{ width: "10%", background: COLORS.purple }} />
+              <div style={{ width: "30%", background: COLORS.yellow }} />
+            </div>
+            <div style={{ marginTop: 10, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8 }}>
+              {[
+                ["60%", "reserve", COLORS.accent],
+                ["10%", "treasury", COLORS.purple],
+                ["30%", "ops", COLORS.yellow],
+              ].map(([value, label, color]) => (
+                <div key={label} style={{ padding: "10px 8px", borderRadius: 12, background: `${color}12`, border: `1px solid ${color}33` }}>
+                  <div style={{ color, fontFamily: fontDisplay, fontSize: 14, fontWeight: 600 }}>{value}</div>
+                  <div style={{ color: COLORS.textMuted, fontFamily: fonts, fontSize: 10, lineHeight: 1.5, textTransform: "uppercase", letterSpacing: 0.6 }}>{label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ padding: 14, borderRadius: 16, border: `1px solid ${COLORS.border}`, background: "rgba(255,255,255,0.05)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            {[
+              ["Floor lane", COLORS.accent],
+              ["Buyback", COLORS.purple],
+              ["Native market", "#2AABCF"],
+              ["Fee flow", COLORS.green],
+            ].map(([label, color]) => (
+              <div key={label} style={{ padding: "10px 8px", borderRadius: 12, background: `${color}12`, border: `1px solid ${color}33`, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", color, fontFamily: fontDisplay, fontSize: 13, fontWeight: 600 }}>
+                {label}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <FrostCard className={className} style={{ padding: 20, ...style }}>
@@ -302,6 +440,8 @@ function LiquiditySystemOverview({ className = "", style }) {
                     {column.summary}
                   </div>
                 </div>
+
+                {renderComparisonVisual(column)}
 
                 <div style={{ display: "grid", gap: 10 }}>
                   {column.rails.map(([title, body], index) => (
